@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/mjmirza/n8n-nodes-clickfunnel/main/assets/clickfunnels-logo.svg" alt="ClickFunnels" width="80" />
+  <img src="https://unpkg.com/n8n-nodes-clickfunnel@latest/dist/nodes/ClickFunnels/clickfunnels.svg" alt="ClickFunnels" width="80" />
 </p>
 
 <h1 align="center">n8n-nodes-clickfunnel</h1>
@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/n8n-nodes-clickfunnel"><img src="https://img.shields.io/npm/v/n8n-nodes-clickfunnel?style=for-the-badge&color=CB3837&label=npm" alt="npm version" /></a>
   <a href="https://www.npmjs.com/package/n8n-nodes-clickfunnel"><img src="https://img.shields.io/npm/dt/n8n-nodes-clickfunnel?style=for-the-badge&color=blue&label=downloads" alt="npm downloads" /></a>
-  <a href="https://github.com/mjmirza/n8n-nodes-clickfunnel/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-FUCL-orange?style=for-the-badge" alt="License" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-FUCL-orange?style=for-the-badge" alt="License" /></a>
 </p>
 
 <p align="center">
@@ -283,11 +283,10 @@ The ClickFunnels name and logo are used solely for the purpose of describing thi
 
 ## License
 
-[FUCL (Fair Use Code License)](https://github.com/mjmirza/n8n-nodes-clickfunnel/blob/main/LICENSE) — Free to use in your own workflows. Copying, forking, redistribution, and derivative works are prohibited without written consent.
+[FUCL (Fair Use Code License)](LICENSE) — Free to use in your own workflows. Copying, forking, redistribution, and derivative works are prohibited without written consent.
 
 For commercial licensing, partnership, or custom development: [services.next8n.com](https://services.next8n.com)
 
 <p align="center">
   <a href="https://next8n.com"><img src="https://img.shields.io/badge/next8n.com-FF6D5A?style=for-the-badge&logoColor=white" alt="next8n" /></a>
-  <a href="https://github.com/mjmirza/n8n-nodes-clickfunnel"><img src="https://img.shields.io/badge/GitHub-Source-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
 </p>
