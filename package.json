@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-clickfunnel",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"description": "n8n community node for ClickFunnels 2.0 — 52 resources, 200+ operations, webhook triggers. Built using the official ClickFunnels public API.",
 	"license": "FUCL",
 	"author": {
@@ -8,10 +8,6 @@
 		"url": "https://next8n.com"
 	},
 	"homepage": "https://next8n.com",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/mjmirza/n8n-nodes-clickfunnel"
-	},
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n",
