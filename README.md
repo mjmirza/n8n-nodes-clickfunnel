@@ -114,4 +114,4 @@ Independent community integration using the public [ClickFunnels API](https://de
 
 ## License
 
-[MIT](LICENSE)
+[FUCL (Fair Use Code License)](LICENSE) — Free to use in your own workflows. Copying, forking, redistribution, and derivative works prohibited without written consent. See LICENSE for full terms.
