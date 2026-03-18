@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-clickfunnel",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "n8n community node for ClickFunnels 2.0 — 52 resources, 200+ operations, webhook triggers. Built using the official ClickFunnels public API.",
 	"license": "MIT",
 	"author": {
