@@ -1,8 +1,11 @@
-# n8n-nodes-clickfunnels
+# n8n-nodes-clickfunnel
 
 Community n8n node for [ClickFunnels 2.0](https://www.clickfunnels.com/) — automate your funnels, contacts, orders, products, courses, and more using the official ClickFunnels public API.
 
 > **52 resources · 200+ operations · Webhook triggers · AI Agent ready**
+
+[![npm version](https://img.shields.io/npm/v/n8n-nodes-clickfunnel.svg)](https://www.npmjs.com/package/n8n-nodes-clickfunnel)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Features
 
@@ -18,6 +21,7 @@ Community n8n node for [ClickFunnels 2.0](https://www.clickfunnels.com/) — aut
 - **Stores & Themes** — Store management, themes, and styles
 - **Platform** — Teams, users, workspaces, sites, images
 - **Webhooks** — Real-time event triggers for 28+ event types
+- **Security Hardened** — SSRF protection, input validation, retry with exponential backoff, HMAC webhook verification
 
 ## Installation
 
@@ -25,14 +29,14 @@ Community n8n node for [ClickFunnels 2.0](https://www.clickfunnels.com/) — aut
 
 1. Go to **Settings → Community Nodes**
 2. Select **Install a community node**
-3. Enter `n8n-nodes-clickfunnels`
+3. Enter `n8n-nodes-clickfunnel`
 4. Agree to the risks and click **Install**
 
 ### Manual Installation
 
 ```bash
 cd ~/.n8n
-npm install n8n-nodes-clickfunnels
+npm install n8n-nodes-clickfunnel
 ```
 
 ## Authentication
@@ -138,9 +142,19 @@ npm install
 # Build
 npm run build
 
+# Run tests
+npm test
+
 # Watch mode
 npm run dev
 ```
+
+## Links
+
+- **Homepage:** [next8n.com](https://next8n.com)
+- **npm:** [npmjs.com/package/n8n-nodes-clickfunnel](https://www.npmjs.com/package/n8n-nodes-clickfunnel)
+- **GitHub:** [github.com/mjmirza/n8n-nodes-clickfunnel](https://github.com/mjmirza/n8n-nodes-clickfunnel)
+- **ClickFunnels API:** [developers.myclickfunnels.com](https://developers.myclickfunnels.com/)
 
 ## Legal Notice
 
