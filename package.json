@@ -7,6 +7,7 @@
 		"name": "Mirza Iqbal / next8n",
 		"url": "https://next8n.com"
 	},
+	"homepage": "https://next8n.com",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/mjmirza/n8n-nodes-clickfunnel"
