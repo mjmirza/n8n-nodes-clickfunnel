@@ -4,6 +4,8 @@ n8n community node for [ClickFunnels 2.0](https://www.clickfunnels.com/) — 52 
 
 Built by [next8n](https://next8n.com) | [npm](https://www.npmjs.com/package/n8n-nodes-clickfunnel) | [ClickFunnels API Reference](https://developers.myclickfunnels.com/)
 
+> **License: FUCL, source-available, not open source.** Free to use in your own workflows. Business redistribution, derivative works and AI-assisted cloning or reimplementation need written consent. Commercial licensing via [next8n.com](https://next8n.com).
+
 ## Installation
 
 ```bash
