@@ -33,6 +33,83 @@ export const orderFields: INodeProperties[] = [
 		},
 	},
 	{
+		displayName: 'Order Type',
+		name: 'orderType',
+		type: 'options',
+		required: true,
+		options: [
+			{ name: 'One-Time Order', value: 'one-time-order' },
+			{ name: 'Subscription Order', value: 'subscription-order' },
+		],
+		default: 'one-time-order',
+		description: 'Whether the order is a single purchase or a subscription',
+		displayOptions: {
+			show: {
+				resource: ['order'],
+				operation: ['create'],
+			},
+		},
+	},
+	{
+		displayName: 'Live Mode',
+		name: 'liveMode',
+		type: 'boolean',
+		required: true,
+		default: false,
+		description: 'Whether this is a live order. Leave off to create a test order.',
+		displayOptions: {
+			show: {
+				resource: ['order'],
+				operation: ['create'],
+			},
+		},
+	},
+	{
+		displayName: 'Line Items',
+		name: 'lineItems',
+		type: 'fixedCollection',
+		typeOptions: { multipleValues: true },
+		required: true,
+		placeholder: 'Add Line Item',
+		default: {},
+		description: 'Products on the order. At least one is required.',
+		displayOptions: {
+			show: {
+				resource: ['order'],
+				operation: ['create'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Item',
+				name: 'item',
+				values: [
+					{
+						displayName: 'Variant ID',
+						name: 'variantId',
+						type: 'string',
+						default: '',
+						description: 'The ID of the product variant',
+					},
+					{
+						displayName: 'Price ID',
+						name: 'priceId',
+						type: 'string',
+						default: '',
+						description: 'The ID of a price on the variant product',
+					},
+					{
+						displayName: 'Quantity',
+						name: 'quantity',
+						type: 'number',
+						typeOptions: { minValue: 1 },
+						default: 1,
+					},
+				],
+			},
+		],
+	},
+	{
 		displayName: 'Additional Fields',
 		name: 'additionalFields',
 		type: 'collection',

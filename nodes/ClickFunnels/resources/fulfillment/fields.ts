@@ -38,21 +38,63 @@ export const fulfillmentFields: INodeProperties[] = [
 	},
 
 	// ------------------------------------------------------------------
-	//        orderId — required for create
+	//        contactId — required for create
 	// ------------------------------------------------------------------
 	{
-		displayName: 'Order ID',
-		name: 'orderId',
+		displayName: 'Contact ID',
+		name: 'contactId',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'The ID of the order this fulfillment belongs to',
+		description: 'The contact who placed the order being fulfilled',
 		displayOptions: {
 			show: {
 				resource: ['fulfillment'],
 				operation: ['create'],
 			},
 		},
+	},
+
+	// ------------------------------------------------------------------
+	//        lineItems — the invoice line items to fulfill
+	// ------------------------------------------------------------------
+	{
+		displayName: 'Line Items',
+		name: 'lineItems',
+		type: 'fixedCollection',
+		typeOptions: { multipleValues: true },
+		required: true,
+		placeholder: 'Add Line Item',
+		default: {},
+		description: 'Order invoice line items to fulfill. At least one is required.',
+		displayOptions: {
+			show: {
+				resource: ['fulfillment'],
+				operation: ['create'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Item',
+				name: 'item',
+				values: [
+					{
+						displayName: 'Invoice Line Item ID',
+						name: 'invoiceLineItemId',
+						type: 'string',
+						default: '',
+						description: 'The ID of the order invoice line item',
+					},
+					{
+						displayName: 'Quantity',
+						name: 'quantity',
+						type: 'number',
+						typeOptions: { minValue: 1 },
+						default: 1,
+					},
+				],
+			},
+		],
 	},
 
 	// ------------------------------------------------------------------
@@ -94,7 +136,7 @@ export const fulfillmentFields: INodeProperties[] = [
 				name: 'tracking_number',
 				type: 'string',
 				default: '',
-				description: 'The shipment tracking number',
+				description: 'The shipment tracking number, sent to ClickFunnels as tracking_code',
 			},
 			{
 				displayName: 'Tracking URL',
@@ -134,7 +176,7 @@ export const fulfillmentFields: INodeProperties[] = [
 				name: 'tracking_number',
 				type: 'string',
 				default: '',
-				description: 'The shipment tracking number',
+				description: 'The shipment tracking number, sent to ClickFunnels as tracking_code',
 			},
 			{
 				displayName: 'Tracking URL',

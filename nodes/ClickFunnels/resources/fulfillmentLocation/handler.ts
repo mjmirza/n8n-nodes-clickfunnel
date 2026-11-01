@@ -1,5 +1,28 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
+
+const ADDRESS_KEYS: Record<string, string> = {
+	addressLine1: 'address_one',
+	addressLine2: 'address_two',
+	city: 'city',
+	state: 'region',
+	zip: 'postal_code',
+	country: 'country',
+};
+
+// The API takes name, address_name and email_address flat, and the postal fields nested in address.
+function buildLocation(fields: IDataObject): IDataObject {
+	const location: IDataObject = {};
+	if (fields.name) location.name = fields.name;
+	if (fields.addressName) location.address_name = fields.addressName;
+	if (fields.emailAddress) location.email_address = fields.emailAddress;
+	const address: IDataObject = {};
+	for (const [field, apiKey] of Object.entries(ADDRESS_KEYS)) {
+		if (fields[field]) address[apiKey] = fields[field];
+	}
+	if (Object.keys(address).length > 0) location.address = address;
+	return location;
+}
 
 export async function handleFulfillmentLocation(
 	ctx: IExecuteFunctions,
@@ -12,24 +35,19 @@ export async function handleFulfillmentLocation(
 				ctx.getNodeParameter('workspaceId', i) as string,
 				'Workspace ID',
 			);
-			const name = ctx.getNodeParameter('name', i) as string;
-			const addressLine1 = ctx.getNodeParameter('addressLine1', i) as string;
-			const city = ctx.getNodeParameter('city', i) as string;
-			const state = ctx.getNodeParameter('state', i) as string;
-			const zip = ctx.getNodeParameter('zip', i) as string;
-			const country = ctx.getNodeParameter('country', i) as string;
 			const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
-
-			const locationData: IDataObject = {
+			const name = ctx.getNodeParameter('name', i) as string;
+			const locationData = buildLocation({
+				...additionalFields,
 				name,
-				address_line_1: addressLine1,
-				city,
-				state,
-				zip,
-				country,
-			};
-
-			if (additionalFields.addressLine2) locationData.address_line_2 = additionalFields.addressLine2;
+				emailAddress: ctx.getNodeParameter('emailAddress', i) as string,
+				addressLine1: ctx.getNodeParameter('addressLine1', i) as string,
+				city: ctx.getNodeParameter('city', i) as string,
+				state: ctx.getNodeParameter('state', i) as string,
+				zip: ctx.getNodeParameter('zip', i) as string,
+				country: ctx.getNodeParameter('country', i) as string,
+			});
+			if (!locationData.address_name) locationData.address_name = name;
 
 			const body: IDataObject = {
 				fulfillments_location: locationData,
@@ -68,14 +86,7 @@ export async function handleFulfillmentLocation(
 			}
 
 			const limit = ctx.getNodeParameter('limit', i) as number;
-			const results = await clickFunnelsGetAll(
-				ctx,
-				'GET',
-				`/workspaces/${workspaceId}/fulfillments/locations`,
-				{},
-				1,
-			);
-			return results.slice(0, limit);
+			return clickFunnelsGetMany(ctx, `/workspaces/${workspaceId}/fulfillments/locations`, {}, limit);
 		}
 
 		case 'update': {
@@ -85,14 +96,7 @@ export async function handleFulfillmentLocation(
 			);
 			const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
 
-			const locationData: IDataObject = {};
-			if (additionalFields.name) locationData.name = additionalFields.name;
-			if (additionalFields.addressLine1) locationData.address_line_1 = additionalFields.addressLine1;
-			if (additionalFields.addressLine2) locationData.address_line_2 = additionalFields.addressLine2;
-			if (additionalFields.city) locationData.city = additionalFields.city;
-			if (additionalFields.state) locationData.state = additionalFields.state;
-			if (additionalFields.zip) locationData.zip = additionalFields.zip;
-			if (additionalFields.country) locationData.country = additionalFields.country;
+			const locationData = buildLocation(additionalFields);
 
 			const body: IDataObject = {
 				fulfillments_location: locationData,

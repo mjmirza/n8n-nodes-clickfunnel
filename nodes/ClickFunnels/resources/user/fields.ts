@@ -2,24 +2,6 @@ import type { INodeProperties } from 'n8n-workflow';
 
 export const userFields: INodeProperties[] = [
 	// ------------------------------------------------------------------
-	//        teamId — used by getMany
-	// ------------------------------------------------------------------
-	{
-		displayName: 'Team ID',
-		name: 'teamId',
-		type: 'string',
-		required: true,
-		default: '',
-		description: 'The ID of the team',
-		displayOptions: {
-			show: {
-				resource: ['user'],
-				operation: ['getMany'],
-			},
-		},
-	},
-
-	// ------------------------------------------------------------------
 	//        userId — used by get
 	// ------------------------------------------------------------------
 	{

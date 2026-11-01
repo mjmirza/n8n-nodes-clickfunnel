@@ -1,5 +1,24 @@
-import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { NodeOperationError, type IExecuteFunctions, type IDataObject } from 'n8n-workflow';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
+
+// The API calls the tracking number tracking_code.
+function withTrackingCode(fields: IDataObject): IDataObject {
+	const { tracking_number: trackingNumber, ...rest } = fields;
+	if (trackingNumber !== undefined && rest.tracking_code === undefined) rest.tracking_code = trackingNumber;
+	return rest;
+}
+
+function getLineItems(ctx: IExecuteFunctions, i: number): IDataObject[] {
+	const collection = ctx.getNodeParameter('lineItems', i, {}) as { item?: IDataObject[] };
+	const items = (collection.item ?? []).map((item) => ({
+		invoices_line_item_id: assertSafeId(item.invoiceLineItemId as string, 'Invoice line item ID'),
+		quantity: Number(item.quantity ?? 1),
+	}));
+	if (items.length === 0) {
+		throw new NodeOperationError(ctx.getNode(), 'Add at least one line item to fulfill', { itemIndex: i });
+	}
+	return items;
+}
 
 export async function handleFulfillment(
 	ctx: IExecuteFunctions,
@@ -12,9 +31,9 @@ export async function handleFulfillment(
 				ctx.getNodeParameter('workspaceId', i) as string,
 				'Workspace ID',
 			);
-			const orderId = assertSafeId(
-				ctx.getNodeParameter('orderId', i) as string,
-				'Order ID',
+			const contactId = assertSafeId(
+				ctx.getNodeParameter('contactId', i) as string,
+				'Contact ID',
 			);
 			const locationId = assertSafeId(
 				ctx.getNodeParameter('locationId', i) as string,
@@ -24,9 +43,10 @@ export async function handleFulfillment(
 
 			const body: IDataObject = {
 				fulfillment: {
-					order_id: orderId,
+					...withTrackingCode(additionalFields),
+					contact_id: contactId,
 					location_id: locationId,
-					...additionalFields,
+					included_orders_invoices_line_items_attributes: getLineItems(ctx, i),
 				} as IDataObject,
 			};
 
@@ -63,14 +83,7 @@ export async function handleFulfillment(
 			}
 
 			const limit = ctx.getNodeParameter('limit', i) as number;
-			const results = await clickFunnelsGetAll(
-				ctx,
-				'GET',
-				`/workspaces/${workspaceId}/fulfillments`,
-				{},
-				1,
-			);
-			return results.slice(0, limit);
+			return clickFunnelsGetMany(ctx, `/workspaces/${workspaceId}/fulfillments`, {}, limit);
 		}
 
 		case 'update': {
@@ -81,7 +94,7 @@ export async function handleFulfillment(
 			const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
 
 			const body: IDataObject = {
-				fulfillment: { ...updateFields } as IDataObject,
+				fulfillment: withTrackingCode(updateFields),
 			};
 
 			return clickFunnelsRequest(ctx, 'PUT', `/fulfillments/${fulfillmentId}`, body);
