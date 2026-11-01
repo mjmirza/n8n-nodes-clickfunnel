@@ -4,10 +4,14 @@ import tsParser from '@typescript-eslint/parser';
 import n8nNodesBase from 'eslint-plugin-n8n-nodes-base';
 import { defineConfig } from 'eslint/config';
 
+const SHIPPED = ['package.json', 'nodes/**/*.ts', 'credentials/**/*.ts'];
+
 export default defineConfig(
-	{ ignores: ['dist/**', 'node_modules/**', 'tests/**', '*.js', '*.mjs'] },
-	n8nCommunityNodesPlugin.configs.recommended,
-	{ rules: { 'no-console': 'error' } },
+	{ ignores: ['dist/**', 'node_modules/**'] },
+	// Community-node rules apply to what ships. Tests and build config are dev-only.
+	{ ...n8nCommunityNodesPlugin.configs.recommended, files: SHIPPED },
+	{ files: SHIPPED, rules: { 'no-console': 'error' } },
+	{ files: ['tests/**/*.ts'], rules: { 'no-eval': 'error' } },
 	{ plugins: { 'n8n-nodes-base': n8nNodesBase } },
 	{ files: ['package.json'], rules: { ...n8nNodesBase.configs.community.rules } },
 	{
@@ -28,4 +32,5 @@ export default defineConfig(
 		},
 	},
 	{ files: ['**/*.json', '**/*.ts'], languageOptions: { parser: tsParser } },
+	{ files: ['*.js'], languageOptions: { sourceType: 'commonjs', globals: { module: 'writable', require: 'readonly' } } },
 );
