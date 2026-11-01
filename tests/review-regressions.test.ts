@@ -3,6 +3,7 @@ import { ClickFunnels } from '../nodes/ClickFunnels/ClickFunnels.node';
 import { ClickFunnelsTrigger } from '../nodes/ClickFunnels/ClickFunnelsTrigger.node';
 import { legacyFieldsSet, splitLegacyFields } from '../nodes/ClickFunnels/legacyFields';
 import { handleProductVariant } from '../nodes/ClickFunnels/resources/productVariant/handler';
+import { handleOrderInvoice } from '../nodes/ClickFunnels/resources/orderInvoice/handler';
 import { calls, makeCtx, type HttpMock } from './helpers';
 
 describe('legacy field defaults', () => {
@@ -137,5 +138,35 @@ describe('README coverage claim', () => {
 	it('names the uncovered survey resources and points to the HTTP Request node', () => {
 		expect(readme()).toMatch(/Not covered yet[^\n]*survey/i);
 		expect(readme()).toMatch(/HTTP Request node/);
+	});
+});
+
+describe('invoice create line item description', () => {
+	// R3-1. The orders_invoice create schema accepts an optional line item description.
+	it('sends a line item description on create', async () => {
+		const http: HttpMock = jest.fn(async (_opts) => ({ id: 1 }));
+		const additionalFields = {
+			line_items_attributes: '[{"amount":"10.00","quantity":1,"variant_id":1,"products_price_id":1,"description":"Setup charge"}]',
+		};
+		await handleOrderInvoice(makeCtx({ orderId: '1', externalId: 'inv-1', additionalFields }, http), 'create', 0);
+		expect((calls(http)[0].body as IDataObject).orders_invoice).toMatchObject({
+			line_items_attributes: [{ amount: '10.00', quantity: 1, variant_id: 1, products_price_id: 1, description: 'Setup charge' }],
+		});
+	});
+
+	it('still rejects a key the create schema does not accept', async () => {
+		const http: HttpMock = jest.fn(async (_opts) => ({ id: 1 }));
+		const additionalFields = { line_items_attributes: '[{"amount":"10.00","quantity":1,"variant_id":1,"products_price_id":1,"id":5}]' };
+		await expect(handleOrderInvoice(makeCtx({ orderId: '1', externalId: 'inv-1', additionalFields }, http), 'create', 0)).rejects.toThrow(/Not accepted: id/);
+		expect(http).not.toHaveBeenCalled();
+	});
+});
+
+describe('README trigger event count', () => {
+	// R3-2. The project layout line must match the 83 events the trigger offers.
+	it('states the same event count as the trigger section', () => {
+		const readme: string = require('fs').readFileSync(require('path').join(__dirname, '..', 'README.md'), 'utf8');
+		expect(readme).not.toMatch(/Webhook trigger, 28 events/);
+		expect(readme).toMatch(/Webhook trigger, 83 events/);
 	});
 });

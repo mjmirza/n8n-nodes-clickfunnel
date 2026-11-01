@@ -193,7 +193,7 @@ credentials/
   ClickFunnelsApi.credentials.ts    Bearer token auth and credential test
 nodes/ClickFunnels/
   ClickFunnels.node.ts              Action node, 52 resources
-  ClickFunnelsTrigger.node.ts       Webhook trigger, 28 events
+  ClickFunnelsTrigger.node.ts       Webhook trigger, 83 events
   transport.ts                      HTTP client, retry, pagination, validation
   resources/<resource>/             operations.ts, fields.ts, handler.ts
 tests/                              Jest unit and failure-path tests
