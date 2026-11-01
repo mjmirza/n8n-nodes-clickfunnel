@@ -101,8 +101,8 @@ function buildListFilters(ctx: IExecuteFunctions, i: number): IDataObject {
 
 	if (filters.email) qs['filter[email_address]'] = filters.email;
 	if (filters.tag) qs['filter[tag_ids]'] = filters.tag;
-	if (filters.afterDate) qs['filter[after]'] = filters.afterDate;
-	if (filters.beforeDate) qs['filter[before]'] = filters.beforeDate;
+	if (filters.id) qs['filter[id]'] = filters.id;
+	if (filters.isActive !== undefined && filters.isActive !== '') qs['filter[is_active]'] = filters.isActive;
 
 	return qs;
 }

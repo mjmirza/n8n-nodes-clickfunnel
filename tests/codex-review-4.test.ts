@@ -7,6 +7,7 @@ import { handleOrderInvoice } from '../nodes/ClickFunnels/resources/orderInvoice
 import { handleCourseLesson } from '../nodes/ClickFunnels/resources/courseLesson/handler';
 import { handleCourseSection } from '../nodes/ClickFunnels/resources/courseSection/handler';
 import { handleFormFieldOption } from '../nodes/ClickFunnels/resources/formFieldOption/handler';
+import { handleContact } from '../nodes/ClickFunnels/resources/contact/contact.handler';
 import { calls, makeCtx, TEST_NODE, type HttpMock } from './helpers';
 
 type Handler = (ctx: never, operation: string, i: number) => Promise<unknown>;
@@ -89,5 +90,14 @@ describe('fourth review', () => {
 
 	it('11. form field options send only a label', async () => {
 		expect(await body(handleFormFieldOption as Handler, 'create', { fieldId: '1', label: 'Red', value: 'red' })).toEqual({ forms_fields_option: { label: 'Red' } });
+	});
+
+	it('contact filters use only documented keys', async () => {
+		const http: HttpMock = jest.fn(async (_opts) => []);
+		await handleContact(makeCtx({ workspaceId: '1', returnAll: false, limit: 5, filters: { id: '7', isActive: true } }, http) as never, 'getAll', 0);
+		const qs = calls(http)[0].qs as IDataObject;
+		expect(qs).toMatchObject({ 'filter[id]': '7', 'filter[is_active]': true });
+		expect(versionsOf('contact', 'filters').v2).not.toContain('afterDate');
+		expect(versionsOf('contact', 'filters').v1).toContain('afterDate');
 	});
 });

@@ -9,6 +9,7 @@ export interface LegacyField {
 }
 
 export const LEGACY_FIELDS: LegacyField[] = [
+	{ resource: 'contact', parameter: 'filters', keys: ['afterDate', 'beforeDate'] },
 	{ resource: 'courseLesson', parameter: 'updateFields', keys: ['position'] },
 	{ resource: 'courseSection', parameter: 'updateFields', keys: ['position'] },
 	{ resource: 'form', parameter: 'additionalFields', keys: ['description', 'redirect_url'] },

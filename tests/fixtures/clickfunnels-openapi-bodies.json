@@ -8278,5 +8278,164 @@
 			},
 			"required": []
 		}
+	},
+	"filters": {
+		"GET /contacts/{}/applied_tags": [
+			"id",
+			"tag_id"
+		],
+		"GET /contacts/{}/events": [
+			"type"
+		],
+		"GET /contacts/{}/unsubscribed_topics": [
+			"contact_id",
+			"id",
+			"topic_id"
+		],
+		"GET /courses/{}/enrollments": [
+			"contact_id",
+			"id"
+		],
+		"GET /courses/{}/lesson_completions": [
+			"enrollment_id",
+			"lesson_id"
+		],
+		"GET /orders/{}/invoices": [
+			"external_id",
+			"id",
+			"invoice_number",
+			"invoice_type",
+			"status"
+		],
+		"GET /products/{}/prices": [
+			"archived",
+			"id",
+			"variant_id",
+			"visible"
+		],
+		"GET /products/{}/variants": [
+			"archived",
+			"fulfillment_required",
+			"id",
+			"visible"
+		],
+		"GET /sales/opportunities/{}/notes": [
+			"created_by_id",
+			"id"
+		],
+		"GET /sales/pipelines/{}/stages": [
+			"id"
+		],
+		"GET /survey_workflows/{}/runs": [
+			"contact_id",
+			"status"
+		],
+		"GET /webhooks/incoming/external_purchase_endpoints/{}/events": [
+			"event_type",
+			"id",
+			"processing_status"
+		],
+		"GET /workflows/{}/runs": [
+			"contact_id",
+			"current_step_id",
+			"status"
+		],
+		"GET /workspaces/{}/contacts": [
+			"email_address",
+			"id",
+			"is_active",
+			"tag_ids"
+		],
+		"GET /workspaces/{}/contacts/tags": [
+			"id",
+			"name"
+		],
+		"GET /workspaces/{}/contacts/unsubscribed_topics": [
+			"contact_id",
+			"id",
+			"topic_id"
+		],
+		"GET /workspaces/{}/discounts": [
+			"applies_to",
+			"code",
+			"discount_method",
+			"discount_type",
+			"id"
+		],
+		"GET /workspaces/{}/emails/addresses": [
+			"email_address",
+			"verified"
+		],
+		"GET /workspaces/{}/emails/broadcasts": [
+			"id",
+			"status"
+		],
+		"GET /workspaces/{}/form_submissions": [
+			"contact_id",
+			"id",
+			"page_id"
+		],
+		"GET /workspaces/{}/funnels": [
+			"id"
+		],
+		"GET /workspaces/{}/funnels/tags": [
+			"id",
+			"name"
+		],
+		"GET /workspaces/{}/orders": [
+			"contact_id",
+			"id",
+			"live_mode",
+			"order_type"
+		],
+		"GET /workspaces/{}/orders/invoices": [
+			"external_id",
+			"id",
+			"invoice_number",
+			"invoice_type",
+			"status"
+		],
+		"GET /workspaces/{}/pages": [
+			"funnel_ids",
+			"funnel_pages",
+			"id",
+			"theme_id"
+		],
+		"GET /workspaces/{}/products": [
+			"archived",
+			"id",
+			"visible_in_customer_center",
+			"visible_in_store"
+		],
+		"GET /workspaces/{}/products/collections": [
+			"archived",
+			"id",
+			"visible_in_store"
+		],
+		"GET /workspaces/{}/products/tags": [
+			"id"
+		],
+		"GET /workspaces/{}/refine_filters": [
+			"name"
+		],
+		"GET /workspaces/{}/sales/opportunities": [
+			"assignee_id",
+			"id",
+			"pipeline_id",
+			"pipelines_stage_id",
+			"primary_contact_id"
+		],
+		"GET /workspaces/{}/sales/pipelines": [
+			"id"
+		],
+		"GET /workspaces/{}/segments": [
+			"name"
+		],
+		"GET /workspaces/{}/stats": [],
+		"GET /workspaces/{}/webhooks/incoming/external_purchase_endpoints": [
+			"id",
+			"live_mode",
+			"provider"
+		]
 	}
 }

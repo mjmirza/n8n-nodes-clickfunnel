@@ -43,8 +43,15 @@ def describe(schema, depth=0):
 
 
 bodies = {}
+filters = {}
 for route, ops in spec["paths"].items():
     norm = re.sub(r"\{[^}]+\}", "{}", route)
+    get = ops.get("get") if isinstance(ops.get("get"), dict) else {}
+    for prm in get.get("parameters", []):
+        prm = resolve(prm)
+        if prm.get("name") == "filter":
+            props = resolve(prm.get("schema", {})).get("properties", {})
+            filters[f"GET {norm}"] = sorted(props)
     for method, op in ops.items():
         if method not in ("post", "put", "patch") or not isinstance(op, dict):
             continue
@@ -58,6 +65,7 @@ out = {
     "source": SOURCE,
     "fetchedAt": date.today().isoformat(),
     "bodies": dict(sorted(bodies.items())),
+    "filters": dict(sorted(filters.items())),
 }
 dest = (
     Path(__file__).resolve().parent.parent

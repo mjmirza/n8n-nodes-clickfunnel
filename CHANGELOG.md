@@ -8,7 +8,7 @@ Fixes from the third and fourth adversarial reviews, of 2.0.0 and of a 2.1.0 can
 - Fields the ClickFunnels request schemas do not accept are gone from version 2 and kept on version 1, marked Not Accepted by the API. A version 1 node with one of them set stops before any request and names the fields. 2.0.0 sent them and ClickFunnels did nothing with them. The full list is in the README upgrade table. Form field option nodes on version 1 always carry Value, so they need switching to version 2.
 
 ### Added
-- A body contract test. Every operation runs twice, once with every field the UI offers and once with only the required ones, and each request body is checked against the OpenAPI request schema, including enums and required keys. `scripts/snapshot-openapi-bodies.py` regenerates the fixture.
+- A body contract test. Every operation runs twice, once with every field the UI offers and once with only the required ones, and each request body is checked against the OpenAPI request schema, including enums and required keys. `filter[...]` query keys are checked against the documented filters. `scripts/snapshot-openapi-bodies.py` regenerates the fixture.
 - Product Type on product variant create (required) and update.
 - Node version 2 for the ClickFunnels and ClickFunnels Trigger nodes. 2.0.0 changed required parameters while keeping version 1, so saved workflows had no migration path. Saved nodes stay on version 1 with their values intact, and a version 1 node that lacks a field the API now requires stops before any request and names the field.
 - The trigger offers all 83 user-selectable event types from the ClickFunnels catalog, including blogs, communities, course lessons and sections, email broadcasts, invoice restocks, surveys and videos.
@@ -37,6 +37,7 @@ Fixes from the third and fourth adversarial reviews, of 2.0.0 and of a 2.1.0 can
 - Product variant create sends the required `product_type`, `weight_unit` and `properties_values`.
 - Course lesson and section updates send the title as `title`.
 - Form field options send only `label`, the one field the option schema accepts.
+- Contact Get Many offers the documented IDs and Is Active filters. After Date and Before Date sent `filter[after]` and `filter[before]`, which the API does not document.
 
 ### Changed
 - On version 2 an empty list returns no items, so downstream nodes do not run on nothing. Use Always Output Data to continue. Version 1 keeps its `{ success: true, count: 0 }` item.

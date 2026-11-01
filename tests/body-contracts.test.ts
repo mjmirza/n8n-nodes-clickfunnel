@@ -15,11 +15,12 @@ interface Schema {
 }
 
 const BASE = 'https://acme.myclickfunnels.com/api/v2';
-const bodies = (
-	JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'clickfunnels-openapi-bodies.json'), 'utf-8')) as {
-		bodies: Record<string, Schema>;
-	}
-).bodies;
+const fixture = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'clickfunnels-openapi-bodies.json'), 'utf-8')) as {
+	bodies: Record<string, Schema>;
+	filters: Record<string, string[]>;
+};
+const bodies = fixture.bodies;
+const PAGING = new Set(['after', 'per_page', 'sort_order', 'sort_property']);
 
 // Values a handler parses or validates, keyed resource.parameter. Everything else gets a generic sample.
 const OVERRIDES: Record<string, unknown> = {
@@ -80,9 +81,9 @@ function sample(resource: string, p: INodeProperties): IDataObject[string] {
 	}
 }
 
-function matchRoute(method: string, url: string): string | undefined {
+function matchRoute(method: string, url: string, routes: string[] = Object.keys(bodies)): string | undefined {
 	const parts = url.split('?')[0].split('/');
-	return Object.keys(bodies).find((route) => {
+	return routes.find((route) => {
 		const [m, tpl] = route.split(' ');
 		const segs = tpl.split('/');
 		return m === method && segs.length === parts.length && segs.every((s, k) => s === '{}' || s === parts[k]);
@@ -140,6 +141,17 @@ describe('every write body matches the ClickFunnels request schema', () => {
 		const problems: string[] = [];
 		for (const c of calls(http)) {
 			const method = String(c.method);
+			if (method === 'GET') {
+				const url = String(c.url).replace(BASE, '');
+				const route = matchRoute('GET', url, Object.keys(fixture.filters));
+				for (const key of Object.keys((c.qs ?? {}) as IDataObject)) {
+					const filter = /^filter\[(.+)\]$/.exec(key);
+					if (filter) {
+						if (!route || !fixture.filters[route].includes(filter[1])) problems.push(`GET ${url} filter ${filter[1]} is not documented`);
+					} else if (!PAGING.has(key)) problems.push(`GET ${url} query ${key} is not documented`);
+				}
+				continue;
+			}
 			if (!['POST', 'PUT', 'PATCH'].includes(method) || c.body === undefined) continue;
 			const url = String(c.url).replace(BASE, '');
 			const route = matchRoute(method, url);

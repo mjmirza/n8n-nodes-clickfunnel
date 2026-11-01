@@ -242,6 +242,20 @@ export const contactFields: INodeProperties[] = [
 				description: 'Filter contacts by email address',
 			},
 			{
+				displayName: 'IDs',
+				name: 'id',
+				type: 'string',
+				default: '',
+				description: 'Comma-separated contact IDs to return',
+			},
+			{
+				displayName: 'Is Active',
+				name: 'isActive',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to return only active contacts, or only inactive ones',
+			},
+			{
 				displayName: 'Tag IDs',
 				name: 'tag',
 				type: 'string',
