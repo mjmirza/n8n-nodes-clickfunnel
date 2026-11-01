@@ -100,4 +100,46 @@ describe('fourth review', () => {
 		expect(versionsOf('contact', 'filters').v2).not.toContain('afterDate');
 		expect(versionsOf('contact', 'filters').v1).toContain('afterDate');
 	});
+
+	it('fifth review 1. a version 1 node without legacy parameters runs, n8n throws on absent parameters', async () => {
+		const http: HttpMock = jest.fn(async (_opts) => ({ id: 3 }));
+		const params: Record<string, unknown> = { resource: 'product', operation: 'get', productId: '3' };
+		const ctx = {
+			...(makeCtx(params, http) as object),
+			getNodeParameter: (...args: [string, number, unknown?]) => {
+				if (args[0] in params) return params[args[0]];
+				if (args.length < 3 || args[2] === undefined) throw new Error(`Could not get parameter "${args[0]}"`);
+				return args[2];
+			},
+			getInputData: () => [{ json: {} }],
+			getNode: () => ({ ...TEST_NODE, typeVersion: 1 }),
+			continueOnFail: () => false,
+		} as unknown as IExecuteFunctions;
+		const out = await new ClickFunnels().execute.call(ctx);
+		expect(out[0]).toEqual([{ json: { id: 3 }, pairedItem: { item: 0 } }]);
+	});
+
+	it('fifth review 2. an incomplete new billing address fails before the contact is written', async () => {
+		const http: HttpMock = jest.fn(async (_opts) => ({ id: 9 }));
+		await expect(
+			handleContact(makeCtx({ workspaceId: '1', email: 'a@b.co', additionalFields: { city: 'Berlin' } }, http) as never, 'create', 0),
+		).rejects.toThrow(/Address Line 1, Country, Zip/);
+		expect(http).not.toHaveBeenCalled();
+
+		// An existing address accepts a partial update.
+		const existing: HttpMock = jest.fn(async (_opts) => ({ id: 9 }));
+		await handleContact(makeCtx({ contactId: '9', additionalFields: { city: 'Berlin' } }, existing) as never, 'update', 0);
+		expect(calls(existing).map((c) => c.method)).toEqual(['GET', 'PUT', 'PATCH']);
+	});
+
+	it('fifth review 4. an empty Tag IDs field clears the tags on version 2 only', async () => {
+		const v2: HttpMock = jest.fn(async (_opts) => ({ id: 9 }));
+		const ctx = { ...(makeCtx({ contactId: '9', additionalFields: { tags: '' } }, v2) as object), getNode: () => ({ ...TEST_NODE, typeVersion: 2 }) };
+		await handleContact(ctx as never, 'update', 0);
+		expect(calls(v2)[0].body).toEqual({ contact: { tag_ids: [] } });
+		const v1 = await body(handleContact as Handler, 'update', { contactId: '9', additionalFields: { tags: '' } });
+		expect(v1).toEqual({ contact: {} });
+		const ids = await body(handleContact as Handler, 'update', { contactId: '9', additionalFields: { tags: '4, 5' } });
+		expect(ids).toEqual({ contact: { tag_ids: [4, 5] } });
+	});
 });

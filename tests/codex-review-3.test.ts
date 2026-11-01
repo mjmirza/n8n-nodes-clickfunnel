@@ -30,7 +30,7 @@ async function first(handler: Handler, operation: string, params: Record<string,
 describe('high findings', () => {
 	it('1. answers send their text as entry', async () => {
 		const c = await first(handleFormSubmissionAnswer as Handler, 'create', { submissionId: '1', fieldId: '2', value: 'Blue' });
-		expect(c.body).toEqual({ forms_submissions_answer: { field_id: '2', entry: 'Blue' } });
+		expect(c.body).toEqual({ forms_submissions_answer: { field_id: 2, entry: 'Blue' } });
 		const u = await first(handleFormSubmissionAnswer as Handler, 'update', { answerId: '3', additionalFields: { value: 'Red' } });
 		expect(u.body).toEqual({ forms_submissions_answer: { entry: 'Red' } });
 	});

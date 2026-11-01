@@ -80,7 +80,7 @@ describe('contact', () => {
 			},
 		}, { id: 77 });
 		const contact = (reqs[0].body as { contact: IDataObject }).contact;
-		expect(contact).toMatchObject({ email_address: 'a@b.c', tag_ids: ['5', '6'], custom_attributes: { plan: 'gold' } });
+		expect(contact).toMatchObject({ email_address: 'a@b.c', tag_ids: [5, 6], custom_attributes: { plan: 'gold' } });
 		for (const k of ['tags', 'custom_fields', 'address_line_1', 'city', 'zip', 'country', 'state']) {
 			expect(contact).not.toHaveProperty(k);
 		}
@@ -154,7 +154,7 @@ describe('order', () => {
 			additionalFields: { shipping_address_address1: '1 Main', shipping_address_zip: '10115' },
 		});
 		expect(c.body.order).toMatchObject({
-			contact_id: '9',
+			contact_id: 9,
 			order_type: 'one-time-order',
 			live_mode: true,
 			line_items_attributes: [{ variant_id: '3', products_price_id: '4', quantity: 2 }],
@@ -180,8 +180,8 @@ describe('fulfillment', () => {
 			additionalFields: { tracking_number: 'TRK1' },
 		});
 		expect(c.body.fulfillment).toMatchObject({
-			contact_id: '9',
-			location_id: '2',
+			contact_id: 9,
+			location_id: 2,
 			included_orders_invoices_line_items_attributes: [{ invoices_line_item_id: '55', quantity: 1 }],
 			tracking_code: 'TRK1',
 		});
@@ -234,7 +234,7 @@ describe('shipping', () => {
 
 	it('should send rates_name_id when creating a rate', async () => {
 		const c = await first(handleShippingRate as Handler, 'create', { zoneId: '8', rateNameId: '3', price: '4.99', additionalFields: {} });
-		expect(c.body.shipping_rate).toMatchObject({ rates_name_id: '3', price: '4.99' });
+		expect(c.body.shipping_rate).toMatchObject({ rates_name_id: 3, price: '4.99' });
 		expect(c.body.shipping_rate).not.toHaveProperty('name');
 	});
 });

@@ -25,6 +25,8 @@ const PAGING = new Set(['after', 'per_page', 'sort_order', 'sort_property']);
 // Values a handler parses or validates, keyed resource.parameter. Everything else gets a generic sample.
 const OVERRIDES: Record<string, unknown> = {
 	'salesPipeline.stages': '[{"name":"New","close_probability":10}]',
+	'contact.tags': '1,2',
+	'salesOpportunity.monetary_value': '5000.00',
 	'webhook.eventTypeIds': 'contact.created',
 	'webhook.event_type_ids': 'contact.created',
 	'orderInvoice.line_items_attributes': '[{"amount":"1.00","quantity":1,"variant_id":1,"products_price_id":1}]',
@@ -45,6 +47,9 @@ function visible(p: INodeProperties, resource: string, operation: string): boole
 function sample(resource: string, p: INodeProperties): IDataObject[string] {
 	const key = `${resource}.${p.name}`;
 	if (key in OVERRIDES) return OVERRIDES[key] as IDataObject[string];
+	if (p.typeOptions?.multipleValues && p.type !== 'fixedCollection' && p.type !== 'collection') {
+		return [sample(resource, { ...p, typeOptions: {} })] as IDataObject[string];
+	}
 	switch (p.type) {
 		case 'number':
 			return 1;
@@ -90,8 +95,27 @@ function matchRoute(method: string, url: string, routes: string[] = Object.keys(
 	});
 }
 
+function jsonType(value: unknown): string {
+	if (value === null) return 'null';
+	if (Array.isArray(value)) return 'array';
+	if (typeof value === 'number') return Number.isInteger(value) ? 'integer' : 'number';
+	return typeof value;
+}
+
+function typeMatches(value: unknown, schema: Schema): boolean {
+	if (!schema.type) return true;
+	const allowed = Array.isArray(schema.type) ? schema.type : [schema.type];
+	const actual = jsonType(value);
+	return allowed.includes(actual) || (actual === 'integer' && allowed.includes('number'));
+}
+
 function check(value: unknown, schema: Schema, at: string, out: string[]): void {
-	if (value === null || value === undefined) return;
+	if (value === undefined) return;
+	if (!typeMatches(value, schema)) {
+		out.push(`${at} is ${jsonType(value)} ${JSON.stringify(value)}, the schema wants ${JSON.stringify(schema.type)}`);
+		return;
+	}
+	if (value === null) return;
 	if (schema.enum && schema.enum.length > 0 && typeof value !== 'object' && !schema.enum.includes(value)) {
 		out.push(`${at}=${JSON.stringify(value)} not in ${JSON.stringify(schema.enum)}`);
 	}
@@ -133,7 +157,13 @@ describe('every write body matches the ClickFunnels request schema', () => {
 			getNode: () => ({ ...TEST_NODE, typeVersion: 2 }),
 			continueOnFail: () => false,
 			getCredentials: async () => ({ subdomain: 'acme', accessToken: 'pat_token' }),
-			getNodeParameter: (name: string, _i: number, fallback?: unknown) => (name in params ? params[name] : fallback),
+			// Like n8n, an absent parameter with no fallback throws.
+			getNodeParameter: (...args: [string, number, unknown?]) => {
+				const [name] = args;
+				if (name in params) return params[name];
+				if (args.length < 3 || args[2] === undefined) throw new Error(`Could not get parameter "${name}"`);
+				return args[2];
+			},
 			helpers: { httpRequest: http },
 		} as unknown as IExecuteFunctions;
 		await new ClickFunnels().execute.call(ctx);
@@ -152,9 +182,15 @@ describe('every write body matches the ClickFunnels request schema', () => {
 				}
 				continue;
 			}
-			if (!['POST', 'PUT', 'PATCH'].includes(method) || c.body === undefined) continue;
+			if (!['POST', 'PUT', 'PATCH'].includes(method)) continue;
 			const url = String(c.url).replace(BASE, '');
 			const route = matchRoute(method, url);
+			if (c.body === undefined) {
+				// A write without a body is only valid when the documented body has nothing required.
+				const required = route ? Object.values(bodies[route].properties ?? {}).some((w) => (w.required ?? []).length > 0) : false;
+				if (required) problems.push(`${method} ${url} sends no body, the schema requires one`);
+				continue;
+			}
 			if (!route) problems.push(`${method} ${url} has no documented request body`);
 			else check(c.body, bodies[route], 'body', problems);
 		}

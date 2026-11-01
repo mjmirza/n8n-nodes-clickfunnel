@@ -1,5 +1,5 @@
 import { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId, toApiId } from '../../transport';
 
 export async function handleFormSubmissionAnswer(
 	ctx: IExecuteFunctions,
@@ -19,7 +19,7 @@ export async function handleFormSubmissionAnswer(
 
 		const body: IDataObject = {
 			forms_submissions_answer: {
-				field_id: fieldId,
+				field_id: toApiId(fieldId),
 				// The API stores the answer text as entry.
 				entry: value,
 			},

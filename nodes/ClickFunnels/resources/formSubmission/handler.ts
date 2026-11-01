@@ -1,5 +1,11 @@
 import { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId, toApiId } from '../../transport';
+
+function submissionFields(fields: IDataObject): IDataObject {
+	const out: IDataObject = { ...fields };
+	if (out.contact_id !== undefined) out.contact_id = toApiId(out.contact_id) as IDataObject[string];
+	return out;
+}
 
 export async function handleFormSubmission(
 	ctx: IExecuteFunctions,
@@ -11,7 +17,7 @@ export async function handleFormSubmission(
 		const additionalFields = ctx.getNodeParameter('additionalFields', i) as IDataObject;
 
 		const body: IDataObject = {
-			forms_submission: { ...additionalFields },
+			forms_submission: submissionFields(additionalFields),
 		};
 		return clickFunnelsRequest(ctx, 'POST', `/forms/${formId}/submissions`, body);
 	}
@@ -37,7 +43,7 @@ export async function handleFormSubmission(
 		const additionalFields = ctx.getNodeParameter('additionalFields', i) as IDataObject;
 
 		const body: IDataObject = {
-			forms_submission: { ...additionalFields },
+			forms_submission: submissionFields(additionalFields),
 		};
 		return clickFunnelsRequest(ctx, 'PUT', `/forms/submissions/${submissionId}`, body);
 	}

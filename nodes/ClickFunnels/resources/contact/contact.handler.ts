@@ -1,5 +1,5 @@
 import { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId, getHttpStatus } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId, getHttpStatus, toApiId } from '../../transport';
 
 /**
  * Build the contact request body from node parameters.
@@ -30,9 +30,14 @@ function buildContactBody(ctx: IExecuteFunctions, i: number, requireEmail: boole
 
 	if (additionalFields.timeZone) body.time_zone = additionalFields.timeZone;
 
-	if (additionalFields.tags) {
-		const tagsRaw = String(additionalFields.tags);
-		body.tag_ids = tagsRaw.split(',').map((t: string) => t.trim()).filter(Boolean);
+	// On version 2 an explicitly empty Tag IDs field clears the tags. Version 1 kept them, and still does.
+	const clearsTags = Number(ctx.getNode().typeVersion) >= 2 && additionalFields.tags !== undefined;
+	if (additionalFields.tags || clearsTags) {
+		body.tag_ids = String(additionalFields.tags)
+			.split(',')
+			.map((t: string) => t.trim())
+			.filter(Boolean)
+			.map((t) => toApiId(assertSafeId(t, 'Tag ID')));
 	}
 
 	// Custom fields are stored by ClickFunnels as custom_attributes.
@@ -68,6 +73,45 @@ function buildBillingAddress(ctx: IExecuteFunctions, i: number): IDataObject | u
 		if (additionalFields[field]) address[apiKey] = additionalFields[field];
 	}
 	return Object.keys(address).length > 0 ? address : undefined;
+}
+
+// Creating a billing address needs these keys. Updating an existing one does not.
+const ADDRESS_REQUIRED: Record<string, string> = {
+	address_one: 'Address Line 1',
+	city: 'City',
+	country_code: 'Country',
+	postal_code: 'Zip',
+};
+
+function missingForCreate(address: IDataObject): string[] {
+	return Object.entries(ADDRESS_REQUIRED)
+		.filter(([key]) => !address[key])
+		.map(([, label]) => label);
+}
+
+/** Fails before any write when the address would have to be created but is incomplete. */
+async function assertAddressWritable(
+	ctx: IExecuteFunctions,
+	address: IDataObject | undefined,
+	existingContactId: string | undefined,
+): Promise<void> {
+	if (!address) return;
+	const missing = missingForCreate(address);
+	if (missing.length === 0) return;
+	if (existingContactId) {
+		// An existing billing address can be updated with a partial address.
+		const exists = await clickFunnelsRequest(ctx, 'GET', `/contacts/${existingContactId}/billing_address`).then(
+			() => true,
+			(error: unknown) => {
+				if (getHttpStatus(error) === 404) return false;
+				throw error;
+			},
+		);
+		if (exists) return;
+	}
+	throw new Error(
+		`A new billing address needs ${missing.join(', ')}. Add them, or leave all address fields empty. Nothing was written.`,
+	);
 }
 
 async function saveBillingAddress(
@@ -125,8 +169,10 @@ export async function handleContact(
 				'Workspace ID',
 			);
 			const body = buildContactBody(ctx, i, true);
+			const address = buildBillingAddress(ctx, i);
+			await assertAddressWritable(ctx, address, undefined);
 			const contact = await clickFunnelsRequest(ctx, 'POST', `/workspaces/${workspaceId}/contacts`, body);
-			return saveBillingAddress(ctx, contact, buildBillingAddress(ctx, i), true);
+			return saveBillingAddress(ctx, contact, address, true);
 		}
 
 		// -----------------------------------------------------------------
@@ -162,8 +208,10 @@ export async function handleContact(
 				'Contact ID',
 			);
 			const body = buildContactBody(ctx, i, false);
+			const address = buildBillingAddress(ctx, i);
+			await assertAddressWritable(ctx, address, contactId);
 			const contact = await clickFunnelsRequest(ctx, 'PUT', `/contacts/${contactId}`, body);
-			return saveBillingAddress(ctx, contact, buildBillingAddress(ctx, i), false);
+			return saveBillingAddress(ctx, contact, address, false);
 		}
 
 		// -----------------------------------------------------------------
@@ -186,13 +234,16 @@ export async function handleContact(
 				'Workspace ID',
 			);
 			const body = buildContactBody(ctx, i, true);
+			// Upsert may create the contact, so a partial address is only accepted when complete enough to create.
+			const address = buildBillingAddress(ctx, i);
+			await assertAddressWritable(ctx, address, undefined);
 			const contact = await clickFunnelsRequest(
 				ctx,
 				'POST',
 				`/workspaces/${workspaceId}/contacts/upsert`,
 				body,
 			);
-			return saveBillingAddress(ctx, contact, buildBillingAddress(ctx, i), false);
+			return saveBillingAddress(ctx, contact, address, false);
 		}
 
 		// -----------------------------------------------------------------

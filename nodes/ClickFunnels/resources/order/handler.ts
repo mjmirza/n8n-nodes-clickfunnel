@@ -1,5 +1,5 @@
 import { IExecuteFunctions, IDataObject, NodeOperationError } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId, toApiId } from '../../transport';
 
 // Field names shipped in 1.x that the API knows under a different key.
 const LEGACY_ADDRESS_KEYS: Record<string, string> = {
@@ -44,7 +44,7 @@ export async function handleOrder(
 			const body: IDataObject = {
 				order: {
 					...renameLegacyAddressFields(additionalFields),
-					contact_id: contactId,
+					contact_id: toApiId(contactId),
 					order_type: ctx.getNodeParameter('orderType', i) as string,
 					live_mode: ctx.getNodeParameter('liveMode', i) as boolean,
 					line_items_attributes: getLineItems(ctx, i),

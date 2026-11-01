@@ -155,6 +155,12 @@ export function assertEventKey(value: string): string {
 	return mapped;
 }
 
+/** The API types its record IDs as integers, so a numeric ID is sent as a number. */
+export function toApiId(value: unknown): unknown {
+	if (typeof value === 'string' && /^[0-9]+$/.test(value.trim())) return Number(value.trim());
+	return value;
+}
+
 export function assertSafeId(value: string | number, label = 'ID'): string {
 	const s = String(value).trim();
 

@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId, toApiId } from '../../transport';
 
 // 1.x field names mapped to the sales_opportunity schema.
 function opportunityFields(fields: IDataObject): IDataObject {
@@ -15,6 +15,15 @@ function opportunityFields(fields: IDataObject): IDataObject {
 			delete out[from];
 		}
 	}
+	for (const key of ['primary_contact_id', 'pipelines_stage_id', 'assignee_id']) {
+		if (out[key] !== undefined) out[key] = toApiId(out[key]) as IDataObject[string];
+	}
+	// value is a number in the schema. The field accepts text such as "5000.00".
+	if (out.value !== undefined && out.value !== '') {
+		const amount = Number(out.value);
+		if (!Number.isFinite(amount)) throw new Error(`Value must be a number, got "${String(out.value)}"`);
+		out.value = amount;
+	} else delete out.value;
 	return out;
 }
 
@@ -41,8 +50,8 @@ export async function handleSalesOpportunity(
 				sales_opportunity: opportunityFields({
 					...additionalFields,
 					name,
-					primary_contact_id: Number(contactId),
-					pipelines_stage_id: Number(stageId),
+					primary_contact_id: toApiId(contactId) as number,
+					pipelines_stage_id: toApiId(stageId) as number,
 				}),
 			};
 
