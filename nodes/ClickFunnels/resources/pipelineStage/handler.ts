@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
 
 export async function handlePipelineStage(
 	ctx: IExecuteFunctions,
@@ -55,14 +55,7 @@ export async function handlePipelineStage(
 			}
 
 			const limit = ctx.getNodeParameter('limit', i) as number;
-			const results = await clickFunnelsGetAll(
-				ctx,
-				'GET',
-				`/sales/pipelines/${pipelineId}/stages`,
-				{},
-				1,
-			);
-			return results.slice(0, limit);
+			return clickFunnelsGetMany(ctx, `/sales/pipelines/${pipelineId}/stages`, {}, limit);
 		}
 
 		case 'update': {

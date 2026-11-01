@@ -1,5 +1,31 @@
-import { IExecuteFunctions, IDataObject } from 'n8n-workflow';
+import { IExecuteFunctions, IDataObject, NodeOperationError } from 'n8n-workflow';
 import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+
+// Field names shipped in 1.x that the API knows under a different key.
+const LEGACY_ADDRESS_KEYS: Record<string, string> = {
+	shipping_address_address1: 'shipping_address_street_one',
+	shipping_address_address2: 'shipping_address_street_two',
+	shipping_address_zip: 'shipping_address_postal_code',
+};
+
+function renameLegacyAddressFields(fields: IDataObject): IDataObject {
+	const out: IDataObject = {};
+	for (const [key, value] of Object.entries(fields)) out[LEGACY_ADDRESS_KEYS[key] ?? key] = value;
+	return out;
+}
+
+function getLineItems(ctx: IExecuteFunctions, i: number): IDataObject[] {
+	const collection = ctx.getNodeParameter('lineItems', i, {}) as { item?: IDataObject[] };
+	const items = (collection.item ?? []).map((item) => ({
+		variant_id: assertSafeId(item.variantId as string, 'Line item variant ID'),
+		products_price_id: assertSafeId(item.priceId as string, 'Line item price ID'),
+		quantity: Number(item.quantity ?? 1),
+	}));
+	if (items.length === 0) {
+		throw new NodeOperationError(ctx.getNode(), 'Add at least one line item to create an order', { itemIndex: i });
+	}
+	return items;
+}
 
 export async function handleOrder(
 	ctx: IExecuteFunctions,
@@ -17,8 +43,11 @@ export async function handleOrder(
 
 			const body: IDataObject = {
 				order: {
+					...renameLegacyAddressFields(additionalFields),
 					contact_id: contactId,
-					...additionalFields,
+					order_type: ctx.getNodeParameter('orderType', i) as string,
+					live_mode: ctx.getNodeParameter('liveMode', i) as boolean,
+					line_items_attributes: getLineItems(ctx, i),
 				} as IDataObject,
 			};
 

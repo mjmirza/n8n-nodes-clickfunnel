@@ -6,10 +6,30 @@ import {
 	IWebhookResponseData,
 	NodeConnectionTypes,
 	IDataObject,
+	NodeOperationError,
 } from 'n8n-workflow';
 
-import { clickFunnelsRequest, getBaseUrl } from './transport';
-import crypto from 'crypto';
+import { createHmac, timingSafeEqual } from 'crypto';
+import { clickFunnelsRequest } from './transport';
+
+const SIGNATURE_HEADER = 'x-webhook-clickfunnels-signature';
+const TIMESTAMP_HEADER = 'x-webhook-clickfunnels-timestamp';
+const TOLERANCE_SECONDS = 600;
+
+function headerValue(headers: IDataObject, name: string): string {
+	const value = headers[name];
+	return typeof value === 'string' ? value.trim() : '';
+}
+
+// HMAC-SHA256 hex over "<timestamp>.<raw body>", timestamp within 600 seconds either way.
+function isValidSignature(secret: string, timestamp: string, signature: string, rawBody: Buffer): boolean {
+	if (!secret || !/^[0-9]+$/.test(timestamp) || !/^[0-9a-f]{64}$/i.test(signature)) return false;
+	if (Math.abs(Math.floor(Date.now() / 1000) - Number(timestamp)) > TOLERANCE_SECONDS) return false;
+	const expected = createHmac('sha256', secret)
+		.update(Buffer.concat([Buffer.from(`${timestamp}.`), rawBody]))
+		.digest();
+	return timingSafeEqual(expected, Buffer.from(signature, 'hex'));
+}
 
 export class ClickFunnelsTrigger implements INodeType {
 	description: INodeTypeDescription = {
@@ -117,26 +137,33 @@ export class ClickFunnelsTrigger implements INodeType {
 				const webhookData = this.getWorkflowStaticData('node');
 				const webhookUrl = this.getNodeWebhookUrl('default') as string;
 
-				if (webhookData.webhookId) {
-					try {
-						const endpoint = (await clickFunnelsRequest(
-							this,
-							'GET',
-							`/webhooks/outgoing/endpoints/${webhookData.webhookId}`,
-						)) as IDataObject;
+				if (!webhookData.webhookId) return false;
 
-						if (endpoint && (endpoint.url as string) === webhookUrl) {
-							return true;
-						}
-					} catch (error) {
-						// A missing endpoint means it must be recreated, so report "not found" instead of failing.
-						this.logger.debug('ClickFunnels webhook endpoint not found, it will be recreated', {
-							webhookId: webhookData.webhookId,
-							error: (error as Error).message,
-						});
-					}
+				let endpoint: IDataObject | undefined;
+				try {
+					endpoint = (await clickFunnelsRequest(
+						this,
+						'GET',
+						`/webhooks/outgoing/endpoints/${webhookData.webhookId}`,
+					)) as IDataObject;
+				} catch (error) {
+					// A missing endpoint means it must be recreated, so report "not found" instead of failing.
+					this.logger.debug('ClickFunnels webhook endpoint not found, it will be recreated', {
+						webhookId: webhookData.webhookId,
+						error: (error as Error).message,
+					});
+					return false;
 				}
 
+				const secret = typeof webhookData.secret === 'string' ? webhookData.secret : '';
+				const lastFour = endpoint?.webhook_secret_last_four;
+				const secretMatches = !!secret && typeof lastFour === 'string' && secret.endsWith(lastFour);
+				if (endpoint && (endpoint.url as string) === webhookUrl && secretMatches) {
+					return true;
+				}
+
+				// Endpoints from 1.x stored a locally generated secret ClickFunnels never used, so replace them.
+				await removeEndpoint(this, webhookData);
 				return false;
 			},
 
@@ -145,15 +172,11 @@ export class ClickFunnelsTrigger implements INodeType {
 				const workspaceId = this.getNodeParameter('workspaceId') as string;
 				const events = this.getNodeParameter('events') as string[];
 
-				// Generate a random secret for signature verification
-				const secret = crypto.randomBytes(32).toString('hex');
-
 				const body = {
 					webhooks_outgoing_endpoint: {
 						url: webhookUrl,
 						name: `n8n-${this.getNode().name}`,
 						event_type_ids: events,
-						secret,
 					},
 				};
 
@@ -170,79 +193,63 @@ export class ClickFunnelsTrigger implements INodeType {
 
 				const webhookData = this.getWorkflowStaticData('node');
 				webhookData.webhookId = endpoint.id;
-				webhookData.secret = secret;
+
+				// ClickFunnels returns the signing secret once, in this response only.
+				if (typeof endpoint.webhook_secret !== 'string' || !endpoint.webhook_secret) {
+					await removeEndpoint(this, webhookData);
+					throw new NodeOperationError(
+						this.getNode(),
+						'ClickFunnels did not return a webhook_secret, so incoming events could not be verified',
+					);
+				}
+				webhookData.secret = endpoint.webhook_secret;
 
 				return true;
 			},
 
 			async delete(this: IHookFunctions): Promise<boolean> {
-				const webhookData = this.getWorkflowStaticData('node');
-
-				if (webhookData.webhookId) {
-					try {
-						await clickFunnelsRequest(
-							this,
-							'DELETE',
-							`/webhooks/outgoing/endpoints/${webhookData.webhookId}`,
-						);
-					} catch (error) {
-						// Cleanup is best effort: a failed delete must not block deactivating the workflow.
-						this.logger.warn('Could not delete ClickFunnels webhook endpoint during cleanup', {
-							webhookId: webhookData.webhookId,
-							error: (error as Error).message,
-						});
-					}
-				}
-
-				delete webhookData.webhookId;
-				delete webhookData.secret;
-
+				await removeEndpoint(this, this.getWorkflowStaticData('node'));
 				return true;
 			},
 		},
 	};
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
-		const body = this.getBodyData() as IDataObject;
 		const headers = this.getHeaderData() as IDataObject;
 		const webhookData = this.getWorkflowStaticData('node');
+		const req = this.getRequestObject();
+		if (!Buffer.isBuffer(req.rawBody) && typeof req.readRawBody === 'function') await req.readRawBody();
+		const rawBody = req.rawBody;
+		const secret = typeof webhookData.secret === 'string' ? webhookData.secret : '';
 
-		// Verify webhook signature if we have a secret
-		if (webhookData.secret && headers['x-clickfunnels-webhook-secret']) {
-			const expectedSignature = headers['x-clickfunnels-webhook-secret'] as string;
-			const secret = webhookData.secret as string;
+		// Fail closed: an unsigned, stale or unverifiable request never reaches the workflow.
+		const verified =
+			Buffer.isBuffer(rawBody) &&
+			isValidSignature(secret, headerValue(headers, TIMESTAMP_HEADER), headerValue(headers, SIGNATURE_HEADER), rawBody);
 
-			// ClickFunnels may use HMAC-SHA256 or direct secret comparison
-			const computedHmac = crypto
-				.createHmac('sha256', secret)
-				.update(JSON.stringify(body))
-				.digest('hex');
-
-			const isValidHmac =
-				expectedSignature.length === computedHmac.length &&
-				crypto.timingSafeEqual(
-					Buffer.from(expectedSignature),
-					Buffer.from(computedHmac),
-				);
-
-			const isValidDirect =
-				expectedSignature.length === secret.length &&
-				crypto.timingSafeEqual(
-					Buffer.from(expectedSignature),
-					Buffer.from(secret),
-				);
-
-			if (!isValidHmac && !isValidDirect) {
-				return {
-					webhookResponse: 'Signature mismatch',
-				};
-			}
+		if (!verified) {
+			this.getResponseObject().status(401).send('Invalid ClickFunnels webhook signature').end();
+			return { noWebhookResponse: true };
 		}
 
 		return {
-			workflowData: [
-				this.helpers.returnJsonArray(body),
-			],
+			workflowData: [this.helpers.returnJsonArray(this.getBodyData() as IDataObject)],
 		};
 	}
+}
+
+// Cleanup is best effort: a failed delete must not block deactivating the workflow.
+async function removeEndpoint(ctx: IHookFunctions, webhookData: IDataObject): Promise<void> {
+	if (webhookData.webhookId) {
+		try {
+			await clickFunnelsRequest(ctx, 'DELETE', `/webhooks/outgoing/endpoints/${webhookData.webhookId}`);
+		} catch (error) {
+			ctx.logger.warn('Could not delete ClickFunnels webhook endpoint during cleanup', {
+				webhookId: webhookData.webhookId,
+				error: (error as Error).message,
+			});
+		}
+	}
+	delete webhookData.webhookId;
+	delete webhookData.secret;
 }

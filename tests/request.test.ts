@@ -1,4 +1,4 @@
-// Failure-path tests for clickFunnelsRequest: retries, error wrapping, and no token leakage.
+// Failure-path tests for clickFunnelsRequest with the real n8n error shapes.
 jest.mock('n8n-workflow', () => ({
 	...jest.requireActual('n8n-workflow'),
 	sleep: jest.fn(async () => undefined),
@@ -6,55 +6,86 @@ jest.mock('n8n-workflow', () => ({
 
 import { NodeApiError, sleep } from 'n8n-workflow';
 import { clickFunnelsRequest } from '../nodes/ClickFunnels/transport';
+import { axiosError, makeCtx, nodeApiError, type HttpMock } from './helpers';
 
-const TOKEN = 'pat_secret_token_value';
+const TOKEN = 'pat_token';
 
-function makeCtx(httpRequest: jest.Mock) {
-	return {
-		getCredentials: jest.fn(async () => ({ subdomain: 'acme', accessToken: TOKEN })),
-		getNode: jest.fn(() => ({ name: 'ClickFunnels', type: 'clickFunnels', typeVersion: 1, id: '1', position: [0, 0], parameters: {} })),
-		helpers: { httpRequest },
-	} as never;
+function ctxFor(httpRequest: HttpMock) {
+	return makeCtx({}, httpRequest);
 }
 
 describe('clickFunnelsRequest', () => {
 	beforeEach(() => (sleep as jest.Mock).mockClear());
 
-	it('should retry a 503 and return the later success', async () => {
-		const httpRequest = jest
+	it('should retry a GET that fails with an Axios-shaped 503 and return the later success', async () => {
+		const httpRequest: HttpMock = jest
 			.fn()
-			.mockRejectedValueOnce({ statusCode: 503, message: 'Service Unavailable' })
+			.mockRejectedValueOnce(axiosError(503))
 			.mockResolvedValueOnce({ id: 7 });
-		const result = await clickFunnelsRequest(makeCtx(httpRequest), 'GET', '/teams');
+		const result = await clickFunnelsRequest(ctxFor(httpRequest), 'GET', '/teams');
 		expect(result).toEqual({ id: 7 });
 		expect(httpRequest).toHaveBeenCalledTimes(2);
 		expect(sleep).toHaveBeenCalledTimes(1);
 	});
 
-	it('should honour Retry-After seconds when retrying a 429', async () => {
-		const httpRequest = jest
+	it('should retry a GET that fails with a NodeApiError carrying httpCode 503', async () => {
+		const httpRequest: HttpMock = jest
 			.fn()
-			.mockRejectedValueOnce({ statusCode: 429, response: { headers: { 'retry-after': '3' } } })
+			.mockRejectedValueOnce(nodeApiError(503))
 			.mockResolvedValueOnce([]);
-		await clickFunnelsRequest(makeCtx(httpRequest), 'GET', '/teams');
+		await clickFunnelsRequest(ctxFor(httpRequest), 'GET', '/teams');
+		expect(httpRequest).toHaveBeenCalledTimes(2);
+	});
+
+	it('should honour Retry-After seconds from the Axios response headers', async () => {
+		const httpRequest: HttpMock = jest
+			.fn()
+			.mockRejectedValueOnce(axiosError(429, { 'retry-after': '3' }))
+			.mockResolvedValueOnce([]);
+		await clickFunnelsRequest(ctxFor(httpRequest), 'GET', '/teams');
 		expect(sleep).toHaveBeenCalledWith(3000);
 	});
 
-	it('should throw a NodeApiError with the HTTP code and no token when a request fails', async () => {
-		const httpRequest = jest.fn().mockRejectedValue({ statusCode: 401, message: 'Unauthorized', body: { error: 'bad token' } });
-		const promise = clickFunnelsRequest(makeCtx(httpRequest), 'GET', '/teams');
+	it.each(['PUT', 'DELETE'] as const)('should retry an idempotent %s on 503', async (method) => {
+		const httpRequest: HttpMock = jest
+			.fn()
+			.mockRejectedValueOnce(axiosError(503))
+			.mockResolvedValueOnce({});
+		await clickFunnelsRequest(ctxFor(httpRequest), method, '/contacts/1', { contact: {} });
+		expect(httpRequest).toHaveBeenCalledTimes(2);
+	});
+
+	it.each(['POST', 'PATCH'] as const)('should never replay a %s after a 503, to avoid duplicate writes', async (method) => {
+		const httpRequest: HttpMock = jest.fn().mockRejectedValue(axiosError(503));
+		const promise = clickFunnelsRequest(ctxFor(httpRequest), method, '/workspaces/1/contacts', { contact: {} });
 		await expect(promise).rejects.toBeInstanceOf(NodeApiError);
-		const error = (await promise.catch((e: unknown) => e)) as NodeApiError;
+		expect(httpRequest).toHaveBeenCalledTimes(1);
+		expect(sleep).not.toHaveBeenCalled();
+	});
+
+	it('should throw a NodeApiError with the HTTP code, the API message and no token', async () => {
+		const httpRequest: HttpMock = jest
+			.fn()
+			.mockRejectedValue(axiosError(401, {}, { errors: [{ detail: 'bad token' }] }));
+		const error = (await clickFunnelsRequest(ctxFor(httpRequest), 'GET', '/teams').catch(
+			(e: unknown) => e,
+		)) as NodeApiError;
+		expect(error).toBeInstanceOf(NodeApiError);
 		expect(error.httpCode).toBe('401');
 		expect(error.message).toContain('ClickFunnels API error [401]');
+		expect(error.message).toContain('bad token');
 		expect(error.message).not.toContain(TOKEN);
 		expect(httpRequest).toHaveBeenCalledTimes(1);
 		expect(sleep).not.toHaveBeenCalled();
 	});
 
 	it('should give up after the retry budget on a persistent 503', async () => {
-		const httpRequest = jest.fn().mockRejectedValue({ statusCode: 503, message: 'down' });
-		await expect(clickFunnelsRequest(makeCtx(httpRequest), 'GET', '/teams')).rejects.toBeInstanceOf(NodeApiError);
+		const httpRequest: HttpMock = jest.fn().mockRejectedValue(axiosError(503));
+		const error = (await clickFunnelsRequest(ctxFor(httpRequest), 'GET', '/teams').catch(
+			(e: unknown) => e,
+		)) as NodeApiError;
+		expect(error).toBeInstanceOf(NodeApiError);
+		expect(error.httpCode).toBe('503');
 		expect(httpRequest).toHaveBeenCalledTimes(4);
 		expect(sleep).toHaveBeenCalledTimes(3);
 	});

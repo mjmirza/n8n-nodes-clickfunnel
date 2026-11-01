@@ -40,7 +40,7 @@ export function getBaseUrl(subdomain: string): string {
 // Token normalisation
 // ---------------------------------------------------------------------------
 
-function normalizeToken(raw: string): string {
+export function normalizeToken(raw: string): string {
 	if (!raw || typeof raw !== 'string') {
 		throw new Error('Access token must be a non-empty string');
 	}
@@ -150,7 +150,7 @@ export function assertSafeId(value: string | number, label = 'ID'): string {
 // Retry-After header parsing
 // ---------------------------------------------------------------------------
 
-function parseRetryAfter(header: string | undefined): number {
+export function parseRetryAfter(header: string | undefined): number {
 	if (!header) return 0;
 
 	// Try integer seconds first (most common)
@@ -175,6 +175,43 @@ function parseRetryAfter(header: string | undefined): number {
 
 const MAX_RETRIES = 3;
 const RETRY_CODES = new Set([429, 502, 503, 504]);
+// The API has no idempotency keys, so a create may have landed before a gateway error.
+const RETRYABLE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE']);
+
+interface HttpFailure {
+	message?: string;
+	httpCode?: string | null;
+	status?: number;
+	statusCode?: number;
+	body?: unknown;
+	response?: { status?: number; headers?: Record<string, unknown>; data?: unknown };
+}
+
+// n8n rethrows the AxiosError (response.status) or a NodeApiError (httpCode).
+export function getHttpStatus(error: unknown): number | undefined {
+	const err = (error ?? {}) as HttpFailure;
+	const candidates = [err.response?.status, err.httpCode, err.status, err.statusCode];
+	for (const value of candidates) {
+		const code = Number(value);
+		if (Number.isInteger(code) && code >= 100 && code <= 599) return code;
+	}
+	return undefined;
+}
+
+function getRetryAfterHeader(err: HttpFailure): string | undefined {
+	const value = err.response?.headers?.['retry-after'];
+	return value === undefined || value === null ? undefined : String(value);
+}
+
+function isRetryable(method: IHttpRequestMethods, status: number | undefined): boolean {
+	return status !== undefined && RETRY_CODES.has(status) && RETRYABLE_METHODS.has(method.toUpperCase());
+}
+
+function retryDelay(err: HttpFailure, attempt: number): number {
+	const retryAfterMs = parseRetryAfter(getRetryAfterHeader(err));
+	const baseDelay = Math.min(1_000 * Math.pow(2, attempt), 10_000);
+	return retryAfterMs || baseDelay + Math.random() * baseDelay * 0.25;
+}
 
 export async function clickFunnelsRequest(
 	ctx: IExecuteFunctions | IHookFunctions | ILoadOptionsFunctions,
@@ -207,81 +244,96 @@ export async function clickFunnelsRequest(
 		options.qs = qs;
 	}
 
-	let lastError: Error | undefined;
-
-	for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+	for (let attempt = 0; ; attempt++) {
 		try {
 			return await ctx.helpers.httpRequest(options);
 		} catch (error: unknown) {
-			const err = error as {
-				statusCode?: number;
-				message?: string;
-				body?: unknown;
-				response?: { headers?: Record<string, string> };
-			};
+			const err = (error ?? {}) as HttpFailure;
+			const status = getHttpStatus(err);
 
-			if (attempt < MAX_RETRIES && err.statusCode && RETRY_CODES.has(err.statusCode)) {
-				const retryAfterMs = parseRetryAfter(err.response?.headers?.['retry-after']);
-				const baseDelay = Math.min(1_000 * Math.pow(2, attempt), 10_000);
-				const jitter = Math.random() * baseDelay * 0.25;
-				const delay = retryAfterMs || (baseDelay + jitter);
-				await sleep(delay);
-				lastError = err as Error;
+			if (attempt < MAX_RETRIES && isRetryable(method, status)) {
+				await sleep(retryDelay(err, attempt));
 				continue;
 			}
 
-			// Parse error but never include raw credentials in messages
-			const parsed = parseErrorResponse(err.body);
+			// Never include raw credentials in messages.
+			const parsed = parseErrorResponse(err.response?.data ?? err.body);
 			const msg = parsed || err.message || 'Unknown ClickFunnels API error';
-			throw new NodeApiError(ctx.getNode(), err as JsonObject, {
-				message: `ClickFunnels API error [${err.statusCode || 'unknown'}]: ${msg.slice(0, MAX_ERROR_LENGTH)}`,
-				httpCode: err.statusCode ? String(err.statusCode) : undefined,
+			throw new NodeApiError(ctx.getNode(), err as unknown as JsonObject, {
+				message: `ClickFunnels API error [${status ?? 'unknown'}]: ${msg.slice(0, MAX_ERROR_LENGTH)}`,
+				httpCode: status ? String(status) : undefined,
 			});
 		}
 	}
-
-	throw lastError || new Error('ClickFunnels API request failed after retries');
 }
 
 // ---------------------------------------------------------------------------
-// Pagination helper — fetches all pages for list endpoints
+// Cursor pagination, see https://developers.myclickfunnels.com/docs/pagination
 // ---------------------------------------------------------------------------
+
+const MAX_PER_PAGE = 100;
+
+function toRows(response: unknown): { rows: unknown[]; isList: boolean } {
+	if (Array.isArray(response)) return { rows: response, isList: true };
+	if (typeof response === 'object' && response !== null) {
+		const data = (response as Record<string, unknown>).data;
+		if (Array.isArray(data)) return { rows: data, isList: true };
+		return { rows: [response], isList: false };
+	}
+	return { rows: [], isList: false };
+}
+
+function lastId(rows: unknown[]): string | undefined {
+	const last = rows[rows.length - 1] as { id?: unknown } | undefined;
+	return last?.id === undefined || last.id === null ? undefined : String(last.id);
+}
+
+// Follows the after cursor until the API runs dry, maxPages is hit or limit rows are collected.
+async function paginate(
+	ctx: IExecuteFunctions,
+	path: string,
+	qs: IDataObject,
+	maxPages: number,
+	limit: number,
+): Promise<unknown[]> {
+	const results: unknown[] = [];
+	let after: string | undefined;
+
+	for (let page = 0; page < maxPages && results.length < limit; page++) {
+		const perPage = Math.min(MAX_PER_PAGE, limit - results.length);
+		const pageQs: IDataObject = { ...qs, per_page: perPage };
+		if (after !== undefined) pageQs.after = after;
+
+		const { rows, isList } = toRows(await clickFunnelsRequest(ctx, 'GET', path, undefined, pageQs));
+		const next = lastId(rows);
+		// A page that ends where the previous one ended is a repeat, so stop without keeping it.
+		if (after !== undefined && next === after) break;
+		results.push(...rows);
+		if (!isList || rows.length < perPage || next === undefined) break;
+		after = next;
+	}
+
+	return results.length > limit ? results.slice(0, limit) : results;
+}
 
 export async function clickFunnelsGetAll(
 	ctx: IExecuteFunctions,
-	method: IHttpRequestMethods,
+	_method: IHttpRequestMethods,
 	path: string,
 	qs: IDataObject = {},
 	maxPages = 50,
 ): Promise<unknown[]> {
-	if (maxPages < 1) maxPages = 1;
-	if (maxPages > 500) maxPages = 500;
+	const pages = Math.min(Math.max(Math.floor(maxPages) || 1, 1), 500);
+	return paginate(ctx, path, qs, pages, Number.POSITIVE_INFINITY);
+}
 
-	const results: unknown[] = [];
-	let page = 1;
-
-	for (let i = 0; i < maxPages; i++) {
-		const pageQs = { ...qs, page, per_page: 50 };
-		const response = (await clickFunnelsRequest(ctx, method, path, undefined, pageQs)) as unknown;
-
-		if (Array.isArray(response)) {
-			results.push(...response);
-			if (response.length < 50) break;
-		} else if (typeof response === 'object' && response !== null) {
-			const obj = response as Record<string, unknown>;
-			if (Array.isArray(obj.data)) {
-				results.push(...obj.data);
-				if (obj.data.length < 50) break;
-			} else {
-				results.push(response);
-				break;
-			}
-		} else {
-			break;
-		}
-
-		page++;
-	}
-
-	return results;
+// Returns at most limit rows, paging with the cursor when limit exceeds one page.
+export async function clickFunnelsGetMany(
+	ctx: IExecuteFunctions,
+	path: string,
+	qs: IDataObject,
+	limit: number,
+): Promise<unknown[]> {
+	const wanted = Math.max(1, Math.floor(limit) || 1);
+	return paginate(ctx, path, qs, Math.ceil(wanted / MAX_PER_PAGE) + 1, wanted);
 }

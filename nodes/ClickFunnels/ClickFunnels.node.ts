@@ -500,7 +500,8 @@ export class ClickFunnels implements INodeType {
 					continue;
 				}
 				if (error instanceof NodeApiError) {
-					// The NodeApiError constructor returns an existing NodeApiError unchanged, keeping its HTTP context.
+					// The constructor returns this same instance and ignores options, so set the item first.
+					error.context.itemIndex = i;
 					throw new NodeApiError(this.getNode(), error as unknown as JsonObject, { itemIndex: i });
 				}
 				throw new NodeOperationError(this.getNode(), error as Error, { itemIndex: i });

@@ -1,5 +1,5 @@
 import type { IExecuteFunctions } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
 
 export async function handleUser(
 	ctx: IExecuteFunctions,
@@ -17,33 +17,18 @@ export async function handleUser(
 		}
 
 		case 'getCurrent': {
-			return clickFunnelsRequest(ctx, 'GET', '/users/me');
+			return clickFunnelsRequest(ctx, 'GET', '/me');
 		}
 
 		case 'getMany': {
-			const teamId = assertSafeId(
-				ctx.getNodeParameter('teamId', i) as string,
-				'Team ID',
-			);
 			const returnAll = ctx.getNodeParameter('returnAll', i) as boolean;
 
 			if (returnAll) {
-				return clickFunnelsGetAll(
-					ctx,
-					'GET',
-					`/teams/${teamId}/users`,
-				);
+				return clickFunnelsGetAll(ctx, 'GET', '/users');
 			}
 
 			const limit = ctx.getNodeParameter('limit', i) as number;
-			const results = await clickFunnelsGetAll(
-				ctx,
-				'GET',
-				`/teams/${teamId}/users`,
-				{},
-				1,
-			);
-			return results.slice(0, limit);
+			return clickFunnelsGetMany(ctx, '/users', {}, limit);
 		}
 
 		default:

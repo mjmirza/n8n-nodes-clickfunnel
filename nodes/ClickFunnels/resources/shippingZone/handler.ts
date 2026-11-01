@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
 
 export async function handleShippingZone(
 	ctx: IExecuteFunctions,
@@ -8,9 +8,9 @@ export async function handleShippingZone(
 ): Promise<unknown> {
 	switch (operation) {
 		case 'create': {
-			const profileId = assertSafeId(
-				ctx.getNodeParameter('profileId', i) as string,
-				'Profile ID',
+			const locationGroupId = assertSafeId(
+				ctx.getNodeParameter('locationGroupId', i) as string,
+				'Location Group ID',
 			);
 			const name = ctx.getNodeParameter('name', i) as string;
 			const countries = ctx.getNodeParameter('countries', i) as string[];
@@ -18,14 +18,14 @@ export async function handleShippingZone(
 			const body: IDataObject = {
 				shipping_zone: {
 					name,
-					countries,
+					country_ids: countries,
 				} as IDataObject,
 			};
 
 			return clickFunnelsRequest(
 				ctx,
 				'POST',
-				`/shipping/profiles/${profileId}/zones`,
+				`/shipping/location_groups/${locationGroupId}/zones`,
 				body,
 			);
 		}
@@ -40,9 +40,9 @@ export async function handleShippingZone(
 		}
 
 		case 'getMany': {
-			const profileId = assertSafeId(
-				ctx.getNodeParameter('profileId', i) as string,
-				'Profile ID',
+			const locationGroupId = assertSafeId(
+				ctx.getNodeParameter('locationGroupId', i) as string,
+				'Location Group ID',
 			);
 			const returnAll = ctx.getNodeParameter('returnAll', i) as boolean;
 
@@ -50,19 +50,12 @@ export async function handleShippingZone(
 				return clickFunnelsGetAll(
 					ctx,
 					'GET',
-					`/shipping/profiles/${profileId}/zones`,
+					`/shipping/location_groups/${locationGroupId}/zones`,
 				);
 			}
 
 			const limit = ctx.getNodeParameter('limit', i) as number;
-			const results = await clickFunnelsGetAll(
-				ctx,
-				'GET',
-				`/shipping/profiles/${profileId}/zones`,
-				{},
-				1,
-			);
-			return results.slice(0, limit);
+			return clickFunnelsGetMany(ctx, `/shipping/location_groups/${locationGroupId}/zones`, {}, limit);
 		}
 
 		case 'update': {
@@ -72,8 +65,9 @@ export async function handleShippingZone(
 			);
 			const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
 
+			const { countries, ...rest } = updateFields;
 			const body: IDataObject = {
-				shipping_zone: { ...updateFields } as IDataObject,
+				shipping_zone: (countries === undefined ? rest : { ...rest, country_ids: countries }) as IDataObject,
 			};
 
 			return clickFunnelsRequest(ctx, 'PUT', `/shipping/zones/${zoneId}`, body);

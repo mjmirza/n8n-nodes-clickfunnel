@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
 
 export async function handleShippingRate(
 	ctx: IExecuteFunctions,
@@ -12,13 +12,16 @@ export async function handleShippingRate(
 				ctx.getNodeParameter('zoneId', i) as string,
 				'Zone ID',
 			);
-			const name = ctx.getNodeParameter('name', i) as string;
+			const rateNameId = assertSafeId(
+				ctx.getNodeParameter('rateNameId', i) as string,
+				'Rate Name ID',
+			);
 			const price = ctx.getNodeParameter('price', i) as string;
 			const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
 
 			const body: IDataObject = {
 				shipping_rate: {
-					name,
+					rates_name_id: rateNameId,
 					price,
 					...additionalFields,
 				} as IDataObject,
@@ -57,14 +60,7 @@ export async function handleShippingRate(
 			}
 
 			const limit = ctx.getNodeParameter('limit', i) as number;
-			const results = await clickFunnelsGetAll(
-				ctx,
-				'GET',
-				`/shipping/zones/${zoneId}/rates`,
-				{},
-				1,
-			);
-			return results.slice(0, limit);
+			return clickFunnelsGetMany(ctx, `/shipping/zones/${zoneId}/rates`, {}, limit);
 		}
 
 		case 'update': {

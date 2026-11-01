@@ -2,15 +2,15 @@ import type { INodeProperties } from 'n8n-workflow';
 
 export const shippingLocationGroupFields: INodeProperties[] = [
 	// ------------------------------------------------------------------
-	//        workspaceId — used by getMany
+	//        profileId — used by getMany
 	// ------------------------------------------------------------------
 	{
-		displayName: 'Workspace ID',
-		name: 'workspaceId',
+		displayName: 'Shipping Profile ID',
+		name: 'profileId',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'The ID of the workspace',
+		description: 'The ID of the shipping profile whose location groups to list',
 		displayOptions: {
 			show: {
 				resource: ['shippingLocationGroup'],

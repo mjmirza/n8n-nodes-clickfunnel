@@ -128,7 +128,7 @@ export const contactFields: INodeProperties[] = [
 				name: 'country',
 				type: 'string',
 				default: '',
-				description: 'Country of the contact address (ISO 3166-1 alpha-2 code)',
+				description: 'Billing address country as an ISO 3166-1 alpha-2 code. Address fields are saved to the contact billing address.',
 			},
 			{
 				displayName: 'Custom Fields',
@@ -168,11 +168,11 @@ export const contactFields: INodeProperties[] = [
 				description: 'State or province of the contact address',
 			},
 			{
-				displayName: 'Tags',
+				displayName: 'Tag IDs',
 				name: 'tags',
 				type: 'string',
 				default: '',
-				description: 'Comma-separated list of tags to apply to the contact',
+				description: 'Comma-separated contact tag IDs. Replaces the tags currently applied to the contact.',
 			},
 			{
 				displayName: 'Time Zone',
@@ -242,11 +242,11 @@ export const contactFields: INodeProperties[] = [
 				description: 'Filter contacts by email address',
 			},
 			{
-				displayName: 'Tag',
+				displayName: 'Tag IDs',
 				name: 'tag',
 				type: 'string',
 				default: '',
-				description: 'Filter contacts by tag',
+				description: 'Comma-separated contact tag IDs to filter by',
 			},
 		],
 	},

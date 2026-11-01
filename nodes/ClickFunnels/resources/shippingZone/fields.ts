@@ -2,15 +2,15 @@ import type { INodeProperties } from 'n8n-workflow';
 
 export const shippingZoneFields: INodeProperties[] = [
 	// ------------------------------------------------------------------
-	//        profileId — used by create & getMany
+	//        locationGroupId — used by create & getMany
 	// ------------------------------------------------------------------
 	{
-		displayName: 'Profile ID',
-		name: 'profileId',
+		displayName: 'Location Group ID',
+		name: 'locationGroupId',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'The ID of the shipping profile',
+		description: 'The ID of the shipping location group the zone belongs to',
 		displayOptions: {
 			show: {
 				resource: ['shippingZone'],
@@ -59,7 +59,7 @@ export const shippingZoneFields: INodeProperties[] = [
 	//        countries — required for create
 	// ------------------------------------------------------------------
 	{
-		displayName: 'Countries',
+		displayName: 'Country IDs',
 		name: 'countries',
 		type: 'string',
 		typeOptions: {
@@ -67,7 +67,7 @@ export const shippingZoneFields: INodeProperties[] = [
 		},
 		required: true,
 		default: [],
-		description: 'The country codes for the shipping zone (e.g. "US", "CA")',
+		description: 'ClickFunnels country IDs for the zone, from the Addresses Countries endpoint',
 		displayOptions: {
 			show: {
 				resource: ['shippingZone'],
@@ -93,14 +93,14 @@ export const shippingZoneFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Countries',
+				displayName: 'Country IDs',
 				name: 'countries',
 				type: 'string',
 				typeOptions: {
 					multipleValues: true,
 				},
 				default: [],
-				description: 'The country codes for the shipping zone (e.g. "US", "CA")',
+				description: 'ClickFunnels country IDs for the zone, from the Addresses Countries endpoint',
 			},
 			{
 				displayName: 'Name',

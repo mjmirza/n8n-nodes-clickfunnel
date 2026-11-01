@@ -44,7 +44,8 @@ export class ClickFunnelsApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '=Bearer {{$credentials.accessToken}}',
+				// Same normalisation as the node transport: trims, unwraps quotes, drops a pasted Bearer prefix.
+				Authorization: `=Bearer {{ String($credentials.accessToken).trim().replace(/^(["'])(.*)\\1$/, '$2').replace(/^Bearer[ \\t]+/i, '') }}`,
 				Accept: 'application/json',
 			},
 		},
@@ -52,7 +53,8 @@ export class ClickFunnelsApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: '=https://{{$credentials.subdomain}}.myclickfunnels.com/api/v2',
+			// Strips everything but [a-z0-9-] so the token can only ever go to *.myclickfunnels.com.
+			baseURL: `={{ 'https://' + String($credentials.subdomain).trim().toLowerCase().replace(/^https?:[/][/]/, '').replace(/[.]myclickfunnels[.]com.*$/, '').replace(/[^a-z0-9-]/g, '') + '.myclickfunnels.com/api/v2' }}`,
 			url: '/teams',
 			method: 'GET',
 		},

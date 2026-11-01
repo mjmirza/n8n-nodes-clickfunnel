@@ -11,10 +11,10 @@ Run your ClickFunnels 2.0 workspace from n8n. Contacts, orders, products, course
 ## What you get
 
 - **Leads land in your CRM the moment they opt in.** The trigger fires on new contacts, orders, subscriptions, purchases and form submissions, so nobody copies data between tabs.
-- **Orders and fulfillment stay in sync.** Create, update and cancel fulfillments, invoices and restocks from any workflow.
+- **Orders and fulfillment stay in sync.** Create orders with their line items, fulfill invoice line items, update and cancel fulfillments, and read restocks from any workflow.
 - **One node for the whole workspace.** 52 resources and 210 operations, so a workflow never needs a raw HTTP call for ClickFunnels.
-- **Fewer broken runs.** Rate limits and short outages are retried with backoff, and failures show the ClickFunnels status code in n8n instead of a vague error.
-- **Safe by default.** Your token never appears in error messages, IDs are validated before a request leaves n8n, and webhook payloads are checked with an HMAC signature.
+- **Fewer broken runs.** Reads, updates and deletes are retried with backoff on rate limits and short outages. Creates are never replayed, so a retry cannot duplicate an order or a contact. Failures show the ClickFunnels status code in n8n instead of a vague error.
+- **Safe by default.** Your token never appears in error messages and is only ever sent to your `*.myclickfunnels.com` workspace, IDs are validated before a request leaves n8n, and the trigger rejects any webhook call without a valid ClickFunnels signature.
 
 ## Get your first result in five minutes
 
@@ -107,6 +107,22 @@ The **ClickFunnels Trigger** node registers a webhook endpoint in your workspace
 | Purchase | Created, Updated |
 | Subscription | Created, Updated, Cancelled, Uncancelled, Upgraded, Downgraded |
 
+## Upgrading from 1.x
+
+Version 2.0.0 fixes requests that did not match the ClickFunnels API. Some saved workflows need a field filled in or a value checked.
+
+| Area | What changed | What to do |
+|------|--------------|------------|
+| Webhook trigger | Calls without a valid `X-Webhook-ClickFunnels-Signature` are now rejected with 401. Before, an unsigned call started the workflow | Deactivate and reactivate the workflow once. The endpoint is recreated with the secret ClickFunnels issues |
+| Product price amount | The amount is a decimal value such as `19.99`. The field used to ask for cents, but the API always read it as a decimal | Check any price created as cents. `1999` meant $1,999, not $19.99 |
+| Product price create | Prices are created on a variant | Fill in **Variant ID** |
+| Product price interval | Values are `days`, `weeks`, `months`, `quarters`, `years`, with a new **Payment Type** | Saved 1.x values are mapped for you |
+| Order create | **Order Type**, **Live Mode** and at least one line item are required by the API | Fill them in. Live Mode defaults to off, which creates a test order |
+| Fulfillment create | Needs the **Contact ID** and the invoice line items to fulfill. Order ID is no longer used | Fill in the new fields |
+| Contact | Filters use email address and tag IDs. Tags are sent as tag IDs, custom fields as custom attributes, and the address goes to the billing address | Use tag IDs, not tag names. Country must be a two letter code |
+| Form field sets, users, shipping | Routes now match the API. Location groups are listed per shipping profile, zones per location group, shipping rates need a **Rate Name ID**, fulfillment locations need an **Email Address** | Fill in the new fields |
+| Get Many limit | The default limit is 50, as n8n requires for verified nodes. 1.1.x used 20 | Set the limit explicitly if a workflow relied on 20 |
+
 ## Compatibility
 
 | Item | Support |
@@ -122,10 +138,10 @@ The **ClickFunnels Trigger** node registers a webhook endpoint in your workspace
 |------|--------|
 | Language | TypeScript, compiled to CommonJS |
 | HTTP | `this.helpers.httpRequest` with a 30 second timeout |
-| Retries | Exponential backoff with jitter on 429, 502, 503 and 504, honouring `Retry-After` |
+| Retries | GET, PUT and DELETE only, with exponential backoff and jitter on 429, 502, 503 and 504, honouring `Retry-After`. POST and PATCH are never replayed because the API has no idempotency keys |
 | Errors | `NodeApiError` with the HTTP status for API failures, `NodeOperationError` for input problems |
-| Pagination | Page based, up to 500 pages, unwraps `{ data: [] }` responses |
-| Security | Subdomain allowlist so only `*.myclickfunnels.com` is reachable, safe ID validation, HMAC-SHA256 webhook signatures |
+| Pagination | Cursor based with `after` and up to 100 records per request, as the [pagination guide](https://developers.myclickfunnels.com/docs/pagination) describes. Limits up to 100 return that many records |
+| Security | Subdomain allowlist so only `*.myclickfunnels.com` is reachable, in node calls and in the credential test. Safe ID validation. Webhooks verified with HMAC-SHA256 over the timestamp and raw body using the `webhook_secret` ClickFunnels issues, within a 600 second window, as the [signature guide](https://developers.myclickfunnels.com/docs/signature-verification) describes |
 
 ### Project structure
 

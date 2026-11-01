@@ -38,15 +38,15 @@ export const shippingRateFields: INodeProperties[] = [
 	},
 
 	// ------------------------------------------------------------------
-	//        name — required for create
+	//        rateNameId — required for create
 	// ------------------------------------------------------------------
 	{
-		displayName: 'Name',
-		name: 'name',
+		displayName: 'Rate Name ID',
+		name: 'rateNameId',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'The name of the shipping rate',
+		description: 'The ID of the shipping rate name to price, from the Shipping Rate Name resource',
 		displayOptions: {
 			show: {
 				resource: ['shippingRate'],

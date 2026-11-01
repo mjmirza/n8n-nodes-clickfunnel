@@ -25,7 +25,7 @@ export async function handleFormField(
 		return clickFunnelsRequest(
 			ctx,
 			'POST',
-			`/forms/fieldsets/${fieldSetId}/fields`,
+			`/forms/field_sets/${fieldSetId}/fields`,
 			body,
 		);
 	}
@@ -43,7 +43,7 @@ export async function handleFormField(
 			ctx.getNodeParameter('fieldSetId', i) as string,
 			'Field Set ID',
 		);
-		return clickFunnelsGetAll(ctx, 'GET', `/forms/fieldsets/${fieldSetId}/fields`);
+		return clickFunnelsGetAll(ctx, 'GET', `/forms/field_sets/${fieldSetId}/fields`);
 	}
 
 	if (operation === 'update') {
