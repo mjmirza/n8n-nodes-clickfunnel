@@ -74,7 +74,7 @@ export const productTagFields: INodeProperties[] = [
 			{
 				displayName: 'Color',
 				name: 'color',
-				type: 'string',
+				type: 'color',
 				default: '',
 				description: 'The color of the tag (e.g. "#FF5733")',
 			},
@@ -107,7 +107,7 @@ export const productTagFields: INodeProperties[] = [
 			{
 				displayName: 'Color',
 				name: 'color',
-				type: 'string',
+				type: 'color',
 				default: '',
 				description: 'The color of the tag (e.g. "#FF5733")',
 			},
@@ -138,7 +138,7 @@ export const productTagFields: INodeProperties[] = [
 			minValue: 1,
 			maxValue: 100,
 		},
-		default: 20,
+		default: 50,
 		description: 'Max number of results to return',
 		displayOptions: {
 			show: {

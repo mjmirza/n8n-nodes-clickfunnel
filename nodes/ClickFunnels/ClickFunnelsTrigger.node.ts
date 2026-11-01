@@ -15,7 +15,7 @@ export class ClickFunnelsTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'ClickFunnels Trigger',
 		name: 'clickFunnelsTrigger',
-		icon: 'file:clickfunnels.svg',
+		icon: { light: 'file:clickfunnels.svg', dark: 'file:clickfunnels.dark.svg' },
 		group: ['trigger'],
 		version: 1,
 		subtitle: '={{$parameter["event"]}}',
@@ -59,9 +59,9 @@ export class ClickFunnelsTrigger implements INodeType {
 				options: [
 					// Contact events
 					{ name: 'Contact — Created', value: 'contact.created' },
-					{ name: 'Contact — Updated', value: 'contact.updated' },
 					{ name: 'Contact — Deleted', value: 'contact.deleted' },
 					{ name: 'Contact — Identified', value: 'contact.identified' },
+					{ name: 'Contact — Updated', value: 'contact.updated' },
 
 					// Course events
 					{ name: 'Course — Enrollment Created', value: 'course.enrollment.created' },
@@ -85,11 +85,11 @@ export class ClickFunnelsTrigger implements INodeType {
 
 					// Order events
 					{ name: 'Order — Created', value: 'order.created' },
-					{ name: 'Order — Updated', value: 'order.updated' },
+					{ name: 'Order — Invoice Created', value: 'order.invoice.created' },
 
 					// Order invoice events
-					{ name: 'Order — Invoice Created', value: 'order.invoice.created' },
 					{ name: 'Order — Invoice Updated', value: 'order.invoice.updated' },
+					{ name: 'Order — Updated', value: 'order.updated' },
 
 					// Product events
 					{ name: 'Product — Created', value: 'product.created' },
@@ -100,12 +100,12 @@ export class ClickFunnelsTrigger implements INodeType {
 					{ name: 'Purchase — Updated', value: 'purchase.updated' },
 
 					// Subscription events
-					{ name: 'Subscription — Created', value: 'subscription.created' },
-					{ name: 'Subscription — Updated', value: 'subscription.updated' },
 					{ name: 'Subscription — Cancelled', value: 'subscription.cancelled' },
-					{ name: 'Subscription — Uncancelled', value: 'subscription.uncancelled' },
-					{ name: 'Subscription — Upgraded', value: 'subscription.upgraded' },
+					{ name: 'Subscription — Created', value: 'subscription.created' },
 					{ name: 'Subscription — Downgraded', value: 'subscription.downgraded' },
+					{ name: 'Subscription — Uncancelled', value: 'subscription.uncancelled' },
+					{ name: 'Subscription — Updated', value: 'subscription.updated' },
+					{ name: 'Subscription — Upgraded', value: 'subscription.upgraded' },
 				],
 			},
 		],
@@ -128,8 +128,12 @@ export class ClickFunnelsTrigger implements INodeType {
 						if (endpoint && (endpoint.url as string) === webhookUrl) {
 							return true;
 						}
-					} catch {
-						// Endpoint no longer exists
+					} catch (error) {
+						// A missing endpoint means it must be recreated, so report "not found" instead of failing.
+						this.logger.debug('ClickFunnels webhook endpoint not found, it will be recreated', {
+							webhookId: webhookData.webhookId,
+							error: (error as Error).message,
+						});
 					}
 				}
 
@@ -181,8 +185,12 @@ export class ClickFunnelsTrigger implements INodeType {
 							'DELETE',
 							`/webhooks/outgoing/endpoints/${webhookData.webhookId}`,
 						);
-					} catch {
-						// Ignore errors during cleanup
+					} catch (error) {
+						// Cleanup is best effort: a failed delete must not block deactivating the workflow.
+						this.logger.warn('Could not delete ClickFunnels webhook endpoint during cleanup', {
+							webhookId: webhookData.webhookId,
+							error: (error as Error).message,
+						});
 					}
 				}
 

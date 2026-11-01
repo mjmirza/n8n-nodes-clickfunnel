@@ -5,6 +5,9 @@ import {
 	IHttpRequestMethods,
 	IHttpRequestOptions,
 	IDataObject,
+	JsonObject,
+	NodeApiError,
+	sleep,
 } from 'n8n-workflow';
 
 // ---------------------------------------------------------------------------
@@ -222,7 +225,7 @@ export async function clickFunnelsRequest(
 				const baseDelay = Math.min(1_000 * Math.pow(2, attempt), 10_000);
 				const jitter = Math.random() * baseDelay * 0.25;
 				const delay = retryAfterMs || (baseDelay + jitter);
-				await new Promise((resolve) => setTimeout(resolve, delay));
+				await sleep(delay);
 				lastError = err as Error;
 				continue;
 			}
@@ -230,9 +233,10 @@ export async function clickFunnelsRequest(
 			// Parse error but never include raw credentials in messages
 			const parsed = parseErrorResponse(err.body);
 			const msg = parsed || err.message || 'Unknown ClickFunnels API error';
-			throw new Error(
-				`ClickFunnels API error [${err.statusCode || 'unknown'}]: ${msg.slice(0, MAX_ERROR_LENGTH)}`,
-			);
+			throw new NodeApiError(ctx.getNode(), err as JsonObject, {
+				message: `ClickFunnels API error [${err.statusCode || 'unknown'}]: ${msg.slice(0, MAX_ERROR_LENGTH)}`,
+				httpCode: err.statusCode ? String(err.statusCode) : undefined,
+			});
 		}
 	}
 

@@ -32,6 +32,27 @@ export const orderInvoiceFields: INodeProperties[] = [
 		},
 		options: [
 			{
+				displayName: 'Discount Amount',
+				name: 'discount_amount',
+				type: 'string',
+				default: '',
+				description: 'Discount amount applied (e.g. "5.00")',
+			},
+			{
+				displayName: 'Due Date',
+				name: 'due_date',
+				type: 'dateTime',
+				default: '',
+				description: 'The due date for the invoice',
+			},
+			{
+				displayName: 'Notes',
+				name: 'notes',
+				type: 'string',
+				default: '',
+				description: 'Internal notes for the invoice',
+			},
+			{
 				displayName: 'Status',
 				name: 'status',
 				type: 'options',
@@ -45,25 +66,11 @@ export const orderInvoiceFields: INodeProperties[] = [
 				description: 'The status of the invoice',
 			},
 			{
-				displayName: 'Due Date',
-				name: 'due_date',
-				type: 'dateTime',
-				default: '',
-				description: 'The due date for the invoice',
-			},
-			{
 				displayName: 'Subtotal Amount',
 				name: 'subtotal_amount',
 				type: 'string',
 				default: '',
 				description: 'Subtotal amount for the invoice (e.g. "29.99")',
-			},
-			{
-				displayName: 'Discount Amount',
-				name: 'discount_amount',
-				type: 'string',
-				default: '',
-				description: 'Discount amount applied (e.g. "5.00")',
 			},
 			{
 				displayName: 'Tax Amount',
@@ -78,13 +85,6 @@ export const orderInvoiceFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description: 'Total amount for the invoice (e.g. "27.49")',
-			},
-			{
-				displayName: 'Notes',
-				name: 'notes',
-				type: 'string',
-				default: '',
-				description: 'Internal notes for the invoice',
 			},
 		],
 	},

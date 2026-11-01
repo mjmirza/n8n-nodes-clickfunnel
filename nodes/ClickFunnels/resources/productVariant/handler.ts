@@ -1,4 +1,4 @@
-import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
+import { NodeOperationError, type IExecuteFunctions, type IDataObject } from 'n8n-workflow';
 import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
 
 export async function handleProductVariant(
@@ -23,7 +23,7 @@ export async function handleProductVariant(
 				try {
 					additionalFields.properties = JSON.parse(additionalFields.properties);
 				} catch {
-					throw new Error('Properties must be valid JSON');
+					throw new NodeOperationError(ctx.getNode(), 'Properties must be valid JSON', { itemIndex: i });
 				}
 			}
 
@@ -89,7 +89,7 @@ export async function handleProductVariant(
 				try {
 					updateFields.properties = JSON.parse(updateFields.properties);
 				} catch {
-					throw new Error('Properties must be valid JSON');
+					throw new NodeOperationError(ctx.getNode(), 'Properties must be valid JSON', { itemIndex: i });
 				}
 			}
 
