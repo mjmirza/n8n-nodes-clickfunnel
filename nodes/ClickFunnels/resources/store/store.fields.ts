@@ -1,5 +1,50 @@
 import { INodeProperties } from 'n8n-workflow';
 
+// Writable fields of the store schema in https://accounts.myclickfunnels.com/openapi.json
+const STORE_FIELDS: INodeProperties[] = [
+	{
+		displayName: 'Current Path',
+		name: 'current_path',
+		type: 'string',
+		default: '',
+	},
+	{
+		displayName: 'Name',
+		name: 'name',
+		type: 'string',
+		default: '',
+		description: 'The name of the store (for update)',
+	},
+	{
+		displayName: 'SEO Description',
+		name: 'seo_description',
+		type: 'string',
+		default: '',
+	},
+	{
+		displayName: 'SEO Indexable',
+		name: 'seo_indexable',
+		type: 'boolean',
+		default: true,
+	},
+	{
+		displayName: 'SEO Title',
+		name: 'seo_title',
+		type: 'string',
+		default: '',
+	},
+	{
+		displayName: 'Status',
+		name: 'status',
+		type: 'options',
+		options: [
+			{ name: 'Draft', value: 'draft' },
+			{ name: 'Published', value: 'published' },
+		],
+		default: 'draft',
+	},
+];
+
 export const storeFields: INodeProperties[] = [
 	// ------------------------------------------------------------------
 	//  workspaceId — required for create, getAll
@@ -56,31 +101,35 @@ export const storeFields: INodeProperties[] = [
 		placeholder: 'Add Field',
 		default: {},
 		displayOptions: {
-			show: { resource: ['store'], operation: ['create', 'update'] },
+			show: { resource: ['store'], operation: ['create', 'update'], '@version': [2] },
 		},
-		options: [
+		options: STORE_FIELDS,
+	},
+	{
+		displayName: 'Additional Fields',
+		name: 'additionalFields',
+		type: 'collection',
+		placeholder: 'Add Field',
+		default: {},
+		displayOptions: {
+			show: { resource: ['store'], operation: ['create', 'update'], '@version': [1] },
+		},
+		// Description and Domain stay on version 1 so saved values are not dropped.
+		options: ([
+			...STORE_FIELDS,
 			{
-				displayName: 'Description',
+				displayName: 'Description (1.x, Sent as SEO Description)',
 				name: 'description',
 				type: 'string',
 				default: '',
-				description: 'A description of the store',
 			},
 			{
-				displayName: 'Domain',
+				displayName: 'Domain (Not Accepted by the API)',
 				name: 'domain',
 				type: 'string',
 				default: '',
-				description: 'The custom domain for the store',
 			},
-			{
-				displayName: 'Name',
-				name: 'name',
-				type: 'string',
-				default: '',
-				description: 'The name of the store (for update)',
-			},
-		],
+		] as INodeProperties[]).sort((a, b) => a.displayName.localeCompare(b.displayName)),
 	},
 
 	// ------------------------------------------------------------------
@@ -92,7 +141,7 @@ export const storeFields: INodeProperties[] = [
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 100 },
 		default: 5,
-		description: 'Maximum number of pages to fetch (50 results per page)',
+		description: 'Maximum number of pages to read, 100 records each. On node version 2 the node stops with an error if more records remain, so nothing is dropped silently.',
 		displayOptions: {
 			show: { resource: ['store'], operation: ['getAll'] },
 		},

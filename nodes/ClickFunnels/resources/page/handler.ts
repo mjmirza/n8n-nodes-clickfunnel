@@ -12,11 +12,11 @@ export async function handlePage(
 	}
 
 	if (operation === 'getAll') {
-		const funnelId = assertSafeId(
-			ctx.getNodeParameter('funnelId', i) as string,
-			'Funnel ID',
-		);
-		return clickFunnelsGetAll(ctx, 'GET', `/funnels/${funnelId}/pages`);
+		const workspaceId = assertSafeId(ctx.getNodeParameter('workspaceId', i, '') as string, 'Workspace ID');
+		const funnelId = String(ctx.getNodeParameter('funnelId', i, '') ?? '').trim();
+		const qs: IDataObject = {};
+		if (funnelId) qs['filter[funnel_ids]'] = assertSafeId(funnelId, 'Funnel ID');
+		return clickFunnelsGetAll(ctx, 'GET', `/workspaces/${workspaceId}/pages`, qs);
 	}
 
 	if (operation === 'update') {

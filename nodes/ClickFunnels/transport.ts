@@ -131,6 +131,30 @@ function parseErrorResponse(body: unknown): string {
 // ID sanitisation
 // ---------------------------------------------------------------------------
 
+// Webhook event keys look like contact.created or orders/invoice.paid.
+const EVENT_KEY = /^[a-z0-9_]+(\/[a-z0-9_]+)*\.[a-z0-9_]+$/;
+
+// 1.x trigger values that have a documented ClickFunnels equivalent.
+export const LEGACY_EVENT_KEYS: Record<string, string> = {
+	'course.enrollment.created': 'courses/enrollment.created',
+	'course.enrollment.updated': 'courses/enrollment.updated',
+	'form.submission.created': 'form_submission.created',
+	'order.invoice.created': 'orders/invoice.created',
+	'order.invoice.updated': 'orders/invoice.updated',
+	'subscription.cancelled': 'subscription.canceled',
+	'subscription.uncancelled': 'subscription.reactivated',
+};
+
+/** Validates a webhook event key and maps a 1.x spelling to the documented key. */
+export function assertEventKey(value: string): string {
+	const key = String(value).trim();
+	const mapped = LEGACY_EVENT_KEYS[key] ?? key;
+	if (!EVENT_KEY.test(mapped) || mapped.length > 120) {
+		throw new Error(`"${key}" is not a ClickFunnels webhook event key, for example contact.created or orders/invoice.paid`);
+	}
+	return mapped;
+}
+
 export function assertSafeId(value: string | number, label = 'ID'): string {
 	const s = String(value).trim();
 
@@ -295,9 +319,11 @@ async function paginate(
 	qs: IDataObject,
 	maxPages: number,
 	limit: number,
+	failOnCap = false,
 ): Promise<unknown[]> {
 	const results: unknown[] = [];
 	let after: string | undefined;
+	let exhausted = false;
 
 	for (let page = 0; page < maxPages && results.length < limit; page++) {
 		const perPage = Math.min(MAX_PER_PAGE, limit - results.length);
@@ -307,24 +333,51 @@ async function paginate(
 		const { rows, isList } = toRows(await clickFunnelsRequest(ctx, 'GET', path, undefined, pageQs));
 		const next = lastId(rows);
 		// A page that ends where the previous one ended is a repeat, so stop without keeping it.
-		if (after !== undefined && next === after) break;
+		if (after !== undefined && next === after) {
+			exhausted = true;
+			break;
+		}
 		results.push(...rows);
-		if (!isList || rows.length < perPage || next === undefined) break;
+		if (!isList || rows.length < perPage || next === undefined) {
+			exhausted = true;
+			break;
+		}
 		after = next;
+	}
+
+	// Return All must never hand back a silently truncated list, so confirm whether more records exist.
+	if (failOnCap && !exhausted && results.length < limit) {
+		const probe = toRows(await clickFunnelsRequest(ctx, 'GET', path, undefined, { ...qs, per_page: 1, after }));
+		const probeId = lastId(probe.rows);
+		if (probe.isList && probe.rows.length > 0 && probeId !== after) {
+			throw new Error(
+				`Stopped after ${maxPages} pages (${results.length} records) and more records remain. Raise Max Pages or narrow the request.`,
+			);
+		}
 	}
 
 	return results.length > limit ? results.slice(0, limit) : results;
 }
 
+const DEFAULT_MAX_PAGES = 10_000;
+
+/**
+ * Returns every record. Without a Max Pages value it pages until the API runs dry. When Max Pages is
+ * reached and more records remain it throws, except on node version 1 with an explicit Max Pages,
+ * where saved workflows keep the 1.x and 2.0 behaviour of returning the first pages.
+ */
 export async function clickFunnelsGetAll(
 	ctx: IExecuteFunctions,
 	_method: IHttpRequestMethods,
 	path: string,
 	qs: IDataObject = {},
-	maxPages = 50,
+	maxPages?: number,
 ): Promise<unknown[]> {
-	const pages = Math.min(Math.max(Math.floor(maxPages) || 1, 1), 500);
-	return paginate(ctx, path, qs, pages, Number.POSITIVE_INFINITY);
+	const explicit = maxPages !== undefined;
+	const pages = Math.min(Math.max(Math.floor(maxPages ?? DEFAULT_MAX_PAGES) || 1, 1), DEFAULT_MAX_PAGES);
+	const version = Number(ctx.getNode?.().typeVersion ?? 2);
+	const failOnCap = !explicit || version >= 2;
+	return paginate(ctx, path, qs, pages, Number.POSITIVE_INFINITY, failOnCap);
 }
 
 // Returns at most limit rows, paging with the cursor when limit exceeds one page.

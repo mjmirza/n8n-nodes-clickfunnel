@@ -1,6 +1,24 @@
 import { INodeProperties } from 'n8n-workflow';
 
 export const lessonCompletionFields: INodeProperties[] = [
+	{
+		displayName: 'Course ID',
+		name: 'courseId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Lesson completions are listed and created under a course',
+		displayOptions: { show: { resource: ['lessonCompletion'], operation: ['create', 'getAll'] } },
+	},
+	{
+		displayName: 'Enrollment ID',
+		name: 'enrollmentId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The course enrollment that completed the lesson',
+		displayOptions: { show: { resource: ['lessonCompletion'], operation: ['create'] } },
+	},
 	// ------------------------------------------------------------------
 	//        lessonCompletion: lessonId (for create, getAll)
 	// ------------------------------------------------------------------
@@ -37,21 +55,4 @@ export const lessonCompletionFields: INodeProperties[] = [
 		},
 	},
 
-	// ------------------------------------------------------------------
-	//        lessonCompletion: contactId (for create)
-	// ------------------------------------------------------------------
-	{
-		displayName: 'Contact ID',
-		name: 'contactId',
-		type: 'string',
-		required: true,
-		default: '',
-		description: 'The ID of the contact who completed the lesson',
-		displayOptions: {
-			show: {
-				resource: ['lessonCompletion'],
-				operation: ['create'],
-			},
-		},
-	},
 ];

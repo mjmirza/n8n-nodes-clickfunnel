@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId, assertEventKey } from '../../transport';
 
 export async function handleWebhook(
 	ctx: IExecuteFunctions,
@@ -20,7 +20,7 @@ export async function handleWebhook(
 				.split(',')
 				.map((id) => id.trim())
 				.filter((id) => id.length > 0)
-				.map((id) => assertSafeId(id, 'Event Type ID'));
+				.map((id) => assertEventKey(id));
 
 			const body: IDataObject = {
 				webhooks_outgoing_endpoint: {
@@ -79,7 +79,7 @@ export async function handleWebhook(
 					.split(',')
 					.map((id) => id.trim())
 					.filter((id) => id.length > 0)
-					.map((id) => assertSafeId(id, 'Event Type ID'));
+					.map((id) => assertEventKey(id));
 			}
 
 			const body: IDataObject = {

@@ -1,6 +1,16 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 export const salesPipelineFields: INodeProperties[] = [
+	{
+		displayName: 'Stages (JSON)',
+		name: 'stages',
+		type: 'json',
+		required: true,
+		default: '[]',
+		placeholder: '[{"name":"New","close_probability":10},{"name":"Won","close_probability":100}]',
+		description: 'Array of stages, each with a name and a close_probability from 0 to 100. The API needs at least one.',
+		displayOptions: { show: { resource: ['salesPipeline'], operation: ['create'] } },
+	},
 	// ------------------------------------------------------------------
 	//        workspaceId — used by create & getMany
 	// ------------------------------------------------------------------

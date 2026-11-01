@@ -1,6 +1,49 @@
 import { IExecuteFunctions, IDataObject } from 'n8n-workflow';
 import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
 
+/** Parses a JSON array parameter, naming the parameter when the JSON is invalid. */
+export function parseJsonArray(raw: string, label: string): unknown[] {
+	if (!raw.trim()) return [];
+	let parsed: unknown;
+	let valid = true;
+	try {
+		parsed = JSON.parse(raw);
+	} catch {
+		valid = false;
+	}
+	if (!valid || !Array.isArray(parsed)) throw new Error(`${label} must be a JSON array`);
+	return parsed;
+}
+
+// Fields 1.x offered that the orders_invoice schema does not accept.
+const UNSUPPORTED = ['discount_amount', 'notes', 'subtotal_amount', 'tax_amount', 'total_amount'];
+
+/** Builds an orders_invoice body, mapping 1.x field names and filling paid_at for a paid invoice. */
+export function invoiceBody(fields: IDataObject): IDataObject {
+	const body: IDataObject = { ...fields };
+	const unsupported = UNSUPPORTED.filter((k) => body[k] !== undefined && body[k] !== '');
+	if (unsupported.length > 0) {
+		throw new Error(`The ClickFunnels invoice API does not accept ${unsupported.join(', ')}. Remove these fields from the node.`);
+	}
+	for (const k of UNSUPPORTED) delete body[k];
+	if (body.due_date !== undefined) {
+		if (body.due_at === undefined && body.due_date !== '') body.due_at = body.due_date;
+		delete body.due_date;
+	}
+	// 1.x offered draft and open, which the API calls unpaid.
+	if (body.status === 'draft' || body.status === 'open') body.status = 'unpaid';
+	if (typeof body.line_items_attributes === 'string') {
+		const raw = body.line_items_attributes.trim();
+		body.line_items_attributes = parseJsonArray(raw, 'Line Items (JSON)');
+	}
+	if (Array.isArray(body.line_items_attributes) && body.line_items_attributes.length === 0) {
+		delete body.line_items_attributes;
+	}
+	for (const [k, v] of Object.entries(body)) if (v === '') delete body[k];
+	if (body.status === 'paid' && !body.paid_at) body.paid_at = new Date().toISOString();
+	return body;
+}
+
 export async function handleOrderInvoice(
 	ctx: IExecuteFunctions,
 	operation: string,
@@ -13,11 +56,20 @@ export async function handleOrderInvoice(
 				'Order ID',
 			);
 			const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
+			const externalId = String(ctx.getNodeParameter('externalId', i, '') ?? '').trim();
+			if (!externalId) throw new Error('External ID is required by the ClickFunnels invoice API');
+			// Version 1 nodes keep the status inside Additional Fields, version 2 has a top-level Status.
+			const status =
+				ctx.getNode().typeVersion < 2
+					? (additionalFields.status as string) || 'unpaid'
+					: (ctx.getNodeParameter('invoiceStatus', i, 'unpaid') as string) || 'unpaid';
 
 			const body: IDataObject = {
-				orders_invoice: {
+				orders_invoice: invoiceBody({
 					...additionalFields,
-				} as IDataObject,
+					external_id: externalId,
+					status,
+				}),
 			};
 
 			return clickFunnelsRequest(
@@ -61,7 +113,7 @@ export async function handleOrderInvoice(
 			const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
 
 			const body: IDataObject = {
-				orders_invoice: updateFields,
+				orders_invoice: invoiceBody(updateFields),
 			};
 
 			return clickFunnelsRequest(

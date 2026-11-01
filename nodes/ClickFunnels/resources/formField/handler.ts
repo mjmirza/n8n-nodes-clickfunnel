@@ -14,10 +14,13 @@ export async function handleFormField(
 		const label = ctx.getNodeParameter('label', i) as string;
 		const fieldType = ctx.getNodeParameter('fieldType', i) as string;
 		const additionalFields = ctx.getNodeParameter('additionalFields', i) as IDataObject;
+		const key = String(ctx.getNodeParameter('key', i, '') ?? '').trim();
+		if (!key) throw new Error('Key is required by the ClickFunnels form field API');
 
 		const body: IDataObject = {
 			forms_field: {
 				label,
+				key,
 				field_type: fieldType,
 				...additionalFields,
 			},

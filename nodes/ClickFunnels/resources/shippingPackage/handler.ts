@@ -18,6 +18,7 @@ export async function handleShippingPackage(
 			const height = ctx.getNodeParameter('height', i) as number;
 			const length = ctx.getNodeParameter('length', i) as number;
 			const dimensionsUnit = ctx.getNodeParameter('dimensionsUnit', i) as string;
+			const packageType = ctx.getNodeParameter('packageType', i, 'box') as string;
 
 			const body: IDataObject = {
 				shipping_package: {
@@ -26,7 +27,8 @@ export async function handleShippingPackage(
 					width,
 					height,
 					length,
-					dimensions_unit: dimensionsUnit,
+					distance_unit: dimensionsUnit,
+					package_type: packageType,
 				} as IDataObject,
 			};
 
@@ -73,8 +75,13 @@ export async function handleShippingPackage(
 			);
 			const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
 
+			const pkg: IDataObject = { ...updateFields };
+			if (pkg.dimensions_unit !== undefined) {
+				pkg.distance_unit = pkg.dimensions_unit;
+				delete pkg.dimensions_unit;
+			}
 			const body: IDataObject = {
-				shipping_package: { ...updateFields } as IDataObject,
+				shipping_package: pkg,
 			};
 
 			return clickFunnelsRequest(ctx, 'PUT', `/shipping/packages/${packageId}`, body);

@@ -200,7 +200,7 @@ export const contactFields: INodeProperties[] = [
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 100 },
 		default: 5,
-		description: 'Maximum number of pages to fetch (50 results per page)',
+		description: 'Maximum number of pages to read, 100 records each. On node version 2 the node stops with an error if more records remain, so nothing is dropped silently.',
 		displayOptions: {
 			show: { resource: ['contact'], operation: ['getAll'] },
 		},

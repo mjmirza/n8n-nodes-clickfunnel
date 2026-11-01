@@ -1,6 +1,15 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
 import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
 
+function noteFields(fields: IDataObject): IDataObject {
+	const note: IDataObject = { ...fields };
+	if (note.body !== undefined) {
+		note.content = note.body;
+		delete note.body;
+	}
+	return note;
+}
+
 export async function handleOpportunityNote(
 	ctx: IExecuteFunctions,
 	operation: string,
@@ -15,8 +24,8 @@ export async function handleOpportunityNote(
 			const body = ctx.getNodeParameter('body', i) as string;
 
 			const requestBody: IDataObject = {
-				sales_opportunity_note: {
-					body,
+				sales_opportunities_note: {
+					content: body,
 				} as IDataObject,
 			};
 
@@ -64,7 +73,7 @@ export async function handleOpportunityNote(
 			const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
 
 			const requestBody: IDataObject = {
-				sales_opportunity_note: { ...updateFields } as IDataObject,
+				sales_opportunities_note: noteFields(updateFields),
 			};
 
 			return clickFunnelsRequest(ctx, 'PUT', `/sales/opportunities/notes/${noteId}`, requestBody);

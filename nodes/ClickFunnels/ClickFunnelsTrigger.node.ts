@@ -6,11 +6,142 @@ import {
 	IWebhookResponseData,
 	NodeConnectionTypes,
 	IDataObject,
+	JsonObject,
+	NodeApiError,
 	NodeOperationError,
 } from 'n8n-workflow';
 
 import { createHmac, timingSafeEqual } from 'crypto';
-import { clickFunnelsRequest } from './transport';
+import { clickFunnelsRequest, getHttpStatus, LEGACY_EVENT_KEYS } from './transport';
+
+// User-selectable keys from https://developers.myclickfunnels.com/docs/webhook-event-types
+// Workflow-stamped event types are excluded, ClickFunnels rejects them on an endpoint you create.
+export const EVENT_OPTIONS = [
+	{ name: 'Appointment — Scheduled Event Canceled', value: 'appointments/scheduled_event.canceled' },
+	{ name: 'Appointment — Scheduled Event Created', value: 'appointments/scheduled_event.created' },
+	{ name: 'Appointment — Scheduled Event Rescheduled', value: 'appointments/scheduled_event.rescheduled' },
+	{ name: 'Blog — Post Created', value: 'blogs/post.created' },
+	{ name: 'Blog — Post Deleted', value: 'blogs/post.deleted' },
+	{ name: 'Blog — Post Published', value: 'blogs/post.published' },
+	{ name: 'Blog — Post Updated', value: 'blogs/post.updated' },
+	{ name: 'Community — Post Comment Created', value: 'communities/posts/comment.created' },
+	{ name: 'Community — Post Created', value: 'communities/post.created' },
+	{ name: 'Contact — Applied Tag Created', value: 'contacts/applied_tag.created' },
+	{ name: 'Contact — Applied Tag Deleted', value: 'contacts/applied_tag.deleted' },
+	{ name: 'Contact — Created', value: 'contact.created' },
+	{ name: 'Contact — Deleted', value: 'contact.deleted' },
+	{ name: 'Contact — Identified', value: 'contact.identified' },
+	{ name: 'Contact — Updated', value: 'contact.updated' },
+	{ name: 'Course — Created', value: 'course.created' },
+	{ name: 'Course — Deleted', value: 'course.deleted' },
+	{ name: 'Course — Enrollment Course Completed', value: 'courses/enrollment.course_completed' },
+	{ name: 'Course — Enrollment Created', value: 'courses/enrollment.created' },
+	{ name: 'Course — Enrollment Deleted', value: 'courses/enrollment.deleted' },
+	{ name: 'Course — Enrollment Suspended', value: 'courses/enrollment.suspended' },
+	{ name: 'Course — Enrollment Updated', value: 'courses/enrollment.updated' },
+	{ name: 'Course — Lesson Created', value: 'courses/lesson.created' },
+	{ name: 'Course — Lesson Deleted', value: 'courses/lesson.deleted' },
+	{ name: 'Course — Lesson Published', value: 'courses/lesson.published' },
+	{ name: 'Course — Lesson Updated', value: 'courses/lesson.updated' },
+	{ name: 'Course — Published', value: 'course.published' },
+	{ name: 'Course — Section Created', value: 'courses/section.created' },
+	{ name: 'Course — Section Deleted', value: 'courses/section.deleted' },
+	{ name: 'Course — Section Published', value: 'courses/section.published' },
+	{ name: 'Course — Section Updated', value: 'courses/section.updated' },
+	{ name: 'Course — Updated', value: 'course.updated' },
+	{ name: 'Email — Broadcast Completed', value: 'emails/broadcast.completed' },
+	{ name: 'Email — Broadcast Created', value: 'emails/broadcast.created' },
+	{ name: 'Email — Broadcast Deleted', value: 'emails/broadcast.deleted' },
+	{ name: 'Email — Broadcast Scheduled', value: 'emails/broadcast.scheduled' },
+	{ name: 'Email — Broadcast Updated', value: 'emails/broadcast.updated' },
+	{ name: 'Form — Submission Created', value: 'form_submission.created' },
+	{ name: 'Fulfillment — Created', value: 'fulfillment.created' },
+	{ name: 'Fulfillment — Updated', value: 'fulfillment.updated' },
+	{ name: 'One-Time Order — Refunded', value: 'one_time_order.refunded' },
+	{ name: 'Order — Completed', value: 'order.completed' },
+	{ name: 'Order — Created', value: 'order.created' },
+	{ name: 'Order — Deleted', value: 'order.deleted' },
+	{ name: 'Order — Invoice Abandoned', value: 'orders/invoice.abandoned' },
+	{ name: 'Order — Invoice Created', value: 'orders/invoice.created' },
+	{ name: 'Order — Invoice Fulfilled', value: 'orders/invoice.fulfilled' },
+	{ name: 'Order — Invoice Paid', value: 'orders/invoice.paid' },
+	{ name: 'Order — Invoice Past Due', value: 'orders/invoice.past_due' },
+	{ name: 'Order — Invoice Refunded', value: 'orders/invoice.refunded' },
+	{ name: 'Order — Invoice Reissued', value: 'orders/invoice.reissued' },
+	{ name: 'Order — Invoice Restock Created', value: 'orders/invoices/restock.created' },
+	{ name: 'Order — Invoice Restock Updated', value: 'orders/invoices/restock.updated' },
+	{ name: 'Order — Invoice Updated', value: 'orders/invoice.updated' },
+	{ name: 'Order — Invoice Voided', value: 'orders/invoice.voided' },
+	{ name: 'Order — Transaction Created', value: 'orders/transaction.created' },
+	{ name: 'Order — Transaction Updated', value: 'orders/transaction.updated' },
+	{ name: 'Order — Updated', value: 'order.updated' },
+	{ name: 'Platform Application — Disconnected', value: 'platform_application.disconnected' },
+	{ name: 'Product — Created', value: 'product.created' },
+	{ name: 'Product — Updated', value: 'product.updated' },
+	{ name: 'Product — Variant Created', value: 'products/variant.created' },
+	{ name: 'Product — Variant Updated', value: 'products/variant.updated' },
+	{ name: 'Sales — Opportunity Closed', value: 'sales/opportunity.closed' },
+	{ name: 'Sales — Opportunity Created', value: 'sales/opportunity.created' },
+	{ name: 'Sales — Opportunity Deleted', value: 'sales/opportunity.deleted' },
+	{ name: 'Sales — Opportunity Moved Stage', value: 'sales/opportunity.moved_stage' },
+	{ name: 'Sales — Opportunity Updated', value: 'sales/opportunity.updated' },
+	{ name: 'Subscription — Activated', value: 'subscription.activated' },
+	{ name: 'Subscription — Canceled', value: 'subscription.canceled' },
+	{ name: 'Subscription — Churned', value: 'subscription.churned' },
+	{ name: 'Subscription — Completed', value: 'subscription.completed' },
+	{ name: 'Subscription — Downgraded', value: 'subscription.downgraded' },
+	{ name: 'Subscription — First Payment Received', value: 'subscription.first_payment_received' },
+	{ name: 'Subscription — Modified', value: 'subscription.modified' },
+	{ name: 'Subscription — Reactivated', value: 'subscription.reactivated' },
+	{ name: 'Subscription — Trial Converted', value: 'subscription.trial_converted' },
+	{ name: 'Subscription — Trial Ended', value: 'subscription.trial_ended' },
+	{ name: 'Subscription — Trial Started', value: 'subscription.trial_started' },
+	{ name: 'Subscription — Upgraded', value: 'subscription.upgraded' },
+	{ name: 'Survey — Run Completed', value: 'survey_workflow_run.completed' },
+	{ name: 'Video — Failed', value: 'video.failed' },
+	{ name: 'Video — Processed', value: 'video.processed' },
+];
+
+// Values saved by 1.x and 2.0.0. Shown only on node version 1 so saved workflows keep their selection.
+const LEGACY_EVENT_OPTIONS = [
+	{ name: 'Course — Enrollment Created (1.x)', value: 'course.enrollment.created' },
+	{ name: 'Course — Enrollment Updated (1.x)', value: 'course.enrollment.updated' },
+	{ name: 'Course — Lesson Completed (1.x, Not a ClickFunnels Event)', value: 'course.lesson_completion.created' },
+	{ name: 'Form — Submission Created (1.x)', value: 'form.submission.created' },
+	{ name: 'Funnel — Created (1.x, Not a ClickFunnels Event)', value: 'funnel.created' },
+	{ name: 'Funnel — Updated (1.x, Not a ClickFunnels Event)', value: 'funnel.updated' },
+	{ name: 'One-Time Order — Created (1.x, Not a ClickFunnels Event)', value: 'one_time_order.created' },
+	{ name: 'One-Time Order — Updated (1.x, Not a ClickFunnels Event)', value: 'one_time_order.updated' },
+	{ name: 'Order — Invoice Created (1.x)', value: 'order.invoice.created' },
+	{ name: 'Order — Invoice Updated (1.x)', value: 'order.invoice.updated' },
+	{ name: 'Purchase — Created (1.x, Not a ClickFunnels Event)', value: 'purchase.created' },
+	{ name: 'Purchase — Updated (1.x, Not a ClickFunnels Event)', value: 'purchase.updated' },
+	{ name: 'Subscription — Cancelled (1.x)', value: 'subscription.cancelled' },
+	{ name: 'Subscription — Created (1.x, Not a ClickFunnels Event)', value: 'subscription.created' },
+	{ name: 'Subscription — Uncancelled (1.x)', value: 'subscription.uncancelled' },
+	{ name: 'Subscription — Updated (1.x, Not a ClickFunnels Event)', value: 'subscription.updated' },
+];
+
+const VALID_EVENT_KEYS = new Set(EVENT_OPTIONS.map((o) => o.value));
+
+/** The documented keys for the selected events. 1.x spellings are mapped, keys ClickFunnels never had are rejected. */
+function selectedEventKeys(ctx: IHookFunctions): string[] {
+	const selected = (ctx.getNodeParameter('events') as string[]) ?? [];
+	const unknown = selected.filter((e) => !LEGACY_EVENT_KEYS[e] && !VALID_EVENT_KEYS.has(e));
+	if (unknown.length > 0) {
+		throw new NodeOperationError(
+			ctx.getNode(),
+			`ClickFunnels has no webhook event ${unknown.join(', ')}. Remove it from Events and pick a documented event.`,
+		);
+	}
+	return [...new Set(selected.map((e) => LEGACY_EVENT_KEYS[e] ?? e))];
+}
+
+function sameKeys(a: string[], b: string[]): boolean {
+	const left = [...new Set(a)].sort();
+	const right = [...new Set(b)].sort();
+	return left.length === right.length && left.every((v, i) => v === right[i]);
+}
 
 const SIGNATURE_HEADER = 'x-webhook-clickfunnels-signature';
 const TIMESTAMP_HEADER = 'x-webhook-clickfunnels-timestamp';
@@ -37,7 +168,8 @@ export class ClickFunnelsTrigger implements INodeType {
 		name: 'clickFunnelsTrigger',
 		icon: { light: 'file:clickfunnels.svg', dark: 'file:clickfunnels.dark.svg' },
 		group: ['trigger'],
-		version: 1,
+		version: [1, 2],
+		defaultVersion: 2,
 		subtitle: '={{$parameter["event"]}}',
 		description:
 			'Receive real-time events from ClickFunnels 2.0 via webhooks',
@@ -76,57 +208,18 @@ export class ClickFunnelsTrigger implements INodeType {
 				required: true,
 				default: [],
 				description: 'The events to listen for',
-				options: [
-					// Contact events
-					{ name: 'Contact — Created', value: 'contact.created' },
-					{ name: 'Contact — Deleted', value: 'contact.deleted' },
-					{ name: 'Contact — Identified', value: 'contact.identified' },
-					{ name: 'Contact — Updated', value: 'contact.updated' },
-
-					// Course events
-					{ name: 'Course — Enrollment Created', value: 'course.enrollment.created' },
-					{ name: 'Course — Enrollment Updated', value: 'course.enrollment.updated' },
-					{ name: 'Course — Lesson Completed', value: 'course.lesson_completion.created' },
-
-					// Form events
-					{ name: 'Form — Submission Created', value: 'form.submission.created' },
-
-					// Fulfillment events
-					{ name: 'Fulfillment — Created', value: 'fulfillment.created' },
-					{ name: 'Fulfillment — Updated', value: 'fulfillment.updated' },
-
-					// Funnel events
-					{ name: 'Funnel — Created', value: 'funnel.created' },
-					{ name: 'Funnel — Updated', value: 'funnel.updated' },
-
-					// One-time order events
-					{ name: 'One-Time Order — Created', value: 'one_time_order.created' },
-					{ name: 'One-Time Order — Updated', value: 'one_time_order.updated' },
-
-					// Order events
-					{ name: 'Order — Created', value: 'order.created' },
-					{ name: 'Order — Invoice Created', value: 'order.invoice.created' },
-
-					// Order invoice events
-					{ name: 'Order — Invoice Updated', value: 'order.invoice.updated' },
-					{ name: 'Order — Updated', value: 'order.updated' },
-
-					// Product events
-					{ name: 'Product — Created', value: 'product.created' },
-					{ name: 'Product — Updated', value: 'product.updated' },
-
-					// Purchase events
-					{ name: 'Purchase — Created', value: 'purchase.created' },
-					{ name: 'Purchase — Updated', value: 'purchase.updated' },
-
-					// Subscription events
-					{ name: 'Subscription — Cancelled', value: 'subscription.cancelled' },
-					{ name: 'Subscription — Created', value: 'subscription.created' },
-					{ name: 'Subscription — Downgraded', value: 'subscription.downgraded' },
-					{ name: 'Subscription — Uncancelled', value: 'subscription.uncancelled' },
-					{ name: 'Subscription — Updated', value: 'subscription.updated' },
-					{ name: 'Subscription — Upgraded', value: 'subscription.upgraded' },
-				],
+				options: EVENT_OPTIONS,
+				displayOptions: { show: { '@version': [2] } },
+			},
+			{
+				displayName: 'Events',
+				name: 'events',
+				type: 'multiOptions',
+				required: true,
+				default: [],
+				description: 'The events to listen for. Values marked 1.x are mapped to the documented ClickFunnels key, or rejected when ClickFunnels has no such event.',
+				options: [...EVENT_OPTIONS, ...LEGACY_EVENT_OPTIONS].sort((a, b) => a.name.localeCompare(b.name)),
+				displayOptions: { show: { '@version': [1] } },
 			},
 		],
 	};
@@ -147,7 +240,8 @@ export class ClickFunnelsTrigger implements INodeType {
 						`/webhooks/outgoing/endpoints/${webhookData.webhookId}`,
 					)) as IDataObject;
 				} catch (error) {
-					// A missing endpoint means it must be recreated, so report "not found" instead of failing.
+					// Only a 404 means the endpoint is gone. Auth and outage errors must surface, not trigger a duplicate.
+					if (getHttpStatus(error) !== 404) throw new NodeApiError(this.getNode(), error as JsonObject);
 					this.logger.debug('ClickFunnels webhook endpoint not found, it will be recreated', {
 						webhookId: webhookData.webhookId,
 						error: (error as Error).message,
@@ -158,7 +252,10 @@ export class ClickFunnelsTrigger implements INodeType {
 				const secret = typeof webhookData.secret === 'string' ? webhookData.secret : '';
 				const lastFour = endpoint?.webhook_secret_last_four;
 				const secretMatches = !!secret && typeof lastFour === 'string' && secret.endsWith(lastFour);
-				if (endpoint && (endpoint.url as string) === webhookUrl && secretMatches) {
+				const wanted = selectedEventKeys(this);
+				const current = Array.isArray(endpoint?.event_type_ids) ? (endpoint.event_type_ids as string[]) : undefined;
+				const eventsMatch = current === undefined || sameKeys(current, wanted);
+				if (endpoint && (endpoint.url as string) === webhookUrl && secretMatches && eventsMatch) {
 					return true;
 				}
 
@@ -170,7 +267,7 @@ export class ClickFunnelsTrigger implements INodeType {
 			async create(this: IHookFunctions): Promise<boolean> {
 				const webhookUrl = this.getNodeWebhookUrl('default') as string;
 				const workspaceId = this.getNodeParameter('workspaceId') as string;
-				const events = this.getNodeParameter('events') as string[];
+				const events = selectedEventKeys(this);
 
 				const body = {
 					webhooks_outgoing_endpoint: {

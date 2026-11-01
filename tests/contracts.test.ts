@@ -30,14 +30,6 @@ async function first(handler: Handler, operation: string, params: Record<string,
 	return { method: c.method, url: (c.url as string).replace(BASE, ''), body: c.body as IDataObject, qs: c.qs as IDataObject };
 }
 
-// Routes with no replacement in this release. Tracked separately, listed so new drift still fails.
-const KNOWN_UNMAPPED = new Set([
-	'POST /courses/lessons/{}/lesson_completions',
-	'GET /courses/lessons/{}/lesson_completions',
-	'GET /funnels/{}/pages',
-	'POST /sales/pipelines/{}/opportunities',
-	'GET /sales/pipelines/{}/opportunities',
-]);
 
 describe('every route the node calls exists in the ClickFunnels OpenAPI spec', () => {
 	const fixture = JSON.parse(
@@ -57,7 +49,7 @@ describe('every route the node calls exists in the ClickFunnels OpenAPI spec', (
 	const normalised = [...new Set(used.map((r) => r.replace(/\$\{[^}]+\}/g, '{}')))];
 
 	it('found the routes to check', () => expect(normalised.length).toBeGreaterThan(150));
-	it.each(normalised.filter((r) => !KNOWN_UNMAPPED.has(r)))('%s', (route) => {
+	it.each(normalised)('%s', (route) => {
 		expect(spec.has(route)).toBe(true);
 	});
 });
@@ -211,8 +203,9 @@ describe('form field sets', () => {
 	});
 
 	it('should create fields under field_sets', async () => {
-		const c = await first(handleFormField as Handler, 'create', { fieldSetId: '2', label: 'Email', fieldType: 'email', additionalFields: {} });
+		const c = await first(handleFormField as Handler, 'create', { fieldSetId: '2', label: 'Email', key: 'email', fieldType: 'email', additionalFields: {} });
 		expect(c.url).toBe('/forms/field_sets/2/fields');
+		expect(c.body).toMatchObject({ forms_field: { key: 'email', label: 'Email' } });
 	});
 });
 

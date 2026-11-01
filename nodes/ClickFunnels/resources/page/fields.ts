@@ -1,6 +1,15 @@
 import { INodeProperties } from 'n8n-workflow';
 
 export const pageFields: INodeProperties[] = [
+	{
+		displayName: 'Workspace ID',
+		name: 'workspaceId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Pages are listed per workspace',
+		displayOptions: { show: { resource: ['page'], operation: ['getAll'] } },
+	},
 	// ------------------------------------------------------------------
 	//        page: funnelId (for getAll)
 	// ------------------------------------------------------------------
@@ -8,7 +17,7 @@ export const pageFields: INodeProperties[] = [
 		displayName: 'Funnel ID',
 		name: 'funnelId',
 		type: 'string',
-		required: true,
+		hint: 'Optional filter',
 		default: '',
 		description: 'The ID of the funnel to list pages from',
 		displayOptions: {
