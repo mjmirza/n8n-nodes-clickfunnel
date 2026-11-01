@@ -1,6 +1,16 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 export const pipelineStageFields: INodeProperties[] = [
+	{
+		displayName: 'Close Probability',
+		name: 'closeProbability',
+		type: 'number',
+		typeOptions: { minValue: 0, maxValue: 100 },
+		required: true,
+		default: 0,
+		description: 'Chance in percent that an opportunity in this stage closes, required by the API',
+		displayOptions: { show: { resource: ['pipelineStage'], operation: ['create'] } },
+	},
 	// ------------------------------------------------------------------
 	//        pipelineId — used by create & getMany
 	// ------------------------------------------------------------------

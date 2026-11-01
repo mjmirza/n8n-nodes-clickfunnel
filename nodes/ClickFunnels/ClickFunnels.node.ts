@@ -1,3 +1,4 @@
+import { legacyFieldsSet, splitLegacyFields, withoutLegacyFields } from './legacyFields';
 import {
 	IExecuteFunctions,
 	INodeExecutionData,
@@ -246,13 +247,51 @@ const resourceHandlers: Record<
 // Node definition
 // ---------------------------------------------------------------------------
 
+// Parameters that 2.0.0 and 3.0.0 made required to match the ClickFunnels API. Nodes saved on
+// version 1 do not have them, so they get a precise instruction instead of an opaque API error.
+export const REQUIRED_SINCE_V2: Record<string, Record<string, Array<[string, string]>>> = {
+	formField: { create: [['key', 'Key']] },
+	fulfillment: { create: [['contactId', 'Contact ID'], ['lineItems', 'Line Items']] },
+	fulfillmentLocation: { create: [['emailAddress', 'Email Address']] },
+	lessonCompletion: { create: [['courseId', 'Course ID'], ['enrollmentId', 'Enrollment ID']], getAll: [['courseId', 'Course ID']] },
+	order: { create: [['lineItems', 'Line Items']] },
+	orderInvoice: { create: [['externalId', 'External ID']] },
+	page: { getAll: [['workspaceId', 'Workspace ID']] },
+	productPrice: { create: [['variantId', 'Variant ID']] },
+	salesOpportunity: { create: [['workspaceId', 'Workspace ID'], ['stageId', 'Stage ID']], getMany: [['workspaceId', 'Workspace ID']] },
+	salesPipeline: { create: [['stages', 'Stages']] },
+	shippingLocationGroup: { getMany: [['profileId', 'Profile ID']] },
+	shippingRate: { create: [['rateNameId', 'Rate Name ID']] },
+	shippingZone: { create: [['locationGroupId', 'Location Group ID']], getMany: [['locationGroupId', 'Location Group ID']] },
+};
+
+function isEmpty(value: unknown): boolean {
+	if (value === undefined || value === null) return true;
+	if (typeof value === 'string') return value.trim() === '' || value.trim() === '[]';
+	if (Array.isArray(value)) return value.length === 0;
+	if (typeof value === 'object') return Object.values(value as object).every(isEmpty);
+	return false;
+}
+
+/** The migration instruction for a version 1 node that lacks a parameter the API now requires. */
+export function migrationMessage(resource: string, operation: string, get: (name: string) => unknown): string | undefined {
+	const required = REQUIRED_SINCE_V2[resource]?.[operation];
+	if (!required) return undefined;
+	const missing = required.filter(([name]) => isEmpty(get(name)));
+	if (missing.length === 0) return undefined;
+	return (
+		`This ${resource} ${operation} node was saved on node version 1, before the ClickFunnels API fixes in 2.0.0 and 3.0.0. Open the node and set ${missing.map(([, label]) => label).join(', ')}. See the upgrade notes in the README.`
+	);
+}
+
 export class ClickFunnels implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'ClickFunnels',
 		name: 'clickFunnels',
 		icon: { light: 'file:clickfunnels.svg', dark: 'file:clickfunnels.dark.svg' },
 		group: ['transform'],
-		version: 1,
+		version: [1, 2],
+		defaultVersion: 2,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description:
 			'Interact with the ClickFunnels 2.0 API — contacts, orders, products, funnels, courses, and more',
@@ -268,7 +307,7 @@ export class ClickFunnels implements INodeType {
 				required: true,
 			},
 		],
-		properties: [
+		properties: splitLegacyFields([
 			// --- resource selector -----------------------------------------
 			{
 				displayName: 'Resource',
@@ -439,7 +478,7 @@ export class ClickFunnels implements INodeType {
 			...webhookFields,
 			...webhookEventFields,
 			...workspaceFields,
-		],
+		]),
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -456,37 +495,44 @@ export class ClickFunnels implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const result = await handler(this, operation, i);
+				const version = this.getNode().typeVersion;
+				let handlerContext: IExecuteFunctions = this;
+				if (version < 2) {
+					const migration = migrationMessage(resource, operation, (name) => this.getNodeParameter(name, i, ''));
+					if (migration) throw new NodeOperationError(this.getNode(), migration, { itemIndex: i });
+					// A null fallback, n8n throws for an absent parameter when the fallback is undefined.
+					const legacy = legacyFieldsSet(resource, operation, (name) => this.getNodeParameter(name, i, null));
+					if (legacy.length > 0) {
+						throw new NodeOperationError(
+							this.getNode(),
+							`ClickFunnels does not accept ${legacy.join(', ')} for this ${resource} operation. Clear these fields, they are marked Not Accepted by the API, or switch the node to version 2.`,
+							{ itemIndex: i },
+						);
+					}
+					handlerContext = Object.create(this) as IExecuteFunctions;
+					handlerContext.getNodeParameter = ((...args: Parameters<IExecuteFunctions['getNodeParameter']>) =>
+						withoutLegacyFields(resource, args[0], this.getNodeParameter(...args))
+					) as IExecuteFunctions['getNodeParameter'];
+				}
+				const result = await handler(handlerContext, operation, i);
 
 				if (result === null || result === undefined) {
 					returnData.push({ json: { success: true }, pairedItem: { item: i } });
-				} else if (Array.isArray(result)) {
-					if (result.length === 0) {
+				} else if (Array.isArray(result) || (typeof result === 'object' && Array.isArray((result as IDataObject).data))) {
+					const rows = (Array.isArray(result) ? result : (result as IDataObject).data) as unknown[];
+					// Version 2 yields no items for an empty list, so downstream nodes do not run on nothing.
+					// Version 1 keeps its placeholder item so saved workflows behave as before.
+					if (rows.length === 0 && version < 2) {
 						returnData.push({ json: { success: true, count: 0 }, pairedItem: { item: i } });
-					} else {
-						for (const entry of result) {
-							returnData.push({
-								json: typeof entry === 'object' && entry !== null ? (entry as IDataObject) : { data: entry },
-								pairedItem: { item: i },
-							});
-						}
+					}
+					for (const entry of rows) {
+						returnData.push({
+							json: typeof entry === 'object' && entry !== null ? (entry as IDataObject) : { data: entry as IDataObject[keyof IDataObject] },
+							pairedItem: { item: i },
+						});
 					}
 				} else if (typeof result === 'object') {
-					const obj = result as Record<string, unknown>;
-					if (Array.isArray(obj.data)) {
-						if (obj.data.length === 0) {
-							returnData.push({ json: { success: true, count: 0 }, pairedItem: { item: i } });
-						} else {
-							for (const entry of obj.data) {
-								returnData.push({
-									json: typeof entry === 'object' && entry !== null ? (entry as IDataObject) : { data: entry },
-									pairedItem: { item: i },
-								});
-							}
-						}
-					} else {
-						returnData.push({ json: result as IDataObject, pairedItem: { item: i } });
-					}
+					returnData.push({ json: result as IDataObject, pairedItem: { item: i } });
 				} else {
 					returnData.push({ json: { data: result }, pairedItem: { item: i } });
 				}

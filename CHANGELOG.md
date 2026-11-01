@@ -1,5 +1,68 @@
 # Changelog
 
+## [3.0.0] - 2026-11-01
+
+Fixes from the third and fourth adversarial reviews, of 2.0.0 and of a 2.1.0 candidate that was never published. **Breaking** for version 1 nodes that set a field ClickFunnels does not accept, see below. Every request shape was checked against the ClickFunnels OpenAPI document (https://accounts.myclickfunnels.com/openapi.json) and the webhook event catalog. The README has an upgrade table.
+
+### Breaking
+- Fields the ClickFunnels request schemas do not accept are gone from version 2 and kept on version 1, marked Not Accepted by the API. A version 1 node with one of them set stops before any request and names the fields. 2.0.0 sent them and ClickFunnels did nothing with them. The full list is in the README upgrade table. Form field option Value is the exception. Every saved node has it, ClickFunnels never stored it, so version 1 keeps it, marked Ignored, and creates the option without it.
+
+### Added
+- A body contract test. Every operation runs twice, once with every field the UI offers and once with only the required ones, and each request body is checked against the OpenAPI request schema, including enums and required keys. `filter[...]` query keys are checked against the documented filters, JSON types are checked, and a write that drops a required body fails. Absent parameters throw, as they do in n8n. `scripts/snapshot-openapi-bodies.py` regenerates the fixture.
+- Product Type on product variant create (required) and update.
+- Node version 2 for the ClickFunnels and ClickFunnels Trigger nodes. 2.0.0 changed required parameters while keeping version 1, so saved workflows had no migration path. Saved nodes stay on version 1 with their values intact, and a version 1 node that lacks a field the API now requires stops before any request and names the field.
+- The trigger offers all 83 user-selectable event types from the ClickFunnels catalog, including blogs, communities, course lessons and sections, email broadcasts, invoice restocks, surveys and videos.
+- Store create and update offer SEO Indexable.
+
+### Fixed
+- Form submission answers send their text as `entry`. 2.0.0 sent `value`, so created answers were empty and updates changed nothing.
+- Return All no longer stops silently at 50 pages. It pages until the API runs dry. On version 2 a Max Pages limit that would cut the result short raises an error, after a one record probe confirms more records exist. Version 1 nodes with an explicit Max Pages keep returning the first pages.
+- Webhook Endpoint create and update accept dotted and slashed event keys such as `contact.created` and `orders/invoice.paid`. 2.0.0 ran them through the ID validator and rejected every valid key.
+- Trigger event values match the ClickFunnels catalog. 1.x spellings with a documented equivalent (`course.enrollment.created`, `form.submission.created`, `order.invoice.created`, `subscription.cancelled` and others) are sent with the documented key. Values ClickFunnels never had stop activation with an error naming them.
+- The trigger replaces its endpoint when the selected events change. Before, a reactivation kept the old subscriptions.
+- The trigger existence check only treats a 404 as a missing endpoint. A 401 or an outage used to count as missing, which created a duplicate endpoint and replaced the stored secret.
+- Order invoice create sends the required `external_id` (new External ID field) and a documented status. Status stays in Additional Fields on both node versions, so switching a node to version 2 keeps a saved status. Statuses are `unpaid`, `paid`, `past-due`, `refunded`, `voided`, `disputed`. `paid_at` is set for a paid invoice when left empty. Due At, Issued At, Paid At, Invoice Number, Shipping Amount, Invoice Type and Line Items are available. On version 1 nodes Draft and Open are sent as unpaid and Due Date as Due At, and the amount fields and Notes are rejected with an error because the schema has no such fields.
+- Shipping package create sends `distance_unit` and the required `package_type` (new Package Type field).
+- Sales pipeline create sends the required `stages_attributes` (new Stages field).
+- Pipeline stages use the `sales_pipelines_stage` wrapper with `sort_order` and the required `close_probability` (new Close Probability field).
+- Opportunity notes use `sales_opportunities_note.content`.
+- Form field create sends the required `key` (new Key field).
+- Lesson completions are created and listed under `/courses/{id}/lesson_completions` with `enrollment_id` and `lesson_id`.
+- Sales opportunities are created and listed under `/workspaces/{id}/sales/opportunities` with `primary_contact_id` and `pipelines_stage_id`. Pipeline ID filters the list.
+- Page Get Many uses `/workspaces/{id}/pages`. Funnel ID filters the list.
+- Theme rename sends `custom_name`.
+- Store edits send the documented fields. Description on version 1 nodes is sent as `seo_description`, Domain is rejected.
+- Max Pages descriptions state 100 records per page. They said 50.
+- Product price update no longer sets `payment_type` to subscription when only the interval changes. That turned payment plans into subscriptions.
+- Product variant create sends the required `product_type`, `weight_unit` and `properties_values`.
+- Course lesson and section updates send the title as `title`.
+- Form field options send only `label`, the one field the option schema accepts.
+- Record IDs the schema types as integers (contact, tag, field, location, rate name, stage) are sent as numbers. Sales opportunity Value is sent as a number.
+- A contact create or upsert with an incomplete billing address fails before the contact is written. An update checks first whether the contact already has a billing address, which accepts a partial change.
+- On version 2 an empty Tag IDs field clears a contact's tags. Version 1 still leaves them unchanged.
+- An upsert for an existing contact that already has a billing address accepts a partial address. The contact is looked up by email first.
+- On version 2 an empty Address Line 2 or State clears it, an empty required address field is rejected, and Upsert never sends an empty tag list, which ClickFunnels ignores.
+- A failed endpoint delete keeps the endpoint tracked. Replacing an endpoint whose delete fails stops activation instead of orphaning it.
+- The quickstart names the Workspace ID.
+- The body contract test fails an operation that makes no request, or a write that only reads.
+- The trigger replaces an endpoint that belongs to a different workspace, and validates Workspace ID so it cannot change the request path.
+- Recurring prices send `interval_count` (1 when not set). A subscription without an interval and a payment plan without a duration fail before any request.
+- Order line item variant and price IDs and fulfillment invoice line item IDs are sent as numbers.
+- A blank Event Type IDs field on Webhook Endpoint update sends `[]`, which unsubscribes from every event.
+- Invoice line items are checked against the create shape (amount, quantity, variant ID, price ID) and the update shape (ID plus amount, quantity, description) before any request.
+- The legacy-field check only looks at fields the current operation uses, so a value left over from another operation does not stop a read.
+- `npm pack` builds first, so a local tarball never carries stale compiled code.
+- The version 1 legacy-field check no longer throws `Could not get parameter` for nodes that never had those parameters.
+- Contact Get Many offers the documented IDs and Is Active filters. After Date and Before Date sent `filter[after]` and `filter[before]`, which the API does not document.
+- A version 1 node whose Not Accepted field holds its default value, such as an unticked Required or a Position of 0, runs and leaves the field out. Only a changed value stops the node.
+- The trigger keeps a valid endpoint when the Workspace ID is a public ID, which ClickFunnels reports back as a number. Switching to another workspace still replaces the endpoint, checked against the workspace stored at activation.
+- Product variant property maps send integer `property_id` values. A key that is not a whole number fails before any request.
+
+### Changed
+- On version 2 an empty list returns no items, so downstream nodes do not run on nothing. Use Always Output Data to continue. Version 1 keeps its `{ success: true, count: 0 }` item.
+- The route contract test has no allowlist any more. Every route the node calls must exist in the OpenAPI snapshot.
+- The README no longer claims every ClickFunnels resource is covered. It names what is missing.
+
 ## [2.0.0] - 2026-11-01
 
 Fixes from an adversarial review of 1.2.0. Every request shape was checked against the ClickFunnels OpenAPI document (https://accounts.myclickfunnels.com/openapi.json) and the developer guides. Breaking changes are marked. The README has an upgrade table.

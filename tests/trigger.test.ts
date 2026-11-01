@@ -55,7 +55,7 @@ describe('ClickFunnelsTrigger.webhook', () => {
 		['a wrong signature', signedHeaders(now(), 'a'.repeat(64))],
 		['a signature over re-serialised JSON', signedHeaders(now(), sign(now(), JSON.stringify(JSON.parse(RAW))))],
 		['a timestamp older than 600 seconds', signedHeaders(String(Math.floor(Date.now() / 1000) - 601))],
-		['a timestamp more than 600 seconds in the future', signedHeaders(String(Math.floor(Date.now() / 1000) + 601))],
+		['a timestamp more than 600 seconds in the future', signedHeaders(String(Math.floor(Date.now() / 1000) + 1200))], // Built at load time, so it must stay over 600 seconds after test start-up delays.
 		['the legacy 1.2.0 header', { 'x-clickfunnels-webhook-secret': SECRET }],
 	])('should reject %s with 401 and no workflow data', async (_label, headers) => {
 		const { out, res } = await run(headers as Record<string, string>);
@@ -115,9 +115,20 @@ describe('ClickFunnelsTrigger webhook lifecycle', () => {
 	it('should keep an endpoint whose secret matches', async () => {
 		const http: HttpMock = jest.fn(async (_opts) => ({
 			id: 9,
+			workspace_id: 42,
 			url: 'https://n8n.example/webhook/abc',
 			webhook_secret_last_four: SECRET.slice(-4),
 		}));
 		await expect(methods.checkExists.call(hookCtx(http, { webhookId: 9, secret: SECRET }))).resolves.toBe(true);
+	});
+
+	it('should replace an endpoint that belongs to another workspace', async () => {
+		const http: HttpMock = jest.fn(async (_opts) => ({
+			id: 9,
+			workspace_id: 999,
+			url: 'https://n8n.example/webhook/abc',
+			webhook_secret_last_four: SECRET.slice(-4),
+		}));
+		await expect(methods.checkExists.call(hookCtx(http, { webhookId: 9, secret: SECRET }))).resolves.toBe(false);
 	});
 });

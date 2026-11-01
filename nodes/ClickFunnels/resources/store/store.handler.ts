@@ -13,9 +13,16 @@ function buildStoreBody(ctx: IExecuteFunctions, i: number, isCreate: boolean): I
 
 	const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
 
+	if (additionalFields.domain) {
+		throw new Error('The ClickFunnels store API does not accept a domain. Remove the Domain field.');
+	}
 	if (additionalFields.name) body.name = additionalFields.name;
-	if (additionalFields.description) body.description = additionalFields.description;
-	if (additionalFields.domain) body.domain = additionalFields.domain;
+	// 1.x called the SEO description Description.
+	const seoDescription = additionalFields.seo_description ?? additionalFields.description;
+	if (seoDescription) body.seo_description = seoDescription;
+	for (const key of ['seo_title', 'seo_indexable', 'current_path', 'status']) {
+		if (additionalFields[key] !== undefined && additionalFields[key] !== '') body[key] = additionalFields[key];
+	}
 
 	return { store: body };
 }

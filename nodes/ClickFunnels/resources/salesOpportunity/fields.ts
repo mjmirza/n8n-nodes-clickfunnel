@@ -1,20 +1,37 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 export const salesOpportunityFields: INodeProperties[] = [
+	{
+		displayName: 'Workspace ID',
+		name: 'workspaceId',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: { show: { resource: ['salesOpportunity'], operation: ['create', 'getMany'] } },
+	},
+	{
+		displayName: 'Stage ID',
+		name: 'stageId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The pipeline stage the opportunity starts in, required by the API',
+		displayOptions: { show: { resource: ['salesOpportunity'], operation: ['create'] } },
+	},
 	// ------------------------------------------------------------------
-	//        pipelineId — used by create & getMany
+	//        pipelineId — optional filter for getMany
 	// ------------------------------------------------------------------
 	{
 		displayName: 'Pipeline ID',
 		name: 'pipelineId',
+		hint: 'Optional filter. Opportunities are listed per workspace.',
 		type: 'string',
-		required: true,
 		default: '',
 		description: 'The ID of the sales pipeline',
 		displayOptions: {
 			show: {
 				resource: ['salesOpportunity'],
-				operation: ['create', 'getMany'],
+				operation: ['getMany'],
 			},
 		},
 	},

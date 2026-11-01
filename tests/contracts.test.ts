@@ -30,14 +30,6 @@ async function first(handler: Handler, operation: string, params: Record<string,
 	return { method: c.method, url: (c.url as string).replace(BASE, ''), body: c.body as IDataObject, qs: c.qs as IDataObject };
 }
 
-// Routes with no replacement in this release. Tracked separately, listed so new drift still fails.
-const KNOWN_UNMAPPED = new Set([
-	'POST /courses/lessons/{}/lesson_completions',
-	'GET /courses/lessons/{}/lesson_completions',
-	'GET /funnels/{}/pages',
-	'POST /sales/pipelines/{}/opportunities',
-	'GET /sales/pipelines/{}/opportunities',
-]);
 
 describe('every route the node calls exists in the ClickFunnels OpenAPI spec', () => {
 	const fixture = JSON.parse(
@@ -57,7 +49,7 @@ describe('every route the node calls exists in the ClickFunnels OpenAPI spec', (
 	const normalised = [...new Set(used.map((r) => r.replace(/\$\{[^}]+\}/g, '{}')))];
 
 	it('found the routes to check', () => expect(normalised.length).toBeGreaterThan(150));
-	it.each(normalised.filter((r) => !KNOWN_UNMAPPED.has(r)))('%s', (route) => {
+	it.each(normalised)('%s', (route) => {
 		expect(spec.has(route)).toBe(true);
 	});
 });
@@ -88,7 +80,7 @@ describe('contact', () => {
 			},
 		}, { id: 77 });
 		const contact = (reqs[0].body as { contact: IDataObject }).contact;
-		expect(contact).toMatchObject({ email_address: 'a@b.c', tag_ids: ['5', '6'], custom_attributes: { plan: 'gold' } });
+		expect(contact).toMatchObject({ email_address: 'a@b.c', tag_ids: [5, 6], custom_attributes: { plan: 'gold' } });
 		for (const k of ['tags', 'custom_fields', 'address_line_1', 'city', 'zip', 'country', 'state']) {
 			expect(contact).not.toHaveProperty(k);
 		}
@@ -162,10 +154,10 @@ describe('order', () => {
 			additionalFields: { shipping_address_address1: '1 Main', shipping_address_zip: '10115' },
 		});
 		expect(c.body.order).toMatchObject({
-			contact_id: '9',
+			contact_id: 9,
 			order_type: 'one-time-order',
 			live_mode: true,
-			line_items_attributes: [{ variant_id: '3', products_price_id: '4', quantity: 2 }],
+			line_items_attributes: [{ variant_id: 3, products_price_id: 4, quantity: 2 }],
 			shipping_address_street_one: '1 Main',
 			shipping_address_postal_code: '10115',
 		});
@@ -188,9 +180,9 @@ describe('fulfillment', () => {
 			additionalFields: { tracking_number: 'TRK1' },
 		});
 		expect(c.body.fulfillment).toMatchObject({
-			contact_id: '9',
-			location_id: '2',
-			included_orders_invoices_line_items_attributes: [{ invoices_line_item_id: '55', quantity: 1 }],
+			contact_id: 9,
+			location_id: 2,
+			included_orders_invoices_line_items_attributes: [{ invoices_line_item_id: 55, quantity: 1 }],
 			tracking_code: 'TRK1',
 		});
 		expect(c.body.fulfillment).not.toHaveProperty('tracking_number');
@@ -211,8 +203,9 @@ describe('form field sets', () => {
 	});
 
 	it('should create fields under field_sets', async () => {
-		const c = await first(handleFormField as Handler, 'create', { fieldSetId: '2', label: 'Email', fieldType: 'email', additionalFields: {} });
+		const c = await first(handleFormField as Handler, 'create', { fieldSetId: '2', label: 'Email', key: 'email', fieldType: 'email', additionalFields: {} });
 		expect(c.url).toBe('/forms/field_sets/2/fields');
+		expect(c.body).toMatchObject({ forms_field: { key: 'email', label: 'Email' } });
 	});
 });
 
@@ -241,7 +234,7 @@ describe('shipping', () => {
 
 	it('should send rates_name_id when creating a rate', async () => {
 		const c = await first(handleShippingRate as Handler, 'create', { zoneId: '8', rateNameId: '3', price: '4.99', additionalFields: {} });
-		expect(c.body.shipping_rate).toMatchObject({ rates_name_id: '3', price: '4.99' });
+		expect(c.body.shipping_rate).toMatchObject({ rates_name_id: 3, price: '4.99' });
 		expect(c.body.shipping_rate).not.toHaveProperty('name');
 	});
 });
@@ -279,8 +272,8 @@ describe('product variant', () => {
 		});
 		expect(c.body.products_variant).toMatchObject({
 			properties_values: [
-				{ property_id: '11', value: 'Large' },
-				{ property_id: '12', value: 'Red' },
+				{ property_id: 11, value: 'Large' },
+				{ property_id: 12, value: 'Red' },
 			],
 		});
 		expect(c.body.products_variant).not.toHaveProperty('properties');

@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId, toApiId } from '../../transport';
 
 export async function handleContactAppliedTag(
 	ctx: IExecuteFunctions,
@@ -19,7 +19,7 @@ export async function handleContactAppliedTag(
 
 			const body: IDataObject = {
 				contacts_applied_tag: {
-					tag_id: tagId,
+					tag_id: toApiId(tagId),
 				} as IDataObject,
 			};
 

@@ -1,6 +1,19 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 export const productVariantFields: INodeProperties[] = [
+	{
+		displayName: 'Product Type',
+		name: 'productType',
+		type: 'options',
+		options: [
+			{ name: 'Digital', value: 'digital' },
+			{ name: 'Physical', value: 'physical', description: 'Collects a shipping address at checkout' },
+		],
+		required: true,
+		default: 'digital',
+		description: 'Required by the API. Saved nodes without it send Digital, which is how ClickFunnels treats a variant with no type.',
+		displayOptions: { show: { resource: ['productVariant'], operation: ['create'] } },
+	},
 	// ------------------------------------------------------------------
 	//        productId — used by create & getMany
 	// ------------------------------------------------------------------
@@ -201,6 +214,16 @@ export const productVariantFields: INodeProperties[] = [
 				type: 'number',
 				default: 0,
 				description: 'Price override for this variant',
+			},
+			{
+				displayName: 'Product Type',
+				name: 'product_type',
+				type: 'options',
+				options: [
+					{ name: 'Digital', value: 'digital' },
+					{ name: 'Physical', value: 'physical' },
+				],
+				default: 'physical',
 			},
 			{
 				displayName: 'Properties',

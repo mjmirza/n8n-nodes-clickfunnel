@@ -200,7 +200,7 @@ export const contactFields: INodeProperties[] = [
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 100 },
 		default: 5,
-		description: 'Maximum number of pages to fetch (50 results per page)',
+		description: 'Maximum number of pages to read, 100 records each. On node version 2 the node stops with an error if more records remain, so nothing is dropped silently.',
 		displayOptions: {
 			show: { resource: ['contact'], operation: ['getAll'] },
 		},
@@ -240,6 +240,20 @@ export const contactFields: INodeProperties[] = [
 				placeholder: 'name@email.com',
 				default: '',
 				description: 'Filter contacts by email address',
+			},
+			{
+				displayName: 'IDs',
+				name: 'id',
+				type: 'string',
+				default: '',
+				description: 'Comma-separated contact IDs to return',
+			},
+			{
+				displayName: 'Is Active',
+				name: 'isActive',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to return only active contacts, or only inactive ones',
 			},
 			{
 				displayName: 'Tag IDs',

@@ -8,7 +8,8 @@ function buildThemeBody(ctx: IExecuteFunctions, i: number): IDataObject {
 	const body: IDataObject = {};
 	const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
 
-	if (updateFields.name) body.name = updateFields.name;
+	// The writable rename field is custom_name.
+	if (updateFields.name) body.custom_name = updateFields.name;
 
 	return { theme: body };
 }

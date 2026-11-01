@@ -1,0 +1,8804 @@
+{
+	"source": "https://accounts.myclickfunnels.com/openapi.json",
+	"fetchedAt": "2026-11-01",
+	"bodies": {
+		"PATCH /blogs/posts/{}": {
+			"type": "object",
+			"properties": {
+				"blogs_post": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"visibility": {
+							"type": "string",
+							"enum": [
+								"draft",
+								"public",
+								"members_only",
+								"scheduled"
+							]
+						},
+						"published_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"excerpt_content": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"markup": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"author_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"tag_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"category_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PATCH /blogs/{}": {
+			"type": "object",
+			"properties": {
+				"blog": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"theme_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PATCH /contacts/{}/billing_address": {
+			"type": "object",
+			"properties": {
+				"contacts_billing_address": {
+					"type": "object",
+					"properties": {
+						"address_one": {
+							"type": "string"
+						},
+						"address_two": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"city": {
+							"type": "string"
+						},
+						"region": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"country_code": {
+							"type": "string"
+						},
+						"postal_code": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"contacts_billing_address"
+			]
+		},
+		"PATCH /courses/{}": {
+			"type": "object",
+			"properties": {
+				"course": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"description": {
+							"type": "string"
+						},
+						"show_in_community": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"redirect_to_full_course": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PATCH /discounts/{}": {
+			"type": "object",
+			"properties": {
+				"discount": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"code": {
+							"type": "string"
+						},
+						"discount_type": {
+							"type": "string",
+							"enum": [
+								"code",
+								"automatic",
+								"sale"
+							]
+						},
+						"discount_method": {
+							"type": "string",
+							"enum": [
+								"percentage",
+								"fixed",
+								"shipping",
+								"bogo"
+							]
+						},
+						"percent": {
+							"type": "string"
+						},
+						"amount": {
+							"type": "string"
+						},
+						"currency": {
+							"type": "string"
+						},
+						"applies_to": {
+							"type": "string",
+							"enum": [
+								"all_products",
+								"specific_products",
+								"specific_variants",
+								"specific_collections"
+							]
+						},
+						"apply_from": {
+							"type": "string"
+						},
+						"apply_until": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"expired": {
+							"type": "boolean"
+						},
+						"limit_1_per_customer": {
+							"type": "boolean"
+						},
+						"require_minimum_spend": {
+							"type": "boolean"
+						},
+						"require_minimum_spend_amount": {
+							"type": "integer"
+						},
+						"discounts_per_redemption": {
+							"type": "integer"
+						},
+						"product_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"variant_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"products_collection_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PATCH /emails/broadcasts/{}": {
+			"type": "object",
+			"properties": {
+				"emails_broadcast": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"subject": {
+							"type": "string"
+						},
+						"preheadline": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"from_email": {
+							"type": "string"
+						},
+						"reply_to_email": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"html_body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"text_body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"template_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"filter_id": {
+							"type": [
+								"string",
+								"integer",
+								"null"
+							]
+						},
+						"split_test": {
+							"type": "boolean"
+						},
+						"split_test_percentage": {
+							"type": "integer"
+						},
+						"split_test_wait_time": {
+							"type": "integer"
+						},
+						"variants": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"subject": {
+										"type": "string"
+									},
+									"preheadline": {
+										"type": [
+											"string",
+											"null"
+										]
+									}
+								},
+								"required": [
+									"subject"
+								]
+							}
+						},
+						"smart_sending": {
+							"type": "boolean"
+						},
+						"smart_sending_time": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"smart_sending_unit": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"hour",
+								"day"
+							]
+						},
+						"send_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"send_at_local_time": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"time_zone": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"external_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"topic_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PATCH /emails/templates/{}": {
+			"type": "object",
+			"properties": {
+				"emails_template": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"subject": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"html_body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"text_body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"from_address_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PATCH /emails/topics/{}": {
+			"type": "object",
+			"properties": {
+				"emails_topic": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PATCH /funnels/{}/conditional_split_steps/{}": {
+			"type": "object",
+			"properties": {
+				"conditional_split_step": {
+					"type": "object",
+					"properties": {
+						"condition": {
+							"type": "object",
+							"properties": {
+								"filter_id": {
+									"type": "string"
+								}
+							},
+							"required": []
+						},
+						"branches": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"page_id": {
+										"type": "integer"
+									},
+									"page_ids": {
+										"type": "array",
+										"items": {
+											"type": "integer"
+										}
+									}
+								},
+								"required": []
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PATCH /funnels/{}/split_test_steps/{}": {
+			"type": "object",
+			"properties": {
+				"split_test_step": {
+					"type": "object",
+					"properties": {
+						"variants": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"page_id": {
+										"type": "integer"
+									},
+									"weight": {
+										"type": "integer"
+									}
+								},
+								"required": []
+							}
+						}
+					},
+					"required": [
+						"variants"
+					]
+				}
+			},
+			"required": [
+				"split_test_step"
+			]
+		},
+		"PATCH /refine_filters/{}": {
+			"type": "object",
+			"properties": {
+				"refine_filter": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"conjunction": {
+							"type": "string",
+							"enum": [
+								"and",
+								"or"
+							]
+						},
+						"criteria": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"attribute": {
+										"type": "string"
+									},
+									"clause": {
+										"type": "string"
+									},
+									"value": {
+										"type": null
+									}
+								},
+								"required": [
+									"attribute",
+									"clause"
+								]
+							}
+						}
+					},
+					"required": []
+				},
+				"results": {
+					"type": null
+				}
+			},
+			"required": [
+				"refine_filter"
+			]
+		},
+		"PATCH /segments/{}": {
+			"type": "object",
+			"properties": {
+				"segment": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"filter_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						}
+					},
+					"required": []
+				},
+				"results": {
+					"type": null
+				}
+			},
+			"required": [
+				"segment"
+			]
+		},
+		"PATCH /shipping/addresses/{}": {
+			"type": "object",
+			"properties": {
+				"shipping_address": {
+					"type": "object",
+					"properties": {
+						"first_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"last_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"organization_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"phone_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"default": {
+							"type": "boolean"
+						},
+						"address": {
+							"type": "object",
+							"properties": {
+								"address_one": {
+									"type": "string"
+								},
+								"address_two": {
+									"type": [
+										"string",
+										"null"
+									]
+								},
+								"city": {
+									"type": "string"
+								},
+								"region": {
+									"type": [
+										"string",
+										"null"
+									]
+								},
+								"country_code": {
+									"type": "string"
+								},
+								"postal_code": {
+									"type": "string"
+								}
+							},
+							"required": []
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"shipping_address"
+			]
+		},
+		"PATCH /url_redirects/{}": {
+			"type": "object",
+			"properties": {
+				"url_redirect": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"original_url": {
+							"type": "string"
+						},
+						"second_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"split_percentage": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"pixel_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"utm_source": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"utm_medium": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"utm_campaign": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"utm_term": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"utm_content": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"domain_id": {
+							"type": [
+								"integer",
+								"string",
+								"null"
+							]
+						},
+						"redirect_type": {
+							"type": "string",
+							"enum": [
+								"temporary",
+								"permanent"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"url_redirect"
+			]
+		},
+		"PATCH /workflows/steps/{}": {
+			"type": "object",
+			"properties": {
+				"workflows_step": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"parent_step_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"branch": {
+							"type": "string"
+						},
+						"position": {
+							"type": "integer"
+						},
+						"after_step_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"step_type_settings": {
+							"type": "object"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"workflows_step"
+			]
+		},
+		"PATCH /workflows/triggers/{}": {
+			"type": "object",
+			"properties": {
+				"workflows_trigger": {
+					"type": "object",
+					"properties": {
+						"event_type_key": {
+							"type": "string",
+							"enum": [
+								"$appointments.appointment_scheduled",
+								"$calendar_event.contact_registered",
+								"$community.join",
+								"$community.group_join",
+								"$community.topic_join",
+								"$community.post",
+								"$community.ban",
+								"$community.unban",
+								"$community.post_view",
+								"$contact.tag_applied",
+								"$contact.tag_removed",
+								"$course.complete",
+								"$course.enroll",
+								"$course.unenroll",
+								"$course.lesson_complete",
+								"$course.lesson_view",
+								"$course.section_complete",
+								"$email.bounce",
+								"$email.click",
+								"$email.open",
+								"$email.sent",
+								"$email.spam_complaint",
+								"$send_email_step.bounce",
+								"$send_email_step.click",
+								"$send_email_step.open",
+								"$send_email_step.sent",
+								"$send_email_step.spam_complaint",
+								"$order.successful_purchase",
+								"$order.cancelled",
+								"$order.churned",
+								"$subscription.upgraded",
+								"$subscription.downgraded",
+								"$transaction.renewal_failed",
+								"$sales.contact_entered_stage",
+								"$sales.contact_exited_stage",
+								"$optin",
+								"$view",
+								"$message_hub_event.contact_conversation_started",
+								"$message_hub_event.agent_conversation_started",
+								"$message_hub_event.contact_responded",
+								"$message_hub_event.agent_responded",
+								"$survey.complete"
+							]
+						},
+						"active": {
+							"type": "boolean"
+						},
+						"allow_anonymous_contacts": {
+							"type": "boolean"
+						},
+						"subscription_cancelation_reason": {
+							"type": "string"
+						},
+						"contacts_tag_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"funnel_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"page_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"product_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"cancellation_product_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"product_variant_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"cancellation_product_variant_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"subscription_variant_to_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"sales_pipelines_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"current_sales_pipelines_stage_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"appointments_calendar_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"appointments_event_type_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"course_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"courses_lesson_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"courses_section_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"community_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"communities_space_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"communities_space_group_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"emails_broadcasts_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"calendar_event_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"survey_workflow_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"workflows_step_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"workflows_trigger"
+			]
+		},
+		"PATCH /workflows/{}": {
+			"type": "object",
+			"properties": {
+				"workflow": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"archived": {
+							"type": "boolean"
+						},
+						"run_type": {
+							"type": "string",
+							"enum": [
+								"asynchronous",
+								"synchronous",
+								"one_time"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"workflow"
+			]
+		},
+		"POST /blogs/{}/posts": {
+			"type": "object",
+			"properties": {
+				"blogs_post": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"visibility": {
+							"type": "string",
+							"enum": [
+								"draft",
+								"public",
+								"members_only",
+								"scheduled"
+							]
+						},
+						"published_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"excerpt_content": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"markup": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"author_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"tag_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"category_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /blogs/{}/tags": {
+			"type": "object",
+			"properties": {
+				"blogs_tag": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /communities/space_groups/{}/spaces": {
+			"type": "object",
+			"properties": {
+				"communities_space": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"access": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"emoji": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"card_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"social_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"members_can_post": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"members_can_invite": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"allow_post_titles": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"allow_cover_images": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"hide_from_featured": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"layout_style": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"default_tab": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"default_post_sort": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"default_comment_sort": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"default_member_sort": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"pinned_posts_label": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"sort_order": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"always_on": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"upgrade_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /communities/spaces/posts/comments/{}/likes": {
+			"type": "object",
+			"properties": {
+				"communities_spaces_posts_comments_like": {
+					"type": "object",
+					"properties": {
+						"contact_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /communities/spaces/posts/{}/comments": {
+			"type": "object",
+			"properties": {
+				"communities_spaces_posts_comment": {
+					"type": "object",
+					"properties": {
+						"body": {
+							"type": "string"
+						},
+						"contact_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"parent_comment_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"skip_notifications": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"body"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /communities/spaces/posts/{}/likes": {
+			"type": "object",
+			"properties": {
+				"communities_spaces_posts_like": {
+					"type": "object",
+					"properties": {
+						"contact_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /communities/spaces/posts/{}/video_embeds": {
+			"type": "object",
+			"properties": {
+				"communities_spaces_posts_video_embed": {
+					"type": "object",
+					"properties": {
+						"url": {
+							"type": "string"
+						},
+						"provider": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"youtube",
+								"vimeo",
+								"loom",
+								"voomly"
+							]
+						},
+						"data": {
+							"type": [
+								"object",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"url"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /communities/spaces/{}/posts": {
+			"type": "object",
+			"properties": {
+				"communities_spaces_post": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"contact_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"is_pinned": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"title"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /communities/{}/bans": {
+			"type": "object",
+			"properties": {
+				"communities_ban": {
+					"type": "object",
+					"properties": {
+						"contact_id": {
+							"type": "string"
+						},
+						"reason": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"contact_id"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /communities/{}/bans/export_actions": {
+			"type": "object",
+			"properties": {
+				"communities_bans_export_action": {
+					"type": "object",
+					"properties": {
+						"target_all": {
+							"type": "boolean"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"fields": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /communities/{}/bans/unban_actions": {
+			"type": "object",
+			"properties": {
+				"communities_bans_unban_action": {
+					"type": "object",
+					"properties": {
+						"target_all": {
+							"type": "boolean"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /communities/{}/memberships": {
+			"type": "object",
+			"properties": {
+				"communities_membership": {
+					"type": "object",
+					"properties": {
+						"contact_id": {
+							"type": "string"
+						},
+						"moderator": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"space_ids": {
+							"type": [
+								"array",
+								"null"
+							],
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					"required": [
+						"contact_id"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /communities/{}/memberships/add_to_group_actions": {
+			"type": "object",
+			"properties": {
+				"communities_memberships_add_to_group_action": {
+					"type": "object",
+					"properties": {
+						"target_all": {
+							"type": "boolean"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"space_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /communities/{}/memberships/ban_actions": {
+			"type": "object",
+			"properties": {
+				"communities_memberships_ban_action": {
+					"type": "object",
+					"properties": {
+						"target_all": {
+							"type": "boolean"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"reason": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /communities/{}/memberships/export_actions": {
+			"type": "object",
+			"properties": {
+				"communities_memberships_export_action": {
+					"type": "object",
+					"properties": {
+						"target_all": {
+							"type": "boolean"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"fields": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /communities/{}/memberships/remove_from_group_actions": {
+			"type": "object",
+			"properties": {
+				"communities_memberships_remove_from_group_action": {
+					"type": "object",
+					"properties": {
+						"target_all": {
+							"type": "boolean"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"space_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /communities/{}/space_groups": {
+			"type": "object",
+			"properties": {
+				"communities_space_group": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"access": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"group_type": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"emoji": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"card_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"auto_add_to_spaces": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"approval_terms": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"require_post_approvals": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"require_post_approvals_override": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"require_comment_approvals": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"require_comment_approvals_override": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"is_hidden": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"is_hidden_from_non_members": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"always_on": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"upgrade_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"sort_order": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /contacts/{}/applied_tags": {
+			"type": "object",
+			"properties": {
+				"contacts_applied_tag": {
+					"type": "object",
+					"properties": {
+						"tag_id": {
+							"type": "integer"
+						}
+					},
+					"required": [
+						"tag_id"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /contacts/{}/billing_address": {
+			"type": "object",
+			"properties": {
+				"contacts_billing_address": {
+					"type": "object",
+					"properties": {
+						"address_one": {
+							"type": "string"
+						},
+						"address_two": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"city": {
+							"type": "string"
+						},
+						"region": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"country_code": {
+							"type": "string"
+						},
+						"postal_code": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"address_one",
+						"city",
+						"country_code",
+						"postal_code"
+					]
+				}
+			},
+			"required": [
+				"contacts_billing_address"
+			]
+		},
+		"POST /contacts/{}/events/notes": {
+			"type": "object",
+			"properties": {
+				"contacts_events_note": {
+					"type": "object",
+					"properties": {
+						"content": {
+							"type": "string"
+						},
+						"occurred_at": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"content"
+					]
+				}
+			},
+			"required": [
+				"contacts_events_note"
+			]
+		},
+		"POST /contacts/{}/shipping/addresses": {
+			"type": "object",
+			"properties": {
+				"shipping_address": {
+					"type": "object",
+					"properties": {
+						"first_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"last_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"organization_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"phone_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"default": {
+							"type": "boolean"
+						},
+						"address": {
+							"type": "object",
+							"properties": {
+								"address_one": {
+									"type": "string"
+								},
+								"address_two": {
+									"type": [
+										"string",
+										"null"
+									]
+								},
+								"city": {
+									"type": "string"
+								},
+								"region": {
+									"type": [
+										"string",
+										"null"
+									]
+								},
+								"country_code": {
+									"type": "string"
+								},
+								"postal_code": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"address_one",
+								"city",
+								"country_code",
+								"postal_code"
+							]
+						}
+					},
+					"required": [
+						"address"
+					]
+				}
+			},
+			"required": [
+				"shipping_address"
+			]
+		},
+		"POST /contacts/{}/unsubscribed_topics": {
+			"type": "object",
+			"properties": {
+				"contacts_unsubscribed_topic": {
+					"type": "object",
+					"properties": {
+						"topic_id": {
+							"type": "integer"
+						}
+					},
+					"required": [
+						"topic_id"
+					]
+				}
+			},
+			"required": [
+				"contacts_unsubscribed_topic"
+			]
+		},
+		"POST /courses/lessons/{}/publish": {
+			"type": "object",
+			"properties": {
+				"published_at": {
+					"type": "string"
+				}
+			},
+			"required": []
+		},
+		"POST /courses/sections/{}/lessons": {
+			"type": "object",
+			"properties": {
+				"courses_lesson": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"lesson_content": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"image_id": {
+							"type": [
+								"integer",
+								"string",
+								"null"
+							]
+						},
+						"video_id": {
+							"type": [
+								"integer",
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /courses/sections/{}/publish": {
+			"type": "object",
+			"properties": {
+				"published_at": {
+					"type": "string"
+				}
+			},
+			"required": []
+		},
+		"POST /courses/{}/enrollments": {
+			"type": "object",
+			"properties": {
+				"courses_enrollment": {
+					"type": "object",
+					"properties": {
+						"contact_id": {
+							"type": "integer"
+						},
+						"suspended": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"suspension_reason": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"contact_id"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /courses/{}/lesson_completions": {
+			"type": "object",
+			"properties": {
+				"courses_lesson_completion": {
+					"type": "object",
+					"properties": {
+						"enrollment_id": {
+							"type": "integer"
+						},
+						"lesson_id": {
+							"type": "integer"
+						}
+					},
+					"required": [
+						"enrollment_id",
+						"lesson_id"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /courses/{}/publish": {
+			"type": "object",
+			"properties": {
+				"published_at": {
+					"type": "string"
+				},
+				"publish_sections_and_lessons": {
+					"type": "boolean"
+				}
+			},
+			"required": []
+		},
+		"POST /courses/{}/sections": {
+			"type": "object",
+			"properties": {
+				"courses_section": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"days_till_drip_access": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"blocker_section_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"blocker_lesson_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"is_hidden_from_non_members": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /courses/{}/sections/publish_actions": {
+			"type": "object",
+			"properties": {
+				"courses_sections_publish_action": {
+					"type": "object",
+					"properties": {
+						"target_all": {
+							"type": "boolean"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"auto_enroll": {
+							"type": "boolean"
+						},
+						"send_email": {
+							"type": "boolean"
+						},
+						"offer_new_section_via_all_access_products": {
+							"type": "boolean"
+						},
+						"scheduled_for": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"courses_sections_publish_action"
+			]
+		},
+		"POST /emails/broadcasts/{}/send_actions": {
+			"type": "object",
+			"properties": {
+				"emails_broadcasts_send_action": {
+					"type": "object",
+					"properties": {
+						"emails_broadcasts_send_action": {
+							"type": "object",
+							"properties": {
+								"send_at": {
+									"type": "string"
+								}
+							},
+							"required": []
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /emails/broadcasts/{}/send_test": {
+			"type": "object",
+			"properties": {
+				"emails_broadcasts_send_preview_action": {
+					"type": "object",
+					"properties": {
+						"recipients": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"subject": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"from_address_id": {
+							"type": [
+								"integer",
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"recipients"
+					]
+				}
+			},
+			"required": [
+				"emails_broadcasts_send_preview_action"
+			]
+		},
+		"POST /forms/field_sets/{}/fields": {
+			"type": "object",
+			"properties": {
+				"forms_field": {
+					"type": "object",
+					"properties": {
+						"label": {
+							"type": "string"
+						},
+						"field_type": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"allow_multiple": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"key": {
+							"type": "string"
+						},
+						"hidden": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"label",
+						"key"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /forms/field_sets/{}/fields/reorder": {
+			"type": "object",
+			"properties": {
+				"ids_in_order": {
+					"type": "array",
+					"items": {
+						"type": "integer"
+					}
+				}
+			},
+			"required": []
+		},
+		"POST /forms/fields/{}/options": {
+			"type": "object",
+			"properties": {
+				"forms_fields_option": {
+					"type": "object",
+					"properties": {
+						"label": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"label"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /forms/submissions/{}/answers": {
+			"type": "object",
+			"properties": {
+				"forms_submissions_answer": {
+					"type": "object",
+					"properties": {
+						"field_id": {
+							"type": "integer"
+						},
+						"fields_option_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"entry": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"fields_option_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"field_id"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /forms/{}/field_sets": {
+			"type": "object",
+			"properties": {
+				"forms_field_set": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"title"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /forms/{}/submissions": {
+			"type": "object",
+			"properties": {
+				"forms_submission": {
+					"type": "object",
+					"properties": {
+						"contact_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /funnels/{}/conditional_split_steps": {
+			"type": "object",
+			"properties": {
+				"conditional_split_step": {
+					"type": "object",
+					"properties": {
+						"condition": {
+							"type": "object",
+							"properties": {
+								"filter_id": {
+									"type": "string"
+								}
+							},
+							"required": []
+						},
+						"branches": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"page_id": {
+										"type": "integer"
+									},
+									"page_ids": {
+										"type": "array",
+										"items": {
+											"type": "integer"
+										}
+									}
+								},
+								"required": []
+							}
+						},
+						"show_page_step_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /funnels/{}/split_test_steps": {
+			"type": "object",
+			"properties": {
+				"split_test_step": {
+					"type": "object",
+					"properties": {
+						"variants": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"page_id": {
+										"type": "integer"
+									},
+									"weight": {
+										"type": "integer"
+									}
+								},
+								"required": []
+							}
+						},
+						"show_page_step_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						}
+					},
+					"required": [
+						"variants"
+					]
+				}
+			},
+			"required": [
+				"split_test_step"
+			]
+		},
+		"POST /orders/line_items/{}/changes": {
+			"type": "object",
+			"properties": {
+				"orders_line_items_change": {
+					"type": "object",
+					"properties": {
+						"products_price_id": {
+							"type": null
+						},
+						"prorate": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"effective_time": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"now",
+								"next_renewal"
+							]
+						}
+					},
+					"required": [
+						"products_price_id"
+					]
+				}
+			},
+			"required": [
+				"orders_line_items_change"
+			]
+		},
+		"POST /orders/line_items/{}/changes/perform": {
+			"type": "object",
+			"properties": {
+				"orders_line_items_change": {
+					"type": "object",
+					"properties": {
+						"products_price_id": {
+							"type": null
+						},
+						"prorate": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"effective_time": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"now",
+								"next_renewal"
+							]
+						}
+					},
+					"required": [
+						"products_price_id"
+					]
+				}
+			},
+			"required": [
+				"orders_line_items_change"
+			]
+		},
+		"POST /orders/transactions/{}/refund": {
+			"type": "object",
+			"properties": {
+				"orders_transaction": {
+					"type": "object",
+					"properties": {
+						"reason": {
+							"type": "string"
+						},
+						"partial": {
+							"type": "boolean"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /orders/{}/applied_tags": {
+			"type": "object",
+			"properties": {
+				"orders_applied_tag": {
+					"type": "object",
+					"properties": {
+						"tag_id": {
+							"type": "integer"
+						}
+					},
+					"required": [
+						"tag_id"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /orders/{}/cancel": {
+			"type": "object",
+			"properties": {
+				"order": {
+					"type": "object",
+					"properties": {
+						"cancel_reason": {
+							"type": "string"
+						},
+						"cancel_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"effective_date": {
+							"type": "string"
+						},
+						"cancelation_proration": {
+							"type": "boolean"
+						},
+						"canceled_by": {
+							"type": "string"
+						},
+						"voidable_invoices": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /orders/{}/invoices": {
+			"type": "object",
+			"properties": {
+				"orders_invoice": {
+					"type": "object",
+					"properties": {
+						"external_id": {
+							"type": "string"
+						},
+						"status": {
+							"type": "string",
+							"enum": [
+								"unpaid",
+								"paid",
+								"voided",
+								"refunded",
+								"disputed",
+								"past-due"
+							]
+						},
+						"invoice_type": {
+							"type": "string",
+							"enum": [
+								"initial",
+								"renewal",
+								"interim",
+								"cancellation",
+								"one_time",
+								"refund",
+								"charge",
+								"one_time_sale"
+							]
+						},
+						"invoice_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_amount": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"issued_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"due_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"paid_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"line_items_attributes": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"amount": {
+										"type": "string"
+									},
+									"quantity": {
+										"type": "integer"
+									},
+									"variant_id": {
+										"type": "integer"
+									},
+									"products_price_id": {
+										"type": "integer"
+									},
+									"description": {
+										"type": [
+											"string",
+											"null"
+										]
+									}
+								},
+								"required": [
+									"amount",
+									"quantity",
+									"variant_id",
+									"products_price_id"
+								]
+							}
+						}
+					},
+					"required": [
+						"external_id",
+						"status"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /products/variants/{}/prices": {
+			"type": "object",
+			"properties": {
+				"products_price": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"amount": {
+							"type": "string"
+						},
+						"cost": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"currency": {
+							"type": "string"
+						},
+						"duration": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"interval": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"days",
+								"weeks",
+								"months",
+								"quarters",
+								"years"
+							]
+						},
+						"trial_interval": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"days",
+								"weeks",
+								"months",
+								"quarters",
+								"years"
+							]
+						},
+						"trial_duration": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"trial_amount": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"setup_amount": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"self_cancel": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"self_upgrade": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"self_downgrade": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"self_reactivate": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"interval_count": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"payment_type": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"one_time",
+								"subscription",
+								"payment_plan"
+							]
+						},
+						"visible": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"compare_at_amount": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"key": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"archived": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"amount"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /products/{}/variants": {
+			"type": "object",
+			"properties": {
+				"products_variant": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"sku": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"product_type": {
+							"type": "string",
+							"enum": [
+								"physical",
+								"digital"
+							]
+						},
+						"out_of_stock_sales": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"weight": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"weight_unit": {
+							"type": "string"
+						},
+						"height": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"width": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"length": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"dimensions_unit": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"tax_category_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"taxable": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"track_quantity": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"archived": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"visible": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"fulfillment_required": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"country_of_manufacture_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"image_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"fulfillments_location_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"properties_values": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"property_id": {
+										"type": "integer"
+									},
+									"value": {
+										"type": "string"
+									}
+								},
+								"required": []
+							}
+						},
+						"has_access_to_all_valid_assets": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"asset_ids": {
+							"type": [
+								"array",
+								"null"
+							],
+							"items": {
+								"type": "integer"
+							}
+						},
+						"included_courses_attributes": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"_destroy": {
+										"type": "boolean"
+									},
+									"course_id": {
+										"type": "integer"
+									},
+									"included_sections_attributes": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "integer"
+												},
+												"_destroy": {
+													"type": "boolean"
+												},
+												"courses_section_id": {
+													"type": "integer"
+												}
+											},
+											"required": []
+										}
+									}
+								},
+								"required": []
+							}
+						},
+						"included_space_groups_attributes": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"_destroy": {
+										"type": "boolean"
+									},
+									"communities_space_group_id": {
+										"type": "integer"
+									}
+								},
+								"required": []
+							}
+						}
+					},
+					"required": [
+						"name",
+						"product_type",
+						"weight_unit",
+						"properties_values"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /sales/opportunities/{}/notes": {
+			"type": "object",
+			"properties": {
+				"sales_opportunities_note": {
+					"type": "object",
+					"properties": {
+						"content": {
+							"type": "string"
+						},
+						"created_by_id": {
+							"type": "integer"
+						}
+					},
+					"required": [
+						"content"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /sales/pipelines/{}/stages": {
+			"type": "object",
+			"properties": {
+				"sales_pipelines_stage": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"sort_order": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"close_probability": {
+							"type": "number"
+						}
+					},
+					"required": [
+						"name",
+						"close_probability"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /shipping/location_groups/{}/zones": {
+			"type": "object",
+			"properties": {
+				"shipping_zone": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"address_filter_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"region_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"country_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"includes_rest_of_world": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /shipping/zones/{}/rates": {
+			"type": "object",
+			"properties": {
+				"shipping_rate": {
+					"type": "object",
+					"properties": {
+						"provider_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"price": {
+							"type": "string"
+						},
+						"price_currency": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"rates_name_id": {
+							"type": "integer"
+						},
+						"live_rates_provider": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"Shippo"
+							]
+						}
+					},
+					"required": [
+						"price",
+						"rates_name_id"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /webhooks/incoming/external_purchase_endpoints/{}/product_mappings": {
+			"type": "object",
+			"properties": {
+				"external_purchase_product_mapping": {
+					"type": "object",
+					"properties": {
+						"external_product_sku": {
+							"type": "string"
+						},
+						"products_variant_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"products_price_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						}
+					},
+					"required": [
+						"external_product_sku",
+						"products_price_id",
+						"products_variant_id"
+					]
+				}
+			},
+			"required": [
+				"external_purchase_product_mapping"
+			]
+		},
+		"POST /workflows/{}/runs": {
+			"type": "object",
+			"properties": {
+				"run": {
+					"type": "object",
+					"properties": {
+						"contact_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"skip_communication": {
+							"type": "boolean"
+						}
+					},
+					"required": [
+						"contact_id"
+					]
+				}
+			},
+			"required": [
+				"run"
+			]
+		},
+		"POST /workflows/{}/steps": {
+			"type": "object",
+			"properties": {
+				"workflows_step": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"parent_step_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"branch": {
+							"type": "string"
+						},
+						"position": {
+							"type": "integer"
+						},
+						"after_step_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"step_type_settings": {
+							"type": "object"
+						}
+					},
+					"required": [
+						"step_type_settings"
+					]
+				}
+			},
+			"required": [
+				"workflows_step"
+			]
+		},
+		"POST /workflows/{}/triggers": {
+			"type": "object",
+			"properties": {
+				"workflows_trigger": {
+					"type": "object",
+					"properties": {
+						"event_type_key": {
+							"type": "string",
+							"enum": [
+								"$appointments.appointment_scheduled",
+								"$calendar_event.contact_registered",
+								"$community.join",
+								"$community.group_join",
+								"$community.topic_join",
+								"$community.post",
+								"$community.ban",
+								"$community.unban",
+								"$community.post_view",
+								"$contact.tag_applied",
+								"$contact.tag_removed",
+								"$course.complete",
+								"$course.enroll",
+								"$course.unenroll",
+								"$course.lesson_complete",
+								"$course.lesson_view",
+								"$course.section_complete",
+								"$email.bounce",
+								"$email.click",
+								"$email.open",
+								"$email.sent",
+								"$email.spam_complaint",
+								"$send_email_step.bounce",
+								"$send_email_step.click",
+								"$send_email_step.open",
+								"$send_email_step.sent",
+								"$send_email_step.spam_complaint",
+								"$order.successful_purchase",
+								"$order.cancelled",
+								"$order.churned",
+								"$subscription.upgraded",
+								"$subscription.downgraded",
+								"$transaction.renewal_failed",
+								"$sales.contact_entered_stage",
+								"$sales.contact_exited_stage",
+								"$optin",
+								"$view",
+								"$message_hub_event.contact_conversation_started",
+								"$message_hub_event.agent_conversation_started",
+								"$message_hub_event.contact_responded",
+								"$message_hub_event.agent_responded",
+								"$survey.complete"
+							]
+						},
+						"active": {
+							"type": "boolean"
+						},
+						"allow_anonymous_contacts": {
+							"type": "boolean"
+						},
+						"subscription_cancelation_reason": {
+							"type": "string"
+						},
+						"contacts_tag_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"funnel_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"page_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"product_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"cancellation_product_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"product_variant_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"cancellation_product_variant_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"subscription_variant_to_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"sales_pipelines_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"current_sales_pipelines_stage_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"appointments_calendar_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"appointments_event_type_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"course_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"courses_lesson_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"courses_section_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"community_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"communities_space_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"communities_space_group_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"emails_broadcasts_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"calendar_event_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"survey_workflow_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"workflows_step_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						}
+					},
+					"required": [
+						"event_type_key"
+					]
+				}
+			},
+			"required": [
+				"workflows_trigger"
+			]
+		},
+		"POST /workspaces/{}/communities": {
+			"type": "object",
+			"properties": {
+				"community": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"status": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"private": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"logo_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"social_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_indexable": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"white_label": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"allow_public_signup": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"upgrade_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"send_membership_email": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"send_digest_email": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"require_post_approvals": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"require_comment_approvals": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"anyone_can_invite": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"invite_only": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"enable_block_list": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"notifications": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/contacts": {
+			"type": "object",
+			"properties": {
+				"contact": {
+					"type": "object",
+					"properties": {
+						"email_address": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"first_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"last_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"phone_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"time_zone": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"fb_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"twitter_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"instagram_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"linkedin_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"website_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"tag_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"custom_attributes": {
+							"type": "object"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/contacts/enroll_actions": {
+			"type": "object",
+			"properties": {
+				"contacts_enroll_action": {
+					"type": "object",
+					"properties": {
+						"course_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"section_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"stable_id": {
+							"type": "string"
+						},
+						"stored_filter_id": {
+							"type": "string"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"target_all": {
+							"type": "boolean"
+						},
+						"scheduled_for": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/contacts/export_actions": {
+			"type": "object",
+			"properties": {
+				"contacts_export_action": {
+					"type": "object",
+					"properties": {
+						"fields": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"stable_id": {
+							"type": "string"
+						},
+						"stored_filter_id": {
+							"type": "string"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"target_all": {
+							"type": "boolean"
+						},
+						"scheduled_for": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"fields"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/contacts/filters": {
+			"type": "object",
+			"properties": {
+				"text": {
+					"type": "string"
+				},
+				"save": {
+					"type": "boolean"
+				},
+				"name": {
+					"type": [
+						"string",
+						"null"
+					]
+				},
+				"results": {
+					"type": null
+				}
+			},
+			"required": [
+				"text"
+			]
+		},
+		"POST /workspaces/{}/contacts/run_workflow_actions": {
+			"type": "object",
+			"properties": {
+				"contacts_run_workflow_action": {
+					"type": "object",
+					"properties": {
+						"workflow_id": {
+							"type": "string"
+						},
+						"force_run": {
+							"type": "boolean"
+						},
+						"stable_id": {
+							"type": "string"
+						},
+						"stored_filter_id": {
+							"type": "string"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"target_all": {
+							"type": "boolean"
+						},
+						"scheduled_for": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"workflow_id"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/contacts/tag_actions": {
+			"type": "object",
+			"properties": {
+				"contacts_tag_action": {
+					"type": "object",
+					"properties": {
+						"tag_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"action_type": {
+							"type": "string",
+							"enum": [
+								"add",
+								"remove"
+							]
+						},
+						"stable_id": {
+							"type": "string"
+						},
+						"stored_filter_id": {
+							"type": "string"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"target_all": {
+							"type": "boolean"
+						},
+						"scheduled_for": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"tag_ids"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/contacts/tags": {
+			"type": "object",
+			"properties": {
+				"contacts_tag": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/contacts/unsubscribe_actions": {
+			"type": "object",
+			"properties": {
+				"contacts_unsubscribe_action": {
+					"type": "object",
+					"properties": {
+						"stable_id": {
+							"type": "string"
+						},
+						"stored_filter_id": {
+							"type": "string"
+						},
+						"target_ids": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"target_all": {
+							"type": "boolean"
+						},
+						"scheduled_for": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/contacts/upsert": {
+			"type": "object",
+			"properties": {
+				"contact": {
+					"type": "object",
+					"properties": {
+						"email_address": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"first_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"last_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"phone_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"time_zone": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"fb_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"twitter_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"instagram_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"linkedin_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"website_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"tag_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"custom_attributes": {
+							"type": "object"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/courses": {
+			"type": "object",
+			"properties": {
+				"course": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"description": {
+							"type": "string"
+						},
+						"show_in_community": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"redirect_to_full_course": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"title"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/discounts": {
+			"type": "object",
+			"properties": {
+				"discount": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"code": {
+							"type": "string"
+						},
+						"discount_type": {
+							"type": "string",
+							"enum": [
+								"code",
+								"automatic",
+								"sale"
+							]
+						},
+						"discount_method": {
+							"type": "string",
+							"enum": [
+								"percentage",
+								"fixed",
+								"shipping",
+								"bogo"
+							]
+						},
+						"percent": {
+							"type": "string"
+						},
+						"amount": {
+							"type": "string"
+						},
+						"currency": {
+							"type": "string"
+						},
+						"applies_to": {
+							"type": "string",
+							"enum": [
+								"all_products",
+								"specific_products",
+								"specific_variants",
+								"specific_collections"
+							]
+						},
+						"apply_from": {
+							"type": "string"
+						},
+						"apply_until": {
+							"type": "string"
+						},
+						"limit_1_per_customer": {
+							"type": "boolean"
+						},
+						"require_minimum_spend": {
+							"type": "boolean"
+						},
+						"require_minimum_spend_amount": {
+							"type": "integer"
+						},
+						"discounts_per_redemption": {
+							"type": "integer"
+						},
+						"product_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"variant_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"products_collection_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/emails/addresses": {
+			"type": "object",
+			"properties": {
+				"emails_address": {
+					"type": "object",
+					"properties": {
+						"username": {
+							"type": "string"
+						},
+						"domain": {
+							"type": "string"
+						},
+						"name": {
+							"type": "string"
+						},
+						"label": {
+							"type": "string"
+						},
+						"emails_domain_id": {
+							"type": "integer"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"emails_address"
+			]
+		},
+		"POST /workspaces/{}/emails/broadcasts": {
+			"type": "object",
+			"properties": {
+				"emails_broadcast": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"subject": {
+							"type": "string"
+						},
+						"preheadline": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"from_email": {
+							"type": "string"
+						},
+						"reply_to_email": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"html_body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"text_body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"template_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"filter_id": {
+							"type": [
+								"string",
+								"integer",
+								"null"
+							]
+						},
+						"send_immediately": {
+							"type": "boolean"
+						},
+						"split_test": {
+							"type": "boolean"
+						},
+						"split_test_percentage": {
+							"type": "integer"
+						},
+						"split_test_wait_time": {
+							"type": "integer"
+						},
+						"variants": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"subject": {
+										"type": "string"
+									},
+									"preheadline": {
+										"type": [
+											"string",
+											"null"
+										]
+									}
+								},
+								"required": [
+									"subject"
+								]
+							}
+						},
+						"smart_sending": {
+							"type": "boolean"
+						},
+						"smart_sending_time": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"smart_sending_unit": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"hour",
+								"day"
+							]
+						},
+						"send_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"send_at_local_time": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"time_zone": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"external_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"topic_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"recipients": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string"
+									},
+									"first_name": {
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"last_name": {
+										"type": [
+											"string",
+											"null"
+										]
+									}
+								},
+								"required": [
+									"email"
+								]
+							}
+						}
+					},
+					"required": [
+						"name",
+						"from_email"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/emails/domains": {
+			"type": "object",
+			"properties": {
+				"emails_domain": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": [
+				"emails_domain"
+			]
+		},
+		"POST /workspaces/{}/emails/templates": {
+			"type": "object",
+			"properties": {
+				"emails_template": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"subject": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"html_body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"text_body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"from_address_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/emails/topics": {
+			"type": "object",
+			"properties": {
+				"emails_topic": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/forms": {
+			"type": "object",
+			"properties": {
+				"form": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/fulfillments": {
+			"type": "object",
+			"properties": {
+				"fulfillment": {
+					"type": "object",
+					"properties": {
+						"contact_id": {
+							"type": "integer"
+						},
+						"tracking_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_provider": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"tracking_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"location_id": {
+							"type": "integer"
+						},
+						"ignore_out_of_stock": {
+							"type": "boolean"
+						},
+						"notify_customer": {
+							"type": "boolean"
+						},
+						"included_orders_invoices_line_items_attributes": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"invoices_line_item_id": {
+										"type": "integer"
+									},
+									"quantity": {
+										"type": "integer"
+									}
+								},
+								"required": []
+							}
+						}
+					},
+					"required": [
+						"contact_id",
+						"location_id",
+						"included_orders_invoices_line_items_attributes"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/fulfillments/locations": {
+			"type": "object",
+			"properties": {
+				"fulfillments_location": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"address_name": {
+							"type": "string"
+						},
+						"email_address": {
+							"type": "string"
+						},
+						"phone_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"archived": {
+							"type": "boolean"
+						},
+						"external_app": {
+							"type": "boolean"
+						},
+						"address": {
+							"type": "object",
+							"properties": {
+								"address_one": {
+									"type": "string"
+								},
+								"address_two": {
+									"type": "string"
+								},
+								"city": {
+									"type": "string"
+								},
+								"region": {
+									"type": "string"
+								},
+								"country": {
+									"type": "string"
+								},
+								"postal_code": {
+									"type": "string"
+								}
+							},
+							"required": []
+						}
+					},
+					"required": [
+						"name",
+						"address_name",
+						"email_address"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/funnels": {
+			"type": "object",
+			"properties": {
+				"funnel": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"current_path": {
+							"type": "string"
+						},
+						"live_mode": {
+							"type": "boolean"
+						},
+						"domain_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"tag_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"head_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"head_code_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						},
+						"footer_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"footer_code_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/funnels/tags": {
+			"type": "object",
+			"properties": {
+				"funnels_tag": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/images": {
+			"type": "object",
+			"properties": {
+				"image": {
+					"type": "object",
+					"properties": {
+						"alt_text": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"upload_source_url": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"upload_source_url"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/orders": {
+			"type": "object",
+			"properties": {
+				"order": {
+					"type": "object",
+					"properties": {
+						"order_type": {
+							"type": "string",
+							"enum": [
+								"one-time-order",
+								"subscription-order"
+							]
+						},
+						"live_mode": {
+							"type": "boolean"
+						},
+						"contact_id": {
+							"type": "integer"
+						},
+						"contact_attributes": {
+							"type": "object",
+							"properties": {
+								"email_address": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"email_address"
+							]
+						},
+						"line_items_attributes": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"variant_id": {
+										"type": "integer"
+									},
+									"products_price_id": {
+										"type": "integer"
+									},
+									"quantity": {
+										"type": "integer"
+									}
+								},
+								"required": [
+									"variant_id",
+									"products_price_id",
+									"quantity"
+								]
+							}
+						},
+						"shipping_address_first_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_last_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_organization_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_phone_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_street_one": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_street_two": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_city": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_region": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_country": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_postal_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_street_one": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_street_two": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_city": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_region": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_country": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_postal_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"notes": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_status": {
+							"type": "string"
+						},
+						"service_status": {
+							"type": "string"
+						},
+						"next_charge_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"activated_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"canceled_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"canceled_by": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"cancel_reason": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"cancel_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"churned_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"external_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"order_type",
+						"live_mode",
+						"line_items_attributes"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/orders/tags": {
+			"type": "object",
+			"properties": {
+				"orders_tag": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/pages": {
+			"type": "object",
+			"properties": {
+				"page": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"current_path": {
+							"type": "string"
+						},
+						"theme_id": {
+							"type": "integer"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_index": {
+							"type": "boolean"
+						},
+						"block_ai_crawler": {
+							"type": "boolean"
+						},
+						"block_ai_search": {
+							"type": "boolean"
+						},
+						"block_ai_assistant": {
+							"type": "boolean"
+						},
+						"sort_order": {
+							"type": "integer"
+						},
+						"funnel": {
+							"type": "object",
+							"properties": {
+								"funnel_id": {
+									"type": "string"
+								},
+								"after_show_page_step_id": {
+									"type": [
+										"integer",
+										"string",
+										"null"
+									]
+								},
+								"show_page_step_id": {
+									"type": "string"
+								}
+							},
+							"required": []
+						},
+						"show_page_step": {
+							"type": "object",
+							"properties": {
+								"product_ids": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"bumps": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"product_id": {
+												"type": "string"
+											},
+											"preheadline": {
+												"type": "string"
+											}
+										},
+										"required": [
+											"product_id"
+										]
+									}
+								}
+							},
+							"required": []
+						},
+						"head_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"head_code_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						},
+						"footer_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"footer_code_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						},
+						"custom_css": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"custom_css_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						},
+						"markup": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/pages/custom_html": {
+			"type": "object",
+			"properties": {
+				"page": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"custom_html": {
+							"type": "string"
+						},
+						"current_path": {
+							"type": "string"
+						},
+						"sort_order": {
+							"type": "integer"
+						},
+						"funnel": {
+							"type": "object",
+							"properties": {
+								"funnel_id": {
+									"type": [
+										"integer",
+										"string"
+									]
+								},
+								"after_show_page_step_id": {
+									"type": [
+										"integer",
+										"string"
+									]
+								},
+								"show_page_step_id": {
+									"type": [
+										"integer",
+										"string"
+									]
+								}
+							},
+							"required": []
+						}
+					},
+					"required": [
+						"name",
+						"custom_html"
+					]
+				}
+			},
+			"required": [
+				"page"
+			]
+		},
+		"POST /workspaces/{}/pages/external": {
+			"type": "object",
+			"properties": {
+				"page": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"external_url": {
+							"type": "string"
+						},
+						"sort_order": {
+							"type": "integer"
+						},
+						"funnel": {
+							"type": "object",
+							"properties": {
+								"funnel_id": {
+									"type": "string"
+								},
+								"after_show_page_step_id": {
+									"type": [
+										"integer",
+										"string"
+									]
+								},
+								"show_page_step_id": {
+									"type": [
+										"integer",
+										"string"
+									]
+								}
+							},
+							"required": []
+						}
+					},
+					"required": [
+						"external_url"
+					]
+				}
+			},
+			"required": [
+				"page"
+			]
+		},
+		"POST /workspaces/{}/products": {
+			"type": "object",
+			"properties": {
+				"product": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"visible_in_store": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"visible_in_customer_center": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_image_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"commissionable": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"image_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"redirect_funnel_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"cancellation_funnel_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"tag_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"variant_properties": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": []
+							}
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/products/collections": {
+			"type": "object",
+			"properties": {
+				"products_collection": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"collection_type": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"product_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"sort_method": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"manually",
+								"name_asc",
+								"name_desc",
+								"price_desc",
+								"price_asc",
+								"added_at_desc",
+								"added_at_asc",
+								"created_at_desc",
+								"created_at_asc"
+							]
+						},
+						"image_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"visible_in_store": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"social_image_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/products/tags": {
+			"type": "object",
+			"properties": {
+				"products_tag": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/refine_filters": {
+			"type": "object",
+			"properties": {
+				"refine_filter": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"filter_class": {
+							"type": "string"
+						},
+						"conjunction": {
+							"type": "string",
+							"enum": [
+								"and",
+								"or"
+							]
+						},
+						"criteria": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"attribute": {
+										"type": "string"
+									},
+									"clause": {
+										"type": "string"
+									},
+									"value": {
+										"type": null
+									}
+								},
+								"required": [
+									"attribute",
+									"clause"
+								]
+							}
+						}
+					},
+					"required": [
+						"criteria"
+					]
+				},
+				"results": {
+					"type": null
+				}
+			},
+			"required": [
+				"refine_filter"
+			]
+		},
+		"POST /workspaces/{}/sales/opportunities": {
+			"type": "object",
+			"properties": {
+				"sales_opportunity": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"pipelines_stage_id": {
+							"type": "integer"
+						},
+						"primary_contact_id": {
+							"type": "integer"
+						},
+						"value": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"closed_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"assignee_id": {
+							"type": "integer"
+						}
+					},
+					"required": [
+						"name",
+						"pipelines_stage_id",
+						"primary_contact_id"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/sales/pipelines": {
+			"type": "object",
+			"properties": {
+				"sales_pipeline": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"stages_attributes": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"close_probability": {
+										"type": "integer"
+									}
+								},
+								"required": []
+							}
+						}
+					},
+					"required": [
+						"name",
+						"stages_attributes"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/segments": {
+			"type": "object",
+			"properties": {
+				"segment": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"filter_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						}
+					},
+					"required": [
+						"name",
+						"filter_id"
+					]
+				},
+				"results": {
+					"type": null
+				}
+			},
+			"required": [
+				"segment"
+			]
+		},
+		"POST /workspaces/{}/shipping/packages": {
+			"type": "object",
+			"properties": {
+				"shipping_package": {
+					"type": "object",
+					"properties": {
+						"package_type": {
+							"type": "string",
+							"enum": [
+								"box",
+								"envelope",
+								"soft_package"
+							]
+						},
+						"height": {
+							"type": "number"
+						},
+						"width": {
+							"type": "number"
+						},
+						"length": {
+							"type": "number"
+						},
+						"distance_unit": {
+							"type": "string",
+							"enum": [
+								"in",
+								"cm",
+								"ft",
+								"m",
+								"mm"
+							]
+						},
+						"empty_weight": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"weight": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"weight_unit": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"lb",
+								"kg",
+								"g",
+								"oz"
+							]
+						},
+						"default_package": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"name": {
+							"type": "string"
+						},
+						"carrier": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"fedex",
+								"ups",
+								"usps"
+							]
+						}
+					},
+					"required": [
+						"package_type",
+						"height",
+						"width",
+						"length",
+						"distance_unit",
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/shipping/profiles": {
+			"type": "object",
+			"properties": {
+				"shipping_profile": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"variant_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/shipping/rates/names": {
+			"type": "object",
+			"properties": {
+				"shipping_rates_name": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/stores": {
+			"type": "object",
+			"properties": {
+				"store": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_indexable": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"social_image_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"status": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"draft",
+								"published"
+							]
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/url_redirects": {
+			"type": "object",
+			"properties": {
+				"url_redirect": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"original_url": {
+							"type": "string"
+						},
+						"second_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"split_percentage": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"pixel_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"utm_source": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"utm_medium": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"utm_campaign": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"utm_term": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"utm_content": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"domain_id": {
+							"type": [
+								"integer",
+								"string",
+								"null"
+							]
+						},
+						"redirect_type": {
+							"type": "string",
+							"enum": [
+								"temporary",
+								"permanent"
+							]
+						}
+					},
+					"required": [
+						"original_url"
+					]
+				}
+			},
+			"required": [
+				"url_redirect"
+			]
+		},
+		"POST /workspaces/{}/videos": {
+			"type": "object",
+			"properties": {
+				"video": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"upload_source_url": {
+							"type": "string"
+						},
+						"poster_image_id": {
+							"type": [
+								"integer",
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"upload_source_url"
+					]
+				}
+			},
+			"required": [
+				"video"
+			]
+		},
+		"POST /workspaces/{}/webhooks/incoming/external_purchase_endpoints": {
+			"type": "object",
+			"properties": {
+				"webhooks_incoming_external_purchases_endpoint": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"provider": {
+							"type": "string",
+							"enum": [
+								"clickbank",
+								"offerlab",
+								"copecart",
+								"whop"
+							]
+						},
+						"live_mode": {
+							"type": "boolean"
+						},
+						"suppress_order_system_emails": {
+							"type": "boolean"
+						}
+					},
+					"required": [
+						"name",
+						"provider"
+					]
+				}
+			},
+			"required": [
+				"webhooks_incoming_external_purchases_endpoint"
+			]
+		},
+		"POST /workspaces/{}/webhooks/outgoing/endpoints": {
+			"type": "object",
+			"properties": {
+				"webhooks_outgoing_endpoint": {
+					"type": "object",
+					"properties": {
+						"url": {
+							"type": "string"
+						},
+						"name": {
+							"type": "string"
+						},
+						"event_type_ids": {
+							"type": "array"
+						},
+						"page_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"funnel_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						}
+					},
+					"required": [
+						"url",
+						"name"
+					]
+				}
+			},
+			"required": []
+		},
+		"POST /workspaces/{}/workflows": {
+			"type": "object",
+			"properties": {
+				"workflow": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"name"
+					]
+				}
+			},
+			"required": [
+				"workflow"
+			]
+		},
+		"PUT /communities/memberships/{}": {
+			"type": "object",
+			"properties": {
+				"communities_membership": {
+					"type": "object",
+					"properties": {
+						"moderator": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"space_ids": {
+							"type": [
+								"array",
+								"null"
+							],
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /communities/space_groups/{}": {
+			"type": "object",
+			"properties": {
+				"communities_space_group": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"access": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"group_type": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"emoji": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"card_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"auto_add_to_spaces": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"approval_terms": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"require_post_approvals": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"require_post_approvals_override": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"require_comment_approvals": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"require_comment_approvals_override": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"is_hidden": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"is_hidden_from_non_members": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"always_on": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"upgrade_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"sort_order": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /communities/spaces/posts/comments/{}": {
+			"type": "object",
+			"properties": {
+				"communities_spaces_posts_comment": {
+					"type": "object",
+					"properties": {
+						"body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"skip_notifications": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /communities/spaces/posts/{}": {
+			"type": "object",
+			"properties": {
+				"communities_spaces_post": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"is_pinned": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /communities/spaces/{}": {
+			"type": "object",
+			"properties": {
+				"communities_space": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"access": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"emoji": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"card_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"social_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"members_can_post": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"members_can_invite": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"allow_post_titles": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"allow_cover_images": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"hide_from_featured": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"layout_style": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"default_tab": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"default_post_sort": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"default_comment_sort": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"default_member_sort": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"pinned_posts_label": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"sort_order": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"always_on": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"upgrade_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /communities/{}": {
+			"type": "object",
+			"properties": {
+				"community": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"status": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"private": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"logo_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"social_image_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_indexable": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"white_label": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"allow_public_signup": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"upgrade_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"send_membership_email": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"send_digest_email": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"require_post_approvals": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"require_comment_approvals": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"anyone_can_invite": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"invite_only": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"enable_block_list": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"notifications": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /contacts/events/notes/{}": {
+			"type": "object",
+			"properties": {
+				"contacts_events_note": {
+					"type": "object",
+					"properties": {
+						"content": {
+							"type": "string"
+						},
+						"occurred_at": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"contacts_events_note"
+			]
+		},
+		"PUT /contacts/tags/{}": {
+			"type": "object",
+			"properties": {
+				"contacts_tag": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /contacts/{}": {
+			"type": "object",
+			"properties": {
+				"contact": {
+					"type": "object",
+					"properties": {
+						"email_address": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"first_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"last_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"phone_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"time_zone": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"fb_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"twitter_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"instagram_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"linkedin_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"website_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"tag_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"custom_attributes": {
+							"type": "object"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /courses/enrollments/{}": {
+			"type": "object",
+			"properties": {
+				"courses_enrollment": {
+					"type": "object",
+					"properties": {
+						"suspended": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"suspension_reason": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /courses/lessons/{}": {
+			"type": "object",
+			"properties": {
+				"courses_lesson": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"body": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"lesson_content": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"image_id": {
+							"type": [
+								"integer",
+								"string",
+								"null"
+							]
+						},
+						"video_id": {
+							"type": [
+								"integer",
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /courses/sections/{}": {
+			"type": "object",
+			"properties": {
+				"courses_section": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"days_till_drip_access": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"blocker_section_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"blocker_lesson_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"is_hidden_from_non_members": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /emails/addresses/{}": {
+			"type": "object",
+			"properties": {
+				"emails_address": {
+					"type": "object",
+					"properties": {
+						"username": {
+							"type": "string"
+						},
+						"domain": {
+							"type": "string"
+						},
+						"name": {
+							"type": "string"
+						},
+						"label": {
+							"type": "string"
+						},
+						"emails_domain_id": {
+							"type": "integer"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"emails_address"
+			]
+		},
+		"PUT /forms/field_sets/{}": {
+			"type": "object",
+			"properties": {
+				"forms_field_set": {
+					"type": "object",
+					"properties": {
+						"title": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /forms/fields/options/{}": {
+			"type": "object",
+			"properties": {
+				"forms_fields_option": {
+					"type": "object",
+					"properties": {
+						"label": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /forms/fields/{}": {
+			"type": "object",
+			"properties": {
+				"forms_field": {
+					"type": "object",
+					"properties": {
+						"label": {
+							"type": "string"
+						},
+						"field_type": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"allow_multiple": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"key": {
+							"type": "string"
+						},
+						"hidden": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /forms/submissions/answers/{}": {
+			"type": "object",
+			"properties": {
+				"forms_submissions_answer": {
+					"type": "object",
+					"properties": {
+						"field_id": {
+							"type": "string"
+						},
+						"fields_option_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"entry": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"fields_option_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /forms/submissions/{}": {
+			"type": "object",
+			"properties": {
+				"forms_submission": {
+					"type": "object",
+					"properties": {
+						"contact_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /forms/{}": {
+			"type": "object",
+			"properties": {
+				"form": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /fulfillments/locations/{}": {
+			"type": "object",
+			"properties": {
+				"fulfillments_location": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"address_name": {
+							"type": "string"
+						},
+						"email_address": {
+							"type": "string"
+						},
+						"phone_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"archived": {
+							"type": "boolean"
+						},
+						"external_app": {
+							"type": "boolean"
+						},
+						"address": {
+							"type": "object",
+							"properties": {
+								"address_one": {
+									"type": "string"
+								},
+								"address_two": {
+									"type": "string"
+								},
+								"city": {
+									"type": "string"
+								},
+								"region": {
+									"type": "string"
+								},
+								"country": {
+									"type": "string"
+								},
+								"postal_code": {
+									"type": "string"
+								}
+							},
+							"required": []
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /fulfillments/{}": {
+			"type": "object",
+			"properties": {
+				"fulfillment": {
+					"type": "object",
+					"properties": {
+						"tracking_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_provider": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"tracking_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"notify_customer": {
+							"type": "boolean"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /funnels/tags/{}": {
+			"type": "object",
+			"properties": {
+				"funnels_tag": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /funnels/{}": {
+			"type": "object",
+			"properties": {
+				"funnel": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"current_path": {
+							"type": "string"
+						},
+						"live_mode": {
+							"type": "boolean"
+						},
+						"domain_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"favicon_image_id": {
+							"type": null
+						},
+						"tag_ids": {
+							"type": [
+								"array",
+								"null"
+							],
+							"items": {
+								"type": null
+							}
+						},
+						"head_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"head_code_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						},
+						"footer_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"footer_code_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"funnel"
+			]
+		},
+		"PUT /images/{}": {
+			"type": "object",
+			"properties": {
+				"image": {
+					"type": "object",
+					"properties": {
+						"alt_text": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"upload_source_url": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /orders/invoices/{}": {
+			"type": "object",
+			"properties": {
+				"orders_invoice": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"enum": [
+								"unpaid",
+								"paid",
+								"voided",
+								"refunded",
+								"disputed",
+								"past-due"
+							]
+						},
+						"external_id": {
+							"type": "string"
+						},
+						"invoice_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_amount": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"issued_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"due_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"paid_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"line_items_attributes": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"amount": {
+										"type": "string"
+									},
+									"quantity": {
+										"type": "integer"
+									},
+									"description": {
+										"type": [
+											"string",
+											"null"
+										]
+									}
+								},
+								"required": [
+									"id"
+								]
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /orders/tags/{}": {
+			"type": "object",
+			"properties": {
+				"orders_tag": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /orders/{}": {
+			"type": "object",
+			"properties": {
+				"order": {
+					"type": "object",
+					"properties": {
+						"trial_end_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"renewal_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"notes": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_status": {
+							"type": "string"
+						},
+						"service_status": {
+							"type": "string"
+						},
+						"external_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_first_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_last_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_organization_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_phone_number": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_street_one": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_street_two": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_city": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_region": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_country": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"shipping_address_postal_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_street_one": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_street_two": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_city": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_region": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_country": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"billing_address_postal_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"activated_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"canceled_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"canceled_by": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"cancel_reason": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"cancel_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"churned_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"next_charge_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /pages/{}": {
+			"type": "object",
+			"properties": {
+				"page": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"sort_order": {
+							"type": "integer"
+						},
+						"funnel": {
+							"type": "object",
+							"properties": {
+								"show_page_step_id": {
+									"type": [
+										"integer",
+										"string"
+									]
+								}
+							},
+							"required": []
+						},
+						"current_path": {
+							"type": "string"
+						},
+						"custom_html": {
+							"type": "string"
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_index": {
+							"type": "boolean"
+						},
+						"block_ai_crawler": {
+							"type": "boolean"
+						},
+						"block_ai_search": {
+							"type": "boolean"
+						},
+						"block_ai_assistant": {
+							"type": "boolean"
+						},
+						"head_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"head_code_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						},
+						"footer_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"footer_code_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						},
+						"custom_css": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"custom_css_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						},
+						"markup": {
+							"type": "string"
+						},
+						"external_url": {
+							"type": "string"
+						},
+						"show_page_step": {
+							"type": "object",
+							"properties": {
+								"product_ids": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"bumps": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"product_id": {
+												"type": "string"
+											},
+											"preheadline": {
+												"type": "string"
+											}
+										},
+										"required": [
+											"product_id"
+										]
+									}
+								}
+							},
+							"required": []
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /products/collections/{}": {
+			"type": "object",
+			"properties": {
+				"products_collection": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"collection_type": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"product_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"sort_method": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"manually",
+								"name_asc",
+								"name_desc",
+								"price_desc",
+								"price_asc",
+								"added_at_desc",
+								"added_at_asc",
+								"created_at_desc",
+								"created_at_asc"
+							]
+						},
+						"image_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"visible_in_store": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"social_image_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /products/prices/{}": {
+			"type": "object",
+			"properties": {
+				"products_price": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"amount": {
+							"type": "string"
+						},
+						"cost": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"currency": {
+							"type": "string"
+						},
+						"duration": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"interval": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"days",
+								"weeks",
+								"months",
+								"quarters",
+								"years"
+							]
+						},
+						"trial_interval": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"days",
+								"weeks",
+								"months",
+								"quarters",
+								"years"
+							]
+						},
+						"trial_duration": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"trial_amount": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"setup_amount": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"self_cancel": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"self_upgrade": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"self_downgrade": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"self_reactivate": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"interval_count": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"payment_type": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"one_time",
+								"subscription",
+								"payment_plan"
+							]
+						},
+						"visible": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"compare_at_amount": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"key": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"archived": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /products/tags/{}": {
+			"type": "object",
+			"properties": {
+				"products_tag": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /products/variants/{}": {
+			"type": "object",
+			"properties": {
+				"products_variant": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"sku": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"product_type": {
+							"type": "string"
+						},
+						"out_of_stock_sales": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"weight": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"weight_unit": {
+							"type": "string"
+						},
+						"height": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"width": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"length": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"dimensions_unit": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"tax_category_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"taxable": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"track_quantity": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"archived": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"visible": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"fulfillment_required": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"country_of_manufacture_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"image_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"fulfillments_location_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"properties_values": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"property_id": {
+										"type": "integer"
+									},
+									"value": {
+										"type": "string"
+									}
+								},
+								"required": []
+							}
+						},
+						"has_access_to_all_valid_assets": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"asset_ids": {
+							"type": [
+								"array",
+								"null"
+							],
+							"items": {
+								"type": "integer"
+							}
+						},
+						"included_courses_attributes": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"_destroy": {
+										"type": "boolean"
+									},
+									"course_id": {
+										"type": "integer"
+									},
+									"included_sections_attributes": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "integer"
+												},
+												"_destroy": {
+													"type": "boolean"
+												},
+												"courses_section_id": {
+													"type": "integer"
+												}
+											},
+											"required": []
+										}
+									}
+								},
+								"required": []
+							}
+						},
+						"included_space_groups_attributes": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"_destroy": {
+										"type": "boolean"
+									},
+									"communities_space_group_id": {
+										"type": "integer"
+									}
+								},
+								"required": []
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /products/{}": {
+			"type": "object",
+			"properties": {
+				"product": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"visible_in_store": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"visible_in_customer_center": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_image_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"commissionable": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"image_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"variant_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"price_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"redirect_funnel_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"cancellation_funnel_url": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"tag_ids": {
+							"type": "array",
+							"items": {
+								"type": "integer"
+							}
+						},
+						"variant_properties": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": []
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /sales/opportunities/notes/{}": {
+			"type": "object",
+			"properties": {
+				"sales_opportunities_note": {
+					"type": "object",
+					"properties": {
+						"content": {
+							"type": "string"
+						},
+						"created_by_id": {
+							"type": "integer"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /sales/opportunities/{}": {
+			"type": "object",
+			"properties": {
+				"sales_opportunity": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"pipelines_stage_id": {
+							"type": "integer"
+						},
+						"primary_contact_id": {
+							"type": "integer"
+						},
+						"value": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"closed_at": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"assignee_id": {
+							"type": "integer"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /sales/pipelines/stages/{}": {
+			"type": "object",
+			"properties": {
+				"sales_pipelines_stage": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"sort_order": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"close_probability": {
+							"type": [
+								"number",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /sales/pipelines/{}": {
+			"type": "object",
+			"properties": {
+				"sales_pipeline": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"stages_attributes": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"close_probability": {
+										"type": "integer"
+									}
+								},
+								"required": []
+							}
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /shipping/packages/{}": {
+			"type": "object",
+			"properties": {
+				"shipping_package": {
+					"type": "object",
+					"properties": {
+						"package_type": {
+							"type": "string",
+							"enum": [
+								"box",
+								"envelope",
+								"soft_package"
+							]
+						},
+						"height": {
+							"type": "number"
+						},
+						"width": {
+							"type": "number"
+						},
+						"length": {
+							"type": "number"
+						},
+						"distance_unit": {
+							"type": "string"
+						},
+						"empty_weight": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"weight": {
+							"type": [
+								"number",
+								"null"
+							]
+						},
+						"weight_unit": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"lb",
+								"kg",
+								"g",
+								"oz"
+							]
+						},
+						"default_package": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"name": {
+							"type": "string"
+						},
+						"carrier": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"fedex",
+								"ups",
+								"usps"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /shipping/profiles/{}": {
+			"type": "object",
+			"properties": {
+				"shipping_profile": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"variant_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /shipping/rates/names/{}": {
+			"type": "object",
+			"properties": {
+				"shipping_rates_name": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /shipping/rates/{}": {
+			"type": "object",
+			"properties": {
+				"shipping_rate": {
+					"type": "object",
+					"properties": {
+						"provider_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"price": {
+							"type": "string"
+						},
+						"price_currency": {
+							"type": "string"
+						},
+						"rates_name_id": {
+							"type": "integer"
+						},
+						"live_rates_provider": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"Shippo"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /shipping/zones/{}": {
+			"type": "object",
+			"properties": {
+				"shipping_zone": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"address_filter_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"region_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"country_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"includes_rest_of_world": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /stores/{}": {
+			"type": "object",
+			"properties": {
+				"store": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"current_path": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_title": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_description": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"seo_indexable": {
+							"type": [
+								"boolean",
+								"null"
+							]
+						},
+						"social_image_id": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"status": {
+							"type": [
+								"string",
+								"null"
+							],
+							"enum": [
+								"draft",
+								"published"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /teams/{}": {
+			"type": "object",
+			"properties": {
+				"team": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"time_zone": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"locale": {
+							"type": "string",
+							"enum": [
+								"en",
+								"ja"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /themes/{}": {
+			"type": "object",
+			"properties": {
+				"theme": {
+					"type": "object",
+					"properties": {
+						"custom_name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"current_style_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"template_pages": {
+							"type": "object"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /videos/{}": {
+			"type": "object",
+			"properties": {
+				"video": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"upload_source_url": {
+							"type": "string"
+						},
+						"poster_image_id": {
+							"type": [
+								"integer",
+								"string",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"video"
+			]
+		},
+		"PUT /webhooks/incoming/external_purchase_endpoints/{}": {
+			"type": "object",
+			"properties": {
+				"webhooks_incoming_external_purchases_endpoint": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"suppress_order_system_emails": {
+							"type": "boolean"
+						},
+						"secret": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"webhooks_incoming_external_purchases_endpoint"
+			]
+		},
+		"PUT /webhooks/incoming/external_purchase_product_mappings/{}": {
+			"type": "object",
+			"properties": {
+				"external_purchase_product_mapping": {
+					"type": "object",
+					"properties": {
+						"external_product_sku": {
+							"type": "string"
+						},
+						"products_variant_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						},
+						"products_price_id": {
+							"type": [
+								"integer",
+								"string"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": [
+				"external_purchase_product_mapping"
+			]
+		},
+		"PUT /webhooks/outgoing/endpoints/{}": {
+			"type": "object",
+			"properties": {
+				"webhooks_outgoing_endpoint": {
+					"type": "object",
+					"properties": {
+						"url": {
+							"type": "string"
+						},
+						"name": {
+							"type": "string"
+						},
+						"event_type_ids": {
+							"type": "array"
+						},
+						"page_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						},
+						"funnel_ids": {
+							"type": [
+								"array",
+								"null"
+							]
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /workspaces/{}": {
+			"type": "object",
+			"properties": {
+				"workspace": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"subdomain": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /workspaces/{}/emails/settings": {
+			"type": "object",
+			"properties": {
+				"marketing_setting": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"address_single_line": {
+							"type": "boolean"
+						},
+						"hide_branding": {
+							"type": "boolean"
+						},
+						"unsubscribe_footer": {
+							"type": "string"
+						},
+						"footer_alignment": {
+							"type": "string",
+							"enum": [
+								"left",
+								"center",
+								"right"
+							]
+						},
+						"system_emails_from_address_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"system_emails_reply_to_address_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"marketing_emails_from_address_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"marketing_emails_reply_to_address_id": {
+							"type": [
+								"integer",
+								"null"
+							]
+						},
+						"address": {
+							"type": "object",
+							"properties": {
+								"address_one": {
+									"type": "string"
+								},
+								"address_two": {
+									"type": [
+										"string",
+										"null"
+									]
+								},
+								"city": {
+									"type": "string"
+								},
+								"postal_code": {
+									"type": "string"
+								},
+								"country_code": {
+									"type": "string"
+								},
+								"region": {
+									"type": "string"
+								}
+							},
+							"required": []
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		},
+		"PUT /workspaces/{}/site": {
+			"type": "object",
+			"properties": {
+				"site": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						},
+						"head_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"head_code_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						},
+						"footer_code": {
+							"type": [
+								"string",
+								"null"
+							]
+						},
+						"footer_code_mode": {
+							"type": "string",
+							"enum": [
+								"append",
+								"replace"
+							]
+						},
+						"homepage_id": {
+							"type": "string"
+						}
+					},
+					"required": []
+				}
+			},
+			"required": []
+		}
+	},
+	"filters": {
+		"GET /contacts/{}/applied_tags": [
+			"id",
+			"tag_id"
+		],
+		"GET /contacts/{}/events": [
+			"type"
+		],
+		"GET /contacts/{}/unsubscribed_topics": [
+			"contact_id",
+			"id",
+			"topic_id"
+		],
+		"GET /courses/{}/enrollments": [
+			"contact_id",
+			"id"
+		],
+		"GET /courses/{}/lesson_completions": [
+			"enrollment_id",
+			"lesson_id"
+		],
+		"GET /orders/{}/invoices": [
+			"external_id",
+			"id",
+			"invoice_number",
+			"invoice_type",
+			"status"
+		],
+		"GET /products/{}/prices": [
+			"archived",
+			"id",
+			"variant_id",
+			"visible"
+		],
+		"GET /products/{}/variants": [
+			"archived",
+			"fulfillment_required",
+			"id",
+			"visible"
+		],
+		"GET /sales/opportunities/{}/notes": [
+			"created_by_id",
+			"id"
+		],
+		"GET /sales/pipelines/{}/stages": [
+			"id"
+		],
+		"GET /survey_workflows/{}/runs": [
+			"contact_id",
+			"status"
+		],
+		"GET /webhooks/incoming/external_purchase_endpoints/{}/events": [
+			"event_type",
+			"id",
+			"processing_status"
+		],
+		"GET /workflows/{}/runs": [
+			"contact_id",
+			"current_step_id",
+			"status"
+		],
+		"GET /workspaces/{}/contacts": [
+			"email_address",
+			"id",
+			"is_active",
+			"tag_ids"
+		],
+		"GET /workspaces/{}/contacts/tags": [
+			"id",
+			"name"
+		],
+		"GET /workspaces/{}/contacts/unsubscribed_topics": [
+			"contact_id",
+			"id",
+			"topic_id"
+		],
+		"GET /workspaces/{}/discounts": [
+			"applies_to",
+			"code",
+			"discount_method",
+			"discount_type",
+			"id"
+		],
+		"GET /workspaces/{}/emails/addresses": [
+			"email_address",
+			"verified"
+		],
+		"GET /workspaces/{}/emails/broadcasts": [
+			"id",
+			"status"
+		],
+		"GET /workspaces/{}/form_submissions": [
+			"contact_id",
+			"id",
+			"page_id"
+		],
+		"GET /workspaces/{}/funnels": [
+			"id"
+		],
+		"GET /workspaces/{}/funnels/tags": [
+			"id",
+			"name"
+		],
+		"GET /workspaces/{}/orders": [
+			"contact_id",
+			"id",
+			"live_mode",
+			"order_type"
+		],
+		"GET /workspaces/{}/orders/invoices": [
+			"external_id",
+			"id",
+			"invoice_number",
+			"invoice_type",
+			"status"
+		],
+		"GET /workspaces/{}/pages": [
+			"funnel_ids",
+			"funnel_pages",
+			"id",
+			"theme_id"
+		],
+		"GET /workspaces/{}/products": [
+			"archived",
+			"id",
+			"visible_in_customer_center",
+			"visible_in_store"
+		],
+		"GET /workspaces/{}/products/collections": [
+			"archived",
+			"id",
+			"visible_in_store"
+		],
+		"GET /workspaces/{}/products/tags": [
+			"id"
+		],
+		"GET /workspaces/{}/refine_filters": [
+			"name"
+		],
+		"GET /workspaces/{}/sales/opportunities": [
+			"assignee_id",
+			"id",
+			"pipeline_id",
+			"pipelines_stage_id",
+			"primary_contact_id"
+		],
+		"GET /workspaces/{}/sales/pipelines": [
+			"id"
+		],
+		"GET /workspaces/{}/segments": [
+			"name"
+		],
+		"GET /workspaces/{}/stats": [],
+		"GET /workspaces/{}/webhooks/incoming/external_purchase_endpoints": [
+			"id",
+			"live_mode",
+			"provider"
+		]
+	}
+}

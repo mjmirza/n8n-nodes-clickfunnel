@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId, assertEventKey } from '../../transport';
 
 export async function handleWebhook(
 	ctx: IExecuteFunctions,
@@ -20,7 +20,7 @@ export async function handleWebhook(
 				.split(',')
 				.map((id) => id.trim())
 				.filter((id) => id.length > 0)
-				.map((id) => assertSafeId(id, 'Event Type ID'));
+				.map((id) => assertEventKey(id));
 
 			const body: IDataObject = {
 				webhooks_outgoing_endpoint: {
@@ -74,12 +74,13 @@ export async function handleWebhook(
 			const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
 
 			// Parse event_type_ids from comma-separated string to array if present
-			if (typeof updateFields.event_type_ids === 'string' && updateFields.event_type_ids) {
+			// A blank Event Type IDs field unsubscribes from everything, which the API expects as [].
+			if (typeof updateFields.event_type_ids === 'string') {
 				updateFields.event_type_ids = (updateFields.event_type_ids as string)
 					.split(',')
 					.map((id) => id.trim())
 					.filter((id) => id.length > 0)
-					.map((id) => assertSafeId(id, 'Event Type ID'));
+					.map((id) => assertEventKey(id));
 			}
 
 			const body: IDataObject = {
