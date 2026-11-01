@@ -130,18 +130,18 @@ export const formFieldFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Label',
-				name: 'label',
-				type: 'string',
-				default: '',
-				description: 'The label of the form field',
-			},
-			{
 				displayName: 'Field Type',
 				name: 'field_type',
 				type: 'string',
 				default: '',
 				description: 'The type of the form field',
+			},
+			{
+				displayName: 'Label',
+				name: 'label',
+				type: 'string',
+				default: '',
+				description: 'The label of the form field',
 			},
 			{
 				displayName: 'Placeholder',
@@ -151,18 +151,18 @@ export const formFieldFields: INodeProperties[] = [
 				description: 'Placeholder text for the field',
 			},
 			{
-				displayName: 'Required',
-				name: 'required',
-				type: 'boolean',
-				default: false,
-				description: 'Whether the field is required',
-			},
-			{
 				displayName: 'Position',
 				name: 'position',
 				type: 'number',
 				default: 0,
 				description: 'The position of the field in the field set',
+			},
+			{
+				displayName: 'Required',
+				name: 'required',
+				type: 'boolean',
+				default: false,
+				description: 'Whether the field is required',
 			},
 		],
 	},

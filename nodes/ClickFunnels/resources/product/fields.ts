@@ -119,11 +119,11 @@ export const productFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Name',
-				name: 'name',
-				type: 'string',
-				default: '',
-				description: 'The name of the product',
+				displayName: 'Commissionable',
+				name: 'commissionable',
+				type: 'boolean',
+				default: false,
+				description: 'Whether the product is commissionable',
 			},
 			{
 				displayName: 'Description',
@@ -140,18 +140,18 @@ export const productFields: INodeProperties[] = [
 				description: 'URL of the product image',
 			},
 			{
-				displayName: 'Commissionable',
-				name: 'commissionable',
-				type: 'boolean',
-				default: false,
-				description: 'Whether the product is commissionable',
-			},
-			{
 				displayName: 'Internal Name',
 				name: 'internal_name',
 				type: 'string',
 				default: '',
 				description: 'An internal-only name for the product',
+			},
+			{
+				displayName: 'Name',
+				name: 'name',
+				type: 'string',
+				default: '',
+				description: 'The name of the product',
 			},
 		],
 	},
@@ -180,7 +180,7 @@ export const productFields: INodeProperties[] = [
 			minValue: 1,
 			maxValue: 100,
 		},
-		default: 20,
+		default: 50,
 		description: 'Max number of results to return',
 		displayOptions: {
 			show: {

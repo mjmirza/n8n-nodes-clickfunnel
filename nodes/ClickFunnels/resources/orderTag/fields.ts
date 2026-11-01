@@ -48,7 +48,7 @@ export const orderTagFields: INodeProperties[] = [
 			{
 				displayName: 'Color',
 				name: 'color',
-				type: 'string',
+				type: 'color',
 				default: '',
 				description: 'Color of the tag (e.g. "#FF5733")',
 			},
@@ -165,7 +165,7 @@ export const orderTagFields: INodeProperties[] = [
 			{
 				displayName: 'Color',
 				name: 'color',
-				type: 'string',
+				type: 'color',
 				default: '',
 				description: 'Color of the tag (e.g. "#FF5733")',
 			},

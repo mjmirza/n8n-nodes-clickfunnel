@@ -5,6 +5,9 @@ import {
 	INodeTypeDescription,
 	NodeConnectionTypes,
 	IDataObject,
+	JsonObject,
+	NodeApiError,
+	NodeOperationError,
 } from 'n8n-workflow';
 
 // ---------------------------------------------------------------------------
@@ -247,7 +250,7 @@ export class ClickFunnels implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'ClickFunnels',
 		name: 'clickFunnels',
-		icon: 'file:clickfunnels.svg',
+		icon: { light: 'file:clickfunnels.svg', dark: 'file:clickfunnels.dark.svg' },
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -285,8 +288,8 @@ export class ClickFunnels implements INodeType {
 					{ name: 'Form Field Option', value: 'formFieldOption' },
 					{ name: 'Form Field Set', value: 'formFieldSet' },
 					{ name: 'Form Submission', value: 'formSubmission' },
-					{ name: 'Form Submission Answer', value: 'formSubmissionAnswer' },
 					{ name: 'Form Submission (Legacy)', value: 'legacyFormSubmission' },
+					{ name: 'Form Submission Answer', value: 'formSubmissionAnswer' },
 					{ name: 'Fulfillment', value: 'fulfillment' },
 					{ name: 'Fulfillment Location', value: 'fulfillmentLocation' },
 					{ name: 'Funnel', value: 'funnel' },
@@ -448,7 +451,7 @@ export class ClickFunnels implements INodeType {
 		const handler = resourceHandlers[resource];
 
 		if (!handler) {
-			throw new Error(`Unknown resource: ${resource}`);
+			throw new NodeOperationError(this.getNode(), `Unknown resource: ${resource}`);
 		}
 
 		for (let i = 0; i < items.length; i++) {
@@ -496,7 +499,11 @@ export class ClickFunnels implements INodeType {
 					});
 					continue;
 				}
-				throw error;
+				if (error instanceof NodeApiError) {
+					// The NodeApiError constructor returns an existing NodeApiError unchanged, keeping its HTTP context.
+					throw new NodeApiError(this.getNode(), error as unknown as JsonObject, { itemIndex: i });
+				}
+				throw new NodeOperationError(this.getNode(), error as Error, { itemIndex: i });
 			}
 		}
 
