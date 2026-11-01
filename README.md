@@ -166,6 +166,10 @@ Version 2.0.0 fixes requests that did not match the ClickFunnels API. Some saved
 | Form field sets, users, shipping | Routes now match the API. Location groups are listed per shipping profile, zones per location group, shipping rates need a **Rate Name ID**, fulfillment locations need an **Email Address** | Fill in the new fields |
 | Get Many limit | The default limit is 50, as n8n requires for verified nodes. 1.1.x used 20 | Set the limit explicitly if a workflow relied on 20 |
 
+### Known limitation
+
+A ClickFunnels Trigger activated by a release before 3.0.0 does not have the workspace it was activated under saved. If that trigger uses a public Workspace ID and you switch it to another public ID, the old webhook endpoint is kept and keeps delivering the old workspace's events. Workaround: after switching the workspace, deactivate the workflow and activate it again. That registers a new endpoint for the new workspace. Triggers activated on 3.0.0 or later replace the endpoint on their own.
+
 ## Compatibility
 
 | Item | Support |
@@ -193,7 +197,7 @@ credentials/
   ClickFunnelsApi.credentials.ts    Bearer token auth and credential test
 nodes/ClickFunnels/
   ClickFunnels.node.ts              Action node, 52 resources
-  ClickFunnelsTrigger.node.ts       Webhook trigger, 28 events
+  ClickFunnelsTrigger.node.ts       Webhook trigger, 83 events
   transport.ts                      HTTP client, retry, pagination, validation
   resources/<resource>/             operations.ts, fields.ts, handler.ts
 tests/                              Jest unit and failure-path tests

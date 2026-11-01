@@ -21,7 +21,7 @@ const UNSUPPORTED = ['discount_amount', 'notes', 'subtotal_amount', 'tax_amount'
 /** Builds an orders_invoice body, mapping 1.x field names and filling paid_at for a paid invoice. */
 // Line item keys per the orders_invoice schema. Create adds items, update changes existing ones by ID.
 const LINE_ITEM_KEYS = {
-	create: { allowed: ['amount', 'quantity', 'variant_id', 'products_price_id'], required: ['amount', 'quantity', 'variant_id', 'products_price_id'] },
+	create: { allowed: ['amount', 'quantity', 'variant_id', 'products_price_id', 'description'], required: ['amount', 'quantity', 'variant_id', 'products_price_id'] },
 	update: { allowed: ['id', 'amount', 'quantity', 'description'], required: ['id'] },
 };
 
@@ -33,7 +33,7 @@ function lineItems(items: unknown[], isCreate: boolean): IDataObject[] {
 		const missing = rules.required.filter((k) => item[k] === undefined || item[k] === '');
 		if (extra.length > 0 || missing.length > 0) {
 			throw new Error(
-				`Line item ${n + 1} must have ${rules.required.join(', ')}${isCreate ? '' : ' and may have amount, quantity, description'}. ${
+				`Line item ${n + 1} must have ${rules.required.join(', ')}${isCreate ? ' and may have description' : ' and may have amount, quantity, description'}. ${
 					missing.length ? `Missing ${missing.join(', ')}. ` : ''
 				}${extra.length ? `Not accepted: ${extra.join(', ')}.` : ''}`.trim(),
 			);

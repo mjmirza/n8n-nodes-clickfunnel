@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.1] - 2026-11-01
+
+From the confirming review of the published 3.0.0.
+
+### Fixed
+- Invoice create accepts a `description` on line items. The create schema allows it, and 3.0.0 rejected it with `Not accepted: description` before any request.
+- The README project layout lists the trigger as 83 events, the number it offers. It said 28.
+
+### Documentation
+- The README names a known limitation. A trigger activated before 3.0.0 keeps its old endpoint after a switch between public Workspace IDs. Deactivate and reactivate the workflow after switching.
+
 ## [3.0.0] - 2026-11-01
 
 Fixes from the third and fourth adversarial reviews, of 2.0.0 and of a 2.1.0 candidate that was never published. **Breaking** for version 1 nodes that set a field ClickFunnels does not accept, see below. Every request shape was checked against the ClickFunnels OpenAPI document (https://accounts.myclickfunnels.com/openapi.json) and the webhook event catalog. The README has an upgrade table.
