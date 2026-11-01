@@ -54,11 +54,11 @@ export const courseSectionFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Name',
+				displayName: 'Title',
 				name: 'name',
 				type: 'string',
 				default: '',
-				description: 'The name of the course section',
+				description: 'The title of the course section, sent as title',
 			},
 			{
 				displayName: 'Position',

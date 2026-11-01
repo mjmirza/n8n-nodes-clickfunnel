@@ -58,11 +58,8 @@ export async function handleOrderInvoice(
 			const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
 			const externalId = String(ctx.getNodeParameter('externalId', i, '') ?? '').trim();
 			if (!externalId) throw new Error('External ID is required by the ClickFunnels invoice API');
-			// Version 1 nodes keep the status inside Additional Fields, version 2 has a top-level Status.
-			const status =
-				ctx.getNode().typeVersion < 2
-					? (additionalFields.status as string) || 'unpaid'
-					: (ctx.getNodeParameter('invoiceStatus', i, 'unpaid') as string) || 'unpaid';
+			// Status lives in Additional Fields on both node versions, so switching versions keeps it.
+			const status = (additionalFields.status as string) || 'unpaid';
 
 			const body: IDataObject = {
 				orders_invoice: invoiceBody({

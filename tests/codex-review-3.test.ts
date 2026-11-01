@@ -107,7 +107,7 @@ describe('high findings', () => {
 	it('6. invoices send external_id, a valid status and paid_at', async () => {
 		const v2 = { ...TEST_NODE, typeVersion: 2 };
 		const http: HttpMock = jest.fn(async (_opts) => ({}));
-		const ctx = { ...(makeCtx({ orderId: '1', externalId: 'inv-1', invoiceStatus: 'paid', additionalFields: {} }, http) as object), getNode: () => v2 };
+		const ctx = { ...(makeCtx({ orderId: '1', externalId: 'inv-1', additionalFields: { status: 'paid' } }, http) as object), getNode: () => v2 };
 		await handleOrderInvoice(ctx as never, 'create', 0);
 		const inv = (calls(http)[0].body as IDataObject).orders_invoice as IDataObject;
 		expect(inv).toMatchObject({ external_id: 'inv-1', status: 'paid' });

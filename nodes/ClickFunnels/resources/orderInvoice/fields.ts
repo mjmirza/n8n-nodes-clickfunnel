@@ -133,6 +133,15 @@ const EXTERNAL_ID: INodeProperties = {
 	default: '',
 };
 
+const STATUS: INodeProperties = {
+	displayName: 'Status',
+	name: 'status',
+	type: 'options',
+	options: STATUS_OPTIONS,
+	default: 'unpaid',
+	description: 'Unpaid when not set',
+};
+
 const byName = (a: INodeProperties, b: INodeProperties) => a.displayName.localeCompare(b.displayName);
 const V1 = { '@version': [1] };
 const V2 = { '@version': [2] };
@@ -168,21 +177,6 @@ export const orderInvoiceFields: INodeProperties[] = [
 		},
 	},
 	{
-		displayName: 'Status',
-		name: 'invoiceStatus',
-		type: 'options',
-		options: STATUS_OPTIONS,
-		required: true,
-		default: 'unpaid',
-		displayOptions: {
-			show: {
-				resource: ['orderInvoice'],
-				operation: ['create'],
-				...V2,
-			},
-		},
-	},
-	{
 		displayName: 'Additional Fields',
 		name: 'additionalFields',
 		type: 'collection',
@@ -195,7 +189,7 @@ export const orderInvoiceFields: INodeProperties[] = [
 				...V2,
 			},
 		},
-		options: [...SHARED_OPTIONAL, INVOICE_TYPE],
+		options: [...SHARED_OPTIONAL, INVOICE_TYPE, STATUS].sort(byName),
 	},
 	{
 		displayName: 'Additional Fields',

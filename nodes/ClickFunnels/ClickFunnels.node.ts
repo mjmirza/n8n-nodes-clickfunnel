@@ -1,3 +1,4 @@
+import { legacyFieldsSet, splitLegacyFields } from './legacyFields';
 import {
 	IExecuteFunctions,
 	INodeExecutionData,
@@ -246,7 +247,7 @@ const resourceHandlers: Record<
 // Node definition
 // ---------------------------------------------------------------------------
 
-// Parameters that 2.0.0 and 2.1.0 made required to match the ClickFunnels API. Nodes saved on
+// Parameters that 2.0.0 and 3.0.0 made required to match the ClickFunnels API. Nodes saved on
 // version 1 do not have them, so they get a precise instruction instead of an opaque API error.
 export const REQUIRED_SINCE_V2: Record<string, Record<string, Array<[string, string]>>> = {
 	formField: { create: [['key', 'Key']] },
@@ -279,7 +280,7 @@ export function migrationMessage(resource: string, operation: string, get: (name
 	const missing = required.filter(([name]) => isEmpty(get(name)));
 	if (missing.length === 0) return undefined;
 	return (
-		`This ${resource} ${operation} node was saved on node version 1, before the ClickFunnels API fixes in 2.0.0 and 2.1.0. Open the node and set ${missing.map(([, label]) => label).join(', ')}. See the upgrade notes in the README.`
+		`This ${resource} ${operation} node was saved on node version 1, before the ClickFunnels API fixes in 2.0.0 and 3.0.0. Open the node and set ${missing.map(([, label]) => label).join(', ')}. See the upgrade notes in the README.`
 	);
 }
 
@@ -306,7 +307,7 @@ export class ClickFunnels implements INodeType {
 				required: true,
 			},
 		],
-		properties: [
+		properties: splitLegacyFields([
 			// --- resource selector -----------------------------------------
 			{
 				displayName: 'Resource',
@@ -477,7 +478,7 @@ export class ClickFunnels implements INodeType {
 			...webhookFields,
 			...webhookEventFields,
 			...workspaceFields,
-		],
+		]),
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -498,6 +499,14 @@ export class ClickFunnels implements INodeType {
 				if (version < 2) {
 					const migration = migrationMessage(resource, operation, (name) => this.getNodeParameter(name, i, ''));
 					if (migration) throw new NodeOperationError(this.getNode(), migration, { itemIndex: i });
+					const legacy = legacyFieldsSet(resource, (name) => this.getNodeParameter(name, i, undefined));
+					if (legacy.length > 0) {
+						throw new NodeOperationError(
+							this.getNode(),
+							`ClickFunnels does not accept ${legacy.join(', ')} for this ${resource} operation. Clear these fields, they are marked Not Accepted by the API, or switch the node to version 2.`,
+							{ itemIndex: i },
+						);
+					}
 				}
 				const result = await handler(this, operation, i);
 

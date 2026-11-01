@@ -33,12 +33,12 @@ export async function handleProductVariant(
 			const name = ctx.getNodeParameter('name', i) as string;
 			const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
 
-			const body: IDataObject = {
-				products_variant: {
-					name,
-					...withPropertyValues(ctx, additionalFields, i),
-				} as IDataObject,
-			};
+			const productType = ctx.getNodeParameter('productType', i, 'digital') as string;
+			const variant: IDataObject = { name, product_type: productType, ...withPropertyValues(ctx, additionalFields, i) };
+			// weight_unit and properties_values are required by the API even for digital variants.
+			if (variant.weight_unit === undefined || variant.weight_unit === '') variant.weight_unit = 'lb';
+			if (variant.properties_values === undefined) variant.properties_values = [];
+			const body: IDataObject = { products_variant: variant };
 
 			return clickFunnelsRequest(
 				ctx,

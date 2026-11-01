@@ -1,10 +1,15 @@
 # Changelog
 
-## [2.1.0] - 2026-11-01
+## [3.0.0] - 2026-11-01
 
-Fixes from a third adversarial review, of 2.0.0. Every request shape was checked against the ClickFunnels OpenAPI document (https://accounts.myclickfunnels.com/openapi.json) and the webhook event catalog. The README has an upgrade table.
+Fixes from the third and fourth adversarial reviews, of 2.0.0 and of a 2.1.0 candidate that was never published. **Breaking** for version 1 nodes that set a field ClickFunnels does not accept, see below. Every request shape was checked against the ClickFunnels OpenAPI document (https://accounts.myclickfunnels.com/openapi.json) and the webhook event catalog. The README has an upgrade table.
+
+### Breaking
+- Fields the ClickFunnels request schemas do not accept are gone from version 2 and kept on version 1, marked Not Accepted by the API. A version 1 node with one of them set stops before any request and names the fields. 2.0.0 sent them and ClickFunnels did nothing with them. The full list is in the README upgrade table. Form field option nodes on version 1 always carry Value, so they need switching to version 2.
 
 ### Added
+- A body contract test. Every operation runs twice, once with every field the UI offers and once with only the required ones, and each request body is checked against the OpenAPI request schema, including enums and required keys. `scripts/snapshot-openapi-bodies.py` regenerates the fixture.
+- Product Type on product variant create (required) and update.
 - Node version 2 for the ClickFunnels and ClickFunnels Trigger nodes. 2.0.0 changed required parameters while keeping version 1, so saved workflows had no migration path. Saved nodes stay on version 1 with their values intact, and a version 1 node that lacks a field the API now requires stops before any request and names the field.
 - The trigger offers all 83 user-selectable event types from the ClickFunnels catalog, including blogs, communities, course lessons and sections, email broadcasts, invoice restocks, surveys and videos.
 - Store create and update offer SEO Indexable.
@@ -16,7 +21,7 @@ Fixes from a third adversarial review, of 2.0.0. Every request shape was checked
 - Trigger event values match the ClickFunnels catalog. 1.x spellings with a documented equivalent (`course.enrollment.created`, `form.submission.created`, `order.invoice.created`, `subscription.cancelled` and others) are sent with the documented key. Values ClickFunnels never had stop activation with an error naming them.
 - The trigger replaces its endpoint when the selected events change. Before, a reactivation kept the old subscriptions.
 - The trigger existence check only treats a 404 as a missing endpoint. A 401 or an outage used to count as missing, which created a duplicate endpoint and replaced the stored secret.
-- Order invoice create sends the required `external_id` (new External ID field) and a documented status. Statuses are `unpaid`, `paid`, `past-due`, `refunded`, `voided`, `disputed`. `paid_at` is set for a paid invoice when left empty. Due At, Issued At, Paid At, Invoice Number, Shipping Amount, Invoice Type and Line Items are available. On version 1 nodes Draft and Open are sent as unpaid and Due Date as Due At, and the amount fields and Notes are rejected with an error because the schema has no such fields.
+- Order invoice create sends the required `external_id` (new External ID field) and a documented status. Status stays in Additional Fields on both node versions, so switching a node to version 2 keeps a saved status. Statuses are `unpaid`, `paid`, `past-due`, `refunded`, `voided`, `disputed`. `paid_at` is set for a paid invoice when left empty. Due At, Issued At, Paid At, Invoice Number, Shipping Amount, Invoice Type and Line Items are available. On version 1 nodes Draft and Open are sent as unpaid and Due Date as Due At, and the amount fields and Notes are rejected with an error because the schema has no such fields.
 - Shipping package create sends `distance_unit` and the required `package_type` (new Package Type field).
 - Sales pipeline create sends the required `stages_attributes` (new Stages field).
 - Pipeline stages use the `sales_pipelines_stage` wrapper with `sort_order` and the required `close_probability` (new Close Probability field).
@@ -28,6 +33,10 @@ Fixes from a third adversarial review, of 2.0.0. Every request shape was checked
 - Theme rename sends `custom_name`.
 - Store edits send the documented fields. Description on version 1 nodes is sent as `seo_description`, Domain is rejected.
 - Max Pages descriptions state 100 records per page. They said 50.
+- Product price update no longer sets `payment_type` to subscription when only the interval changes. That turned payment plans into subscriptions.
+- Product variant create sends the required `product_type`, `weight_unit` and `properties_values`.
+- Course lesson and section updates send the title as `title`.
+- Form field options send only `label`, the one field the option schema accepts.
 
 ### Changed
 - On version 2 an empty list returns no items, so downstream nodes do not run on nothing. Use Always Output Data to continue. Version 1 keeps its `{ success: true, count: 0 }` item.

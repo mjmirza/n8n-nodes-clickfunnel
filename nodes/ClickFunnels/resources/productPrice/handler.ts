@@ -11,7 +11,7 @@ const LEGACY_INTERVALS: Record<string, string> = {
 const DECIMAL_FIELDS = ['amount', 'compare_at_amount', 'setup_amount', 'trial_amount'];
 
 // Amounts are decimal strings ("19.99"), intervals are plural. Saved 1.x values are mapped forward.
-function toPriceBody(fields: IDataObject): IDataObject {
+function toPriceBody(fields: IDataObject, isCreate: boolean): IDataObject {
 	const { trial_interval_count: trialCount, ...price } = fields;
 	for (const key of DECIMAL_FIELDS) {
 		if (price[key] !== undefined && price[key] !== null && price[key] !== '') price[key] = String(price[key]);
@@ -23,7 +23,8 @@ function toPriceBody(fields: IDataObject): IDataObject {
 		else if (value && LEGACY_INTERVALS[value]) price[key] = LEGACY_INTERVALS[value];
 	}
 	if (fields.interval === 'one_time' && !price.payment_type) price.payment_type = 'one_time';
-	if (price.interval && !price.payment_type) price.payment_type = 'subscription';
+	// Only a new price defaults to a subscription. An update must not turn a payment plan into one.
+	if (isCreate && price.interval && !price.payment_type) price.payment_type = 'subscription';
 	return price;
 }
 
@@ -43,7 +44,7 @@ export async function handleProductPrice(
 			const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
 
 			const body: IDataObject = {
-				products_price: toPriceBody({ ...additionalFields, amount, currency }),
+				products_price: toPriceBody({ ...additionalFields, amount, currency }, true),
 			};
 
 			return clickFunnelsRequest(
@@ -90,7 +91,7 @@ export async function handleProductPrice(
 			const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
 
 			const body: IDataObject = {
-				products_price: toPriceBody({ ...updateFields }),
+				products_price: toPriceBody({ ...updateFields }, false),
 			};
 
 			return clickFunnelsRequest(ctx, 'PUT', `/products/prices/${priceId}`, body);

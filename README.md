@@ -115,18 +115,22 @@ The **ClickFunnels Trigger** node registers a webhook endpoint in your workspace
 
 Workflow-stamped event types (for example `workflows/steps/deliver_webhook_step.executed`) are not offered, because ClickFunnels rejects them on an endpoint you create.
 
-## Upgrading to 2.1.0
+## Upgrading to 3.0.0
 
-2.1.0 adds **node version 2** for both nodes. New nodes are version 2. Saved workflows stay on version 1 and keep their saved values. Open a node and choose the newer version when you are ready.
+3.0.0 is a major release. It adds **node version 2** for both nodes. New nodes are version 2. Saved workflows stay on version 1 and keep their saved values. Open a node and choose the newer version when you are ready.
 
 | Area | What changed | What to do |
 |------|--------------|------------|
 | Saved version 1 nodes that lack a field the API requires | The node stops before any request and names the missing field, instead of failing with an API error | Open the node and fill in the named field |
+| Fields ClickFunnels never accepted | Version 2 no longer offers them. Version 1 keeps them, marked Not Accepted by the API, and a node that has one set stops before any request. Affected: lesson and section Position, form Description and Redirect URL, form field Placeholder, Position and Required, form field option Value, field set Description and Position, form submission Page ID, order Currency, In Trial, Origination Channel Type and Total Amount, product Description, Image URL and Internal Name, variant Price, shipping rate Min and Max Price and Weight and rate Name | Clear the field, or switch the node to version 2. Form field option nodes on version 1 always carry Value, so switch them to version 2 |
+| Course lesson and section update | Name is sent as `title` and shown as Title | None |
+| Product variant create | Sends the required `product_type` (new **Product Type**, Digital by default), `weight_unit` (Pounds when not set) and `properties_values` (empty when not set). Update offers Product Type | Choose Physical for goods that ship |
+| Product price update | An interval change no longer sets the payment type to subscription | Set Payment Type explicitly when you mean to change it |
 | Return All | Pages until the API runs dry, the old 50 page cap is gone. On version 2 a Max Pages limit that cuts the result short stops with an error. Version 1 nodes with Max Pages keep returning the first pages | Raise Max Pages or narrow the request |
 | Empty lists | Version 2 returns no items, so later nodes do not run. Version 1 keeps its single `{ success: true, count: 0 }` item | Turn on **Always Output Data** if a version 2 workflow must continue on an empty result |
 | Trigger events | Event keys match the ClickFunnels catalog. Version 1 triggers keep their 1.x values. Course enrollment, form submission, order invoice and subscription cancel values are sent with the documented key. Values ClickFunnels never had (funnel, purchase, one-time order created or updated, subscription created or updated, lesson completed) stop activation with an error | Replace those events and reactivate |
 | Webhook Endpoint | Event Type IDs accept the documented keys such as `contact.created` or `orders/invoice.paid` | None |
-| Order invoice | **External ID** is required. Status values are `unpaid`, `paid`, `past-due`, `refunded`, `voided`, `disputed`. Paid at is filled with the current time for a paid invoice. Draft and Open on version 1 nodes are sent as unpaid, Due Date as Due At. Amount fields and Notes are rejected, the API has no such fields | Fill in External ID and remove the amount fields |
+| Order invoice | **External ID** is required. Status stays in Additional Fields on both versions, unpaid when not set. Status values are `unpaid`, `paid`, `past-due`, `refunded`, `voided`, `disputed`. Paid at is filled with the current time for a paid invoice. Draft and Open on version 1 nodes are sent as unpaid, Due Date as Due At. Amount fields and Notes are rejected, the API has no such fields | Fill in External ID and remove the amount fields |
 | Form submission answer | The answer text is sent as `entry`, so answers are no longer empty | None |
 | Form field create | **Key** is required | Fill in Key |
 | Lesson completion | Created and listed per course, with **Course ID** and **Enrollment ID**. Lesson ID filters the list | Fill in the new fields |
