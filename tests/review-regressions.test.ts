@@ -86,3 +86,17 @@ describe('variant property map IDs', () => {
 		expect(http).not.toHaveBeenCalled();
 	});
 });
+
+describe('README coverage claim', () => {
+	// R0-20. The README must not promise that every workflow avoids raw HTTP calls.
+	const readme = (): string => require('fs').readFileSync(require('path').join(__dirname, '..', 'README.md'), 'utf8');
+
+	it('does not claim complete API coverage', () => {
+		expect(readme()).not.toMatch(/never (need|require)[^.\n]*(raw )?HTTP/i);
+	});
+
+	it('names the uncovered survey resources and points to the HTTP Request node', () => {
+		expect(readme()).toMatch(/Not covered yet[^\n]*survey/i);
+		expect(readme()).toMatch(/HTTP Request node/);
+	});
+});
