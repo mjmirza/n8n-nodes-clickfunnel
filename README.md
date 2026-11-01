@@ -10,9 +10,9 @@ Run your ClickFunnels 2.0 workspace from n8n. Contacts, orders, products, course
 
 ## What you get
 
-- **Leads land in your CRM the moment they opt in.** The trigger fires on new contacts, orders, subscriptions, purchases and form submissions, so nobody copies data between tabs.
+- **Leads land in your CRM the moment they opt in.** The trigger fires on new contacts, orders, invoices, subscriptions, course enrollments and form submissions, so nobody copies data between tabs.
 - **Orders and fulfillment stay in sync.** Create orders with their line items, fulfill invoice line items, update and cancel fulfillments, and read restocks from any workflow.
-- **One node for the whole workspace.** 52 resources and 210 operations, so a workflow never needs a raw HTTP call for ClickFunnels.
+- **One node for most of the workspace.** 52 resources and 210 operations. Not covered yet: survey definitions and survey runs, plus resources such as blogs, communities and videos. Use the HTTP Request node with the ClickFunnels credential for those.
 - **Fewer broken runs.** Reads, updates and deletes are retried with backoff on rate limits and short outages. Creates are never replayed, so a retry cannot duplicate an order or a contact. Failures show the ClickFunnels status code in n8n instead of a vague error.
 - **Safe by default.** Your token never appears in error messages and is only ever sent to your `*.myclickfunnels.com` workspace, IDs are validated before a request leaves n8n, and the trigger rejects any webhook call without a valid ClickFunnels signature.
 
@@ -21,7 +21,7 @@ Run your ClickFunnels 2.0 workspace from n8n. Contacts, orders, products, course
 1. In n8n, open **Settings**, then **Community Nodes**, select **Install** and enter `n8n-nodes-clickfunnel`.
 2. In ClickFunnels, create an API access token. The steps are in the ClickFunnels [getting started guide](https://developers.myclickfunnels.com/docs/getting-started).
 3. In n8n, add a **ClickFunnels API** credential with your workspace subdomain and the token. n8n tests it on save.
-4. Add the **ClickFunnels** node, choose the resource **Contact** and the operation **Get Many**, then select **Execute step**.
+4. Add the **ClickFunnels** node, choose the resource **Contact** and the operation **Get Many**, and enter your **Workspace ID**. It is the number in your workspace URLs, or the `id` from the **Workspace** resource with **Get Many**. Then select **Execute step**.
 5. Your contacts appear in the output panel. From here, connect them to any other node.
 
 ## Credentials
@@ -92,20 +92,63 @@ The credential is verified on save with a request to `GET /teams`. Tokens are cr
 
 ## Trigger events
 
-The **ClickFunnels Trigger** node registers a webhook endpoint in your workspace when the workflow is activated and removes it when the workflow is deactivated. It covers 28 events.
+The **ClickFunnels Trigger** node registers a webhook endpoint in your workspace when the workflow is activated and removes it when the workflow is deactivated. It offers every event type ClickFunnels lets you pick for an endpoint, 83 in all, from the [webhook event catalog](https://developers.myclickfunnels.com/docs/webhook-event-types). Changing the selected events or the Workspace ID replaces the endpoint on the next activation.
 
 | Area | Events |
 |------|--------|
-| Contact | Created, Updated, Deleted, Identified |
-| Course | Enrollment created, Enrollment updated, Lesson completed |
+| Appointment | Scheduled event created, canceled, rescheduled |
+| Blog | Post created, updated, published, deleted |
+| Community | Post created, post comment created |
+| Contact | Created, updated, deleted, identified, applied tag created and deleted |
+| Course | Created, updated, published, deleted. Enrollment created, updated, suspended, deleted, course completed. Lesson and section created, updated, published, deleted |
+| Email | Broadcast created, scheduled, updated, completed, deleted |
 | Form | Submission created |
-| Fulfillment | Created, Updated |
-| Funnel | Created, Updated |
-| Order | Created, Updated, Invoice created, Invoice updated |
-| One-Time Order | Created, Updated |
-| Product | Created, Updated |
-| Purchase | Created, Updated |
-| Subscription | Created, Updated, Cancelled, Uncancelled, Upgraded, Downgraded |
+| Fulfillment | Created, updated |
+| Order | Created, updated, completed, deleted. Invoice created, updated, paid, fulfilled, past due, abandoned, refunded, reissued, voided. Invoice restock created, updated. Transaction created, updated |
+| One-Time Order | Refunded |
+| Platform Application | Disconnected |
+| Product | Created, updated, variant created, variant updated |
+| Sales | Opportunity created, updated, moved stage, closed, deleted |
+| Subscription | Activated, canceled, churned, completed, downgraded, upgraded, modified, reactivated, first payment received, trial started, trial ended, trial converted |
+| Survey | Run completed |
+| Video | Processed, failed |
+
+Workflow-stamped event types (for example `workflows/steps/deliver_webhook_step.executed`) are not offered, because ClickFunnels rejects them on an endpoint you create.
+
+## Upgrading to 3.0.0
+
+3.0.0 is a major release. It adds **node version 2** for both nodes. New nodes are version 2. Saved workflows stay on version 1 and keep their saved values. Open a node and choose the newer version when you are ready.
+
+| Area | What changed | What to do |
+|------|--------------|------------|
+| Saved version 1 nodes that lack a field the API requires | The node stops before any request and names the missing field, instead of failing with an API error | Open the node and fill in the named field |
+| Fields ClickFunnels never accepted | Version 2 no longer offers them. Version 1 keeps them, marked Not Accepted by the API. A node that has one set to anything other than its default stops before any request, and a default value such as an unticked Required or a Position of 0 is left out of the request. Affected: contact After Date and Before Date filters, lesson and section Position, form Description and Redirect URL, form field Placeholder, Position and Required, field set Description and Position, form submission Page ID, order Currency, In Trial, Origination Channel Type and Total Amount, product Description, Image URL and Internal Name, variant Price, shipping rate Min and Max Price and Weight and rate Name | Clear the field, or switch the node to version 2 |
+| Form field option Value | ClickFunnels stores only the label. Version 2 no longer shows Value. Version 1 keeps it, marked Ignored, and creates the option without it, as before | None |
+| Contact tags | On version 2 an empty Tag IDs field on Update clears the contact's tags. Upsert cannot clear tags, ClickFunnels ignores an empty list there. Version 1 leaves them unchanged | Remove the Tag IDs field if a version 2 node must keep tags |
+| Contact address | A new billing address needs Address Line 1, City, Country and Zip. A create, or an upsert for a contact without an address, with fewer fails before anything is written. On version 2 an empty Address Line 2 or State clears it, and an empty required address field is rejected | Fill in the full address |
+| Contact Get Many filters | New IDs and Is Active filters, the documented `filter[id]` and `filter[is_active]` | None |
+| Course lesson and section update | Name is sent as `title` and shown as Title | None |
+| Product variant create | Sends the required `product_type` (new **Product Type**, Digital by default), `weight_unit` (Pounds when not set) and `properties_values` (empty when not set). Update offers Product Type | Choose Physical for goods that ship |
+| Product price create | Recurring prices send an interval count, 1 when not set. A subscription needs an Interval and a payment plan a Duration | Fill them in |
+| Trigger endpoint cleanup | A failed delete keeps the endpoint tracked. Replacing an endpoint whose delete fails stops activation with the API error | Fix the token permissions and reactivate |
+| Webhook Endpoint update | A blank Event Type IDs field unsubscribes from every event | Remove the field if you meant to keep the subscriptions |
+| Product price update | An interval change no longer sets the payment type to subscription | Set Payment Type explicitly when you mean to change it |
+| Return All | Pages until the API runs dry, the old 50 page cap is gone. On version 2 a Max Pages limit that cuts the result short stops with an error. Version 1 nodes with Max Pages keep returning the first pages | Raise Max Pages or narrow the request |
+| Empty lists | Version 2 returns no items, so later nodes do not run. Version 1 keeps its single `{ success: true, count: 0 }` item | Turn on **Always Output Data** if a version 2 workflow must continue on an empty result |
+| Trigger events | Event keys match the ClickFunnels catalog. Version 1 triggers keep their 1.x values. Course enrollment, form submission, order invoice and subscription cancel values are sent with the documented key. Values ClickFunnels never had (funnel, purchase, one-time order created or updated, subscription created or updated, lesson completed) stop activation with an error | Replace those events and reactivate |
+| Webhook Endpoint | Event Type IDs accept the documented keys such as `contact.created` or `orders/invoice.paid` | None |
+| Order invoice | **External ID** is required. Status stays in Additional Fields on both versions, unpaid when not set. Status values are `unpaid`, `paid`, `past-due`, `refunded`, `voided`, `disputed`. Paid at is filled with the current time for a paid invoice. Draft and Open on version 1 nodes are sent as unpaid, Due Date as Due At. Amount fields and Notes are rejected, the API has no such fields | Fill in External ID and remove the amount fields |
+| Form submission answer | The answer text is sent as `entry`, so answers are no longer empty | None |
+| Form field create | **Key** is required | Fill in Key |
+| Lesson completion | Created and listed per course, with **Course ID** and **Enrollment ID**. Lesson ID filters the list | Fill in the new fields |
+| Page Get Many | Listed per workspace with **Workspace ID**. Funnel ID is an optional filter | Fill in Workspace ID |
+| Sales opportunity | Created and listed per workspace with **Workspace ID** and **Stage ID**. Pipeline ID filters the list | Fill in the new fields |
+| Sales pipeline create | **Stages** is required, as a JSON array of name and close probability | Fill in Stages |
+| Pipeline stage | Sent as `sales_pipelines_stage` with `sort_order` and a required **Close Probability** (defaults to 0) | Check the probability |
+| Opportunity note | Sent as `sales_opportunities_note.content` | None |
+| Shipping package | Sends `distance_unit` and a required **Package Type** (defaults to Box) | Check the package type |
+| Store | Writes the documented fields, including SEO title and description. Description on version 1 nodes is sent as SEO description, Domain is rejected | Remove Domain |
+| Theme rename | Sent as `custom_name` | None |
 
 ## Upgrading from 1.x
 

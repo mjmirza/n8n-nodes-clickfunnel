@@ -259,7 +259,7 @@ export const orderFields: INodeProperties[] = [
 			minValue: 1,
 		},
 		default: 10,
-		description: 'Maximum number of pages to fetch (50 results per page)',
+		description: 'Maximum number of pages to read, 100 records each. On node version 2 the node stops with an error if more records remain, so nothing is dropped silently.',
 		displayOptions: {
 			show: {
 				resource: ['order'],

@@ -25,8 +25,10 @@ export async function handleCourseSection(
 			'Section ID',
 		);
 		const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
+		// The API names the lesson and section title "title". Saved nodes keep the parameter name "name".
+		const { name, ...rest } = updateFields;
 		const body: IDataObject = {
-			courses_section: { ...updateFields } as IDataObject,
+			courses_section: (name === undefined || name === '' ? rest : { ...rest, title: name }) as IDataObject,
 		};
 		return clickFunnelsRequest(ctx, 'PUT', `/courses/sections/${sectionId}`, body);
 	}

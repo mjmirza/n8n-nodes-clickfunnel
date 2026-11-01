@@ -1,6 +1,19 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 export const shippingPackageFields: INodeProperties[] = [
+	{
+		displayName: 'Package Type',
+		name: 'packageType',
+		type: 'options',
+		options: [
+			{ name: 'Box', value: 'box' },
+			{ name: 'Envelope', value: 'envelope' },
+			{ name: 'Soft Package', value: 'soft_package' },
+		],
+		required: true,
+		default: 'box',
+		displayOptions: { show: { resource: ['shippingPackage'], operation: ['create'] } },
+	},
 	// ------------------------------------------------------------------
 	//        workspaceId — used by create & getMany
 	// ------------------------------------------------------------------

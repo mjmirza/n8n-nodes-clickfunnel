@@ -7,18 +7,16 @@ export async function handleLessonCompletion(
 	i: number,
 ): Promise<unknown> {
 	if (operation === 'create') {
+		const courseId = assertSafeId(ctx.getNodeParameter('courseId', i, '') as string, 'Course ID');
 		const lessonId = assertSafeId(ctx.getNodeParameter('lessonId', i) as string, 'Lesson ID');
-		const contactId = assertSafeId(
-			ctx.getNodeParameter('contactId', i) as string,
-			'Contact ID',
-		);
+		const enrollmentId = assertSafeId(ctx.getNodeParameter('enrollmentId', i, '') as string, 'Enrollment ID');
 		const body: IDataObject = {
-			courses_lesson_completion: { contact_id: contactId },
+			courses_lesson_completion: { enrollment_id: Number(enrollmentId), lesson_id: Number(lessonId) },
 		};
 		return clickFunnelsRequest(
 			ctx,
 			'POST',
-			`/courses/lessons/${lessonId}/lesson_completions`,
+			`/courses/${courseId}/lesson_completions`,
 			body,
 		);
 	}
@@ -32,12 +30,11 @@ export async function handleLessonCompletion(
 	}
 
 	if (operation === 'getAll') {
-		const lessonId = assertSafeId(ctx.getNodeParameter('lessonId', i) as string, 'Lesson ID');
-		return clickFunnelsGetAll(
-			ctx,
-			'GET',
-			`/courses/lessons/${lessonId}/lesson_completions`,
-		);
+		const courseId = assertSafeId(ctx.getNodeParameter('courseId', i, '') as string, 'Course ID');
+		const lessonId = String(ctx.getNodeParameter('lessonId', i, '') ?? '').trim();
+		const qs: IDataObject = {};
+		if (lessonId) qs['filter[lesson_id]'] = assertSafeId(lessonId, 'Lesson ID');
+		return clickFunnelsGetAll(ctx, 'GET', `/courses/${courseId}/lesson_completions`, qs);
 	}
 
 	if (operation === 'delete') {

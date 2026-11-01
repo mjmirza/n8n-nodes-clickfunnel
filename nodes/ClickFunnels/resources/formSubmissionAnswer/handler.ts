@@ -1,5 +1,5 @@
 import { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId, toApiId } from '../../transport';
 
 export async function handleFormSubmissionAnswer(
 	ctx: IExecuteFunctions,
@@ -19,8 +19,9 @@ export async function handleFormSubmissionAnswer(
 
 		const body: IDataObject = {
 			forms_submissions_answer: {
-				field_id: fieldId,
-				value,
+				field_id: toApiId(fieldId),
+				// The API stores the answer text as entry.
+				entry: value,
 			},
 		};
 		return clickFunnelsRequest(
@@ -54,8 +55,13 @@ export async function handleFormSubmissionAnswer(
 		);
 		const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
 
+		const answer: IDataObject = { ...additionalFields };
+		if (answer.value !== undefined) {
+			answer.entry = answer.value;
+			delete answer.value;
+		}
 		const body: IDataObject = {
-			forms_submissions_answer: { ...additionalFields },
+			forms_submissions_answer: answer,
 		};
 		return clickFunnelsRequest(ctx, 'PUT', `/forms/submissions/answers/${answerId}`, body);
 	}

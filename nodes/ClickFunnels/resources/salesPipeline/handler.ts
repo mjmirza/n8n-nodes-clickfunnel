@@ -1,4 +1,5 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
+import { parseJsonArray } from '../orderInvoice/handler';
 import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
 
 export async function handleSalesPipeline(
@@ -13,10 +14,16 @@ export async function handleSalesPipeline(
 				'Workspace ID',
 			);
 			const name = ctx.getNodeParameter('name', i) as string;
+			const stagesRaw = ctx.getNodeParameter('stages', i, '') as string | IDataObject[];
+			const stages: unknown = typeof stagesRaw === 'string' ? parseJsonArray(stagesRaw, 'Stages (JSON)') : stagesRaw;
+			if (!Array.isArray(stages) || stages.length === 0) {
+				throw new Error('Stages must be a JSON array with at least one stage, for example [{"name":"New","close_probability":10}]');
+			}
 
 			const body: IDataObject = {
 				sales_pipeline: {
 					name,
+					stages_attributes: stages,
 				} as IDataObject,
 			};
 

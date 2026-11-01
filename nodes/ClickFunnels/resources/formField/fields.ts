@@ -1,6 +1,16 @@
 import { INodeProperties } from 'n8n-workflow';
 
 export const formFieldFields: INodeProperties[] = [
+	{
+		displayName: 'Key',
+		name: 'key',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: 'favorite_color',
+		description: 'Machine name of the field, required by the API',
+		displayOptions: { show: { resource: ['formField'], operation: ['create'] } },
+	},
 	// ------------------------------------------------------------------
 	//        formField: fieldSetId (for create, getAll)
 	// ------------------------------------------------------------------

@@ -1,5 +1,5 @@
 import { NodeOperationError, type IExecuteFunctions, type IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId, toApiId } from '../../transport';
 
 // The API calls the tracking number tracking_code.
 function withTrackingCode(fields: IDataObject): IDataObject {
@@ -11,7 +11,7 @@ function withTrackingCode(fields: IDataObject): IDataObject {
 function getLineItems(ctx: IExecuteFunctions, i: number): IDataObject[] {
 	const collection = ctx.getNodeParameter('lineItems', i, {}) as { item?: IDataObject[] };
 	const items = (collection.item ?? []).map((item) => ({
-		invoices_line_item_id: assertSafeId(item.invoiceLineItemId as string, 'Invoice line item ID'),
+		invoices_line_item_id: toApiId(assertSafeId(item.invoiceLineItemId as string, 'Invoice line item ID')),
 		quantity: Number(item.quantity ?? 1),
 	}));
 	if (items.length === 0) {
@@ -44,8 +44,8 @@ export async function handleFulfillment(
 			const body: IDataObject = {
 				fulfillment: {
 					...withTrackingCode(additionalFields),
-					contact_id: contactId,
-					location_id: locationId,
+					contact_id: toApiId(contactId),
+					location_id: toApiId(locationId),
 					included_orders_invoices_line_items_attributes: getLineItems(ctx, i),
 				} as IDataObject,
 			};

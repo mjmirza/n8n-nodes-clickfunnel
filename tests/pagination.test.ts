@@ -1,6 +1,10 @@
 // Cursor pagination per https://developers.myclickfunnels.com/docs/pagination (after = last ID).
 import { clickFunnelsGetAll, clickFunnelsGetMany } from '../nodes/ClickFunnels/transport';
-import { calls, makeCtx, type HttpMock } from './helpers';
+import { calls, makeCtx, TEST_NODE, type HttpMock } from './helpers';
+
+function v2Ctx(http: HttpMock) {
+	return { ...(makeCtx({}, http) as object), getNode: () => ({ ...TEST_NODE, typeVersion: 2 }) } as never;
+}
 
 function rows(from: number, count: number) {
 	return Array.from({ length: count }, (_, k) => ({ id: from + k }));
@@ -48,6 +52,27 @@ describe('clickFunnelsGetAll', () => {
 		const result = await clickFunnelsGetAll(makeCtx({}, http), 'GET', '/x', {}, 2);
 		expect(result).toHaveLength(200);
 		expect(http).toHaveBeenCalledTimes(2);
+	});
+
+	it('should stop at maxPages with an error on node version 2 instead of truncating silently', async () => {
+		const http = fakeApi(1000);
+		await expect(clickFunnelsGetAll(v2Ctx(http), 'GET', '/x', {}, 2)).rejects.toThrow('more records remain');
+	});
+
+	it('should not error when the capped last page is exactly the last record', async () => {
+		const http = fakeApi(200);
+		await expect(clickFunnelsGetAll(v2Ctx(http), 'GET', '/x', {}, 2)).resolves.toHaveLength(200);
+	});
+
+	it('should return everything past the old 50 page default', async () => {
+		const http = fakeApi(5101);
+		const result = await clickFunnelsGetAll(makeCtx({}, http), 'GET', '/x');
+		expect(result).toHaveLength(5101);
+	});
+
+	it('should not error when the last allowed page is also the last page', async () => {
+		const http = fakeApi(150);
+		await expect(clickFunnelsGetAll(v2Ctx(http), 'GET', '/x', {}, 2)).resolves.toHaveLength(150);
 	});
 });
 

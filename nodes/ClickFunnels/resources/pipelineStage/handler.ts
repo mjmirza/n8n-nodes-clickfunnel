@@ -14,11 +14,13 @@ export async function handlePipelineStage(
 			);
 			const name = ctx.getNodeParameter('name', i) as string;
 			const position = ctx.getNodeParameter('position', i) as number;
+			const closeProbability = ctx.getNodeParameter('closeProbability', i, 0) as number;
 
 			const body: IDataObject = {
-				sales_pipeline_stage: {
+				sales_pipelines_stage: {
 					name,
-					position,
+					sort_order: position,
+					close_probability: closeProbability,
 				} as IDataObject,
 			};
 
@@ -65,8 +67,13 @@ export async function handlePipelineStage(
 			);
 			const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
 
+			const stage: IDataObject = { ...updateFields };
+			if (stage.position !== undefined) {
+				stage.sort_order = stage.position;
+				delete stage.position;
+			}
 			const body: IDataObject = {
-				sales_pipeline_stage: { ...updateFields } as IDataObject,
+				sales_pipelines_stage: stage,
 			};
 
 			return clickFunnelsRequest(ctx, 'PUT', `/sales/pipelines/stages/${stageId}`, body);

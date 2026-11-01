@@ -12,13 +12,10 @@ export async function handleFormFieldOption(
 			'Field ID',
 		);
 		const label = ctx.getNodeParameter('label', i) as string;
-		const value = ctx.getNodeParameter('value', i) as string;
 
+		// The option schema accepts only a label, ClickFunnels derives the stored value from it.
 		const body: IDataObject = {
-			forms_fields_option: {
-				label,
-				value,
-			},
+			forms_fields_option: { label },
 		};
 		return clickFunnelsRequest(
 			ctx,

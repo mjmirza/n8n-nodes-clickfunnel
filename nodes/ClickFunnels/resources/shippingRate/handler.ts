@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId, toApiId } from '../../transport';
 
 export async function handleShippingRate(
 	ctx: IExecuteFunctions,
@@ -21,7 +21,7 @@ export async function handleShippingRate(
 
 			const body: IDataObject = {
 				shipping_rate: {
-					rates_name_id: rateNameId,
+					rates_name_id: toApiId(rateNameId),
 					price,
 					...additionalFields,
 				} as IDataObject,

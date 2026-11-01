@@ -1,5 +1,5 @@
 import { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId, toApiId } from '../../transport';
 
 export async function handleCourseEnrollment(
 	ctx: IExecuteFunctions,
@@ -13,7 +13,7 @@ export async function handleCourseEnrollment(
 			'Contact ID',
 		);
 		const body: IDataObject = {
-			courses_enrollment: { contact_id: contactId },
+			courses_enrollment: { contact_id: toApiId(contactId) },
 		};
 		return clickFunnelsRequest(ctx, 'POST', `/courses/${courseId}/enrollments`, body);
 	}
