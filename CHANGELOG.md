@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [3.0.1] - 2026-11-01
 
 From the confirming review of the published 3.0.0.
 
