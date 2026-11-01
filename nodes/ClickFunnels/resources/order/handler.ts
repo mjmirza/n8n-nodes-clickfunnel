@@ -17,8 +17,8 @@ function renameLegacyAddressFields(fields: IDataObject): IDataObject {
 function getLineItems(ctx: IExecuteFunctions, i: number): IDataObject[] {
 	const collection = ctx.getNodeParameter('lineItems', i, {}) as { item?: IDataObject[] };
 	const items = (collection.item ?? []).map((item) => ({
-		variant_id: assertSafeId(item.variantId as string, 'Line item variant ID'),
-		products_price_id: assertSafeId(item.priceId as string, 'Line item price ID'),
+		variant_id: toApiId(assertSafeId(item.variantId as string, 'Line item variant ID')),
+		products_price_id: toApiId(assertSafeId(item.priceId as string, 'Line item price ID')),
 		quantity: Number(item.quantity ?? 1),
 	}));
 	if (items.length === 0) {

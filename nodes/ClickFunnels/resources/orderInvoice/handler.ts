@@ -1,5 +1,5 @@
 import { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId, toApiId } from '../../transport';
 
 /** Parses a JSON array parameter, naming the parameter when the JSON is invalid. */
 export function parseJsonArray(raw: string, label: string): unknown[] {
@@ -19,7 +19,33 @@ export function parseJsonArray(raw: string, label: string): unknown[] {
 const UNSUPPORTED = ['discount_amount', 'notes', 'subtotal_amount', 'tax_amount', 'total_amount'];
 
 /** Builds an orders_invoice body, mapping 1.x field names and filling paid_at for a paid invoice. */
-export function invoiceBody(fields: IDataObject): IDataObject {
+// Line item keys per the orders_invoice schema. Create adds items, update changes existing ones by ID.
+const LINE_ITEM_KEYS = {
+	create: { allowed: ['amount', 'quantity', 'variant_id', 'products_price_id'], required: ['amount', 'quantity', 'variant_id', 'products_price_id'] },
+	update: { allowed: ['id', 'amount', 'quantity', 'description'], required: ['id'] },
+};
+
+function lineItems(items: unknown[], isCreate: boolean): IDataObject[] {
+	const rules = isCreate ? LINE_ITEM_KEYS.create : LINE_ITEM_KEYS.update;
+	return items.map((raw, n) => {
+		const item = (raw ?? {}) as IDataObject;
+		const extra = Object.keys(item).filter((k) => !rules.allowed.includes(k));
+		const missing = rules.required.filter((k) => item[k] === undefined || item[k] === '');
+		if (extra.length > 0 || missing.length > 0) {
+			throw new Error(
+				`Line item ${n + 1} must have ${rules.required.join(', ')}${isCreate ? '' : ' and may have amount, quantity, description'}. ${
+					missing.length ? `Missing ${missing.join(', ')}. ` : ''
+				}${extra.length ? `Not accepted: ${extra.join(', ')}.` : ''}`.trim(),
+			);
+		}
+		const out: IDataObject = { ...item };
+		for (const k of ['id', 'variant_id', 'products_price_id', 'quantity']) if (out[k] !== undefined) out[k] = toApiId(String(out[k]));
+		if (out.amount !== undefined) out.amount = String(out.amount);
+		return out;
+	});
+}
+
+export function invoiceBody(fields: IDataObject, isCreate = false): IDataObject {
 	const body: IDataObject = { ...fields };
 	const unsupported = UNSUPPORTED.filter((k) => body[k] !== undefined && body[k] !== '');
 	if (unsupported.length > 0) {
@@ -38,6 +64,8 @@ export function invoiceBody(fields: IDataObject): IDataObject {
 	}
 	if (Array.isArray(body.line_items_attributes) && body.line_items_attributes.length === 0) {
 		delete body.line_items_attributes;
+	} else if (Array.isArray(body.line_items_attributes)) {
+		body.line_items_attributes = lineItems(body.line_items_attributes, isCreate);
 	}
 	for (const [k, v] of Object.entries(body)) if (v === '') delete body[k];
 	if (body.status === 'paid' && !body.paid_at) body.paid_at = new Date().toISOString();
@@ -66,7 +94,7 @@ export async function handleOrderInvoice(
 					...additionalFields,
 					external_id: externalId,
 					status,
-				}),
+				}, true),
 			};
 
 			return clickFunnelsRequest(

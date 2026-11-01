@@ -231,7 +231,7 @@ describe('medium findings', () => {
 		await expect(new ClickFunnelsTrigger().webhookMethods.default.checkExists.call(hookCtx(missing))).resolves.toBe(false);
 
 		// A changed event selection replaces the endpoint instead of keeping stale subscriptions.
-		const endpoint = { id: 9, url: 'https://n8n.example/webhook/abc', webhook_secret_last_four: 'abcd', event_type_ids: ['contact.created'] };
+		const endpoint = { id: 9, workspace_id: 42, url: 'https://n8n.example/webhook/abc', webhook_secret_last_four: 'abcd', event_type_ids: ['contact.created'] };
 		const same: HttpMock = jest.fn(async (_opts) => endpoint);
 		await expect(new ClickFunnelsTrigger().webhookMethods.default.checkExists.call(hookCtx(same))).resolves.toBe(true);
 		const changed: HttpMock = jest.fn(async (_opts) => endpoint);

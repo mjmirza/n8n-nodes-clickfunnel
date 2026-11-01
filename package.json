@@ -43,6 +43,7 @@
 	],
 	"scripts": {
 		"build": "tsc && gulp build:icons",
+		"prepack": "npm run build",
 		"dev": "tsc --watch",
 		"format": "prettier nodes credentials --write",
 		"lint": "eslint --max-warnings 0 .",

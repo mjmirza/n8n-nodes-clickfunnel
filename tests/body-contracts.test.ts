@@ -29,6 +29,7 @@ const OVERRIDES: Record<string, unknown> = {
 	'salesOpportunity.monetary_value': '5000.00',
 	'webhook.eventTypeIds': 'contact.created',
 	'webhook.event_type_ids': 'contact.created',
+	'orderInvoice.update.line_items_attributes': '[{"id":1,"amount":"1.00","quantity":1}]',
 	'orderInvoice.line_items_attributes': '[{"amount":"1.00","quantity":1,"variant_id":1,"products_price_id":1}]',
 };
 
@@ -44,7 +45,11 @@ function visible(p: INodeProperties, resource: string, operation: string): boole
 	return true;
 }
 
+let currentOperation = '';
+
 function sample(resource: string, p: INodeProperties): IDataObject[string] {
+	const opKey = `${resource}.${currentOperation}.${p.name}`;
+	if (opKey in OVERRIDES) return OVERRIDES[opKey] as IDataObject[string];
 	const key = `${resource}.${p.name}`;
 	if (key in OVERRIDES) return OVERRIDES[key] as IDataObject[string];
 	if (p.typeOptions?.multipleValues && p.type !== 'fixedCollection' && p.type !== 'collection') {
@@ -144,6 +149,7 @@ describe('every write body matches the ClickFunnels request schema', () => {
 
 	async function problemsFor(resource: string, operation: string, minimal: boolean): Promise<string[]> {
 		const params: IDataObject = { resource, operation, returnAll: false, limit: 1 };
+		currentOperation = operation;
 		for (const p of props) {
 			if (p.name === 'resource' || p.name === 'operation' || !visible(p, resource, operation)) continue;
 			if (p.name in params && p.name !== 'returnAll' && p.name !== 'limit') continue;

@@ -128,6 +128,8 @@ Workflow-stamped event types (for example `workflows/steps/deliver_webhook_step.
 | Contact Get Many filters | New IDs and Is Active filters, the documented `filter[id]` and `filter[is_active]` | None |
 | Course lesson and section update | Name is sent as `title` and shown as Title | None |
 | Product variant create | Sends the required `product_type` (new **Product Type**, Digital by default), `weight_unit` (Pounds when not set) and `properties_values` (empty when not set). Update offers Product Type | Choose Physical for goods that ship |
+| Product price create | Recurring prices send an interval count, 1 when not set. A subscription needs an Interval and a payment plan a Duration | Fill them in |
+| Webhook Endpoint update | A blank Event Type IDs field unsubscribes from every event | Remove the field if you meant to keep the subscriptions |
 | Product price update | An interval change no longer sets the payment type to subscription | Set Payment Type explicitly when you mean to change it |
 | Return All | Pages until the API runs dry, the old 50 page cap is gone. On version 2 a Max Pages limit that cuts the result short stops with an error. Version 1 nodes with Max Pages keep returning the first pages | Raise Max Pages or narrow the request |
 | Empty lists | Version 2 returns no items, so later nodes do not run. Version 1 keeps its single `{ success: true, count: 0 }` item | Turn on **Always Output Data** if a version 2 workflow must continue on an empty result |

@@ -352,7 +352,21 @@
 						"variants": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"subject": {
+										"type": "string"
+									},
+									"preheadline": {
+										"type": [
+											"string",
+											"null"
+										]
+									}
+								},
+								"required": [
+									"subject"
+								]
 							}
 						},
 						"smart_sending": {
@@ -488,7 +502,19 @@
 						"branches": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"page_id": {
+										"type": "integer"
+									},
+									"page_ids": {
+										"type": "array",
+										"items": {
+											"type": "integer"
+										}
+									}
+								},
+								"required": []
 							}
 						}
 					},
@@ -506,7 +532,16 @@
 						"variants": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"page_id": {
+										"type": "integer"
+									},
+									"weight": {
+										"type": "integer"
+									}
+								},
+								"required": []
 							}
 						}
 					},
@@ -538,7 +573,22 @@
 						"criteria": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"attribute": {
+										"type": "string"
+									},
+									"clause": {
+										"type": "string"
+									},
+									"value": {
+										"type": null
+									}
+								},
+								"required": [
+									"attribute",
+									"clause"
+								]
 							}
 						}
 					},
@@ -2321,7 +2371,19 @@
 						"branches": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"page_id": {
+										"type": "integer"
+									},
+									"page_ids": {
+										"type": "array",
+										"items": {
+											"type": "integer"
+										}
+									}
+								},
+								"required": []
 							}
 						},
 						"show_page_step_id": {
@@ -2345,7 +2407,16 @@
 						"variants": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"page_id": {
+										"type": "integer"
+									},
+									"weight": {
+										"type": "integer"
+									}
+								},
+								"required": []
 							}
 						},
 						"show_page_step_id": {
@@ -2571,7 +2642,33 @@
 						"line_items_attributes": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"amount": {
+										"type": "string"
+									},
+									"quantity": {
+										"type": "integer"
+									},
+									"variant_id": {
+										"type": "integer"
+									},
+									"products_price_id": {
+										"type": "integer"
+									},
+									"description": {
+										"type": [
+											"string",
+											"null"
+										]
+									}
+								},
+								"required": [
+									"amount",
+									"quantity",
+									"variant_id",
+									"products_price_id"
+								]
 							}
 						}
 					},
@@ -2854,7 +2951,16 @@
 						"properties_values": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"property_id": {
+										"type": "integer"
+									},
+									"value": {
+										"type": "string"
+									}
+								},
+								"required": []
 							}
 						},
 						"has_access_to_all_valid_assets": {
@@ -2875,13 +2981,55 @@
 						"included_courses_attributes": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"_destroy": {
+										"type": "boolean"
+									},
+									"course_id": {
+										"type": "integer"
+									},
+									"included_sections_attributes": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "integer"
+												},
+												"_destroy": {
+													"type": "boolean"
+												},
+												"courses_section_id": {
+													"type": "integer"
+												}
+											},
+											"required": []
+										}
+									}
+								},
+								"required": []
 							}
 						},
 						"included_space_groups_attributes": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"_destroy": {
+										"type": "boolean"
+									},
+									"communities_space_group_id": {
+										"type": "integer"
+									}
+								},
+								"required": []
 							}
 						}
 					},
@@ -4081,7 +4229,21 @@
 						"variants": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"subject": {
+										"type": "string"
+									},
+									"preheadline": {
+										"type": [
+											"string",
+											"null"
+										]
+									}
+								},
+								"required": [
+									"subject"
+								]
 							}
 						},
 						"smart_sending": {
@@ -4136,7 +4298,27 @@
 						"recipients": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string"
+									},
+									"first_name": {
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"last_name": {
+										"type": [
+											"string",
+											"null"
+										]
+									}
+								},
+								"required": [
+									"email"
+								]
 							}
 						}
 					},
@@ -4287,7 +4469,16 @@
 						"included_orders_invoices_line_items_attributes": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"invoices_line_item_id": {
+										"type": "integer"
+									},
+									"quantity": {
+										"type": "integer"
+									}
+								},
+								"required": []
 							}
 						}
 					},
@@ -4504,7 +4695,23 @@
 						"line_items_attributes": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"variant_id": {
+										"type": "integer"
+									},
+									"products_price_id": {
+										"type": "integer"
+									},
+									"quantity": {
+										"type": "integer"
+									}
+								},
+								"required": [
+									"variant_id",
+									"products_price_id",
+									"quantity"
+								]
 							}
 						},
 						"shipping_address_first_name": {
@@ -4764,10 +4971,27 @@
 							"type": "object",
 							"properties": {
 								"product_ids": {
-									"type": "array"
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
 								},
 								"bumps": {
-									"type": "array"
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"product_id": {
+												"type": "string"
+											},
+											"preheadline": {
+												"type": "string"
+											}
+										},
+										"required": [
+											"product_id"
+										]
+									}
 								}
 							},
 							"required": []
@@ -5011,7 +5235,16 @@
 						"variant_properties": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": []
 							}
 						}
 					},
@@ -5146,7 +5379,22 @@
 						"criteria": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"attribute": {
+										"type": "string"
+									},
+									"clause": {
+										"type": "string"
+									},
+									"value": {
+										"type": null
+									}
+								},
+								"required": [
+									"attribute",
+									"clause"
+								]
 							}
 						}
 					},
@@ -5214,7 +5462,16 @@
 						"stages_attributes": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"close_probability": {
+										"type": "integer"
+									}
+								},
+								"required": []
 							}
 						}
 					},
@@ -6791,7 +7048,27 @@
 						"line_items_attributes": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"amount": {
+										"type": "string"
+									},
+									"quantity": {
+										"type": "integer"
+									},
+									"description": {
+										"type": [
+											"string",
+											"null"
+										]
+									}
+								},
+								"required": [
+									"id"
+								]
 							}
 						}
 					},
@@ -7107,10 +7384,27 @@
 							"type": "object",
 							"properties": {
 								"product_ids": {
-									"type": "array"
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
 								},
 								"bumps": {
-									"type": "array"
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"product_id": {
+												"type": "string"
+											},
+											"preheadline": {
+												"type": "string"
+											}
+										},
+										"required": [
+											"product_id"
+										]
+									}
 								}
 							},
 							"required": []
@@ -7484,7 +7778,16 @@
 						"properties_values": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"property_id": {
+										"type": "integer"
+									},
+									"value": {
+										"type": "string"
+									}
+								},
+								"required": []
 							}
 						},
 						"has_access_to_all_valid_assets": {
@@ -7505,13 +7808,55 @@
 						"included_courses_attributes": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"_destroy": {
+										"type": "boolean"
+									},
+									"course_id": {
+										"type": "integer"
+									},
+									"included_sections_attributes": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "integer"
+												},
+												"_destroy": {
+													"type": "boolean"
+												},
+												"courses_section_id": {
+													"type": "integer"
+												}
+											},
+											"required": []
+										}
+									}
+								},
+								"required": []
 							}
 						},
 						"included_space_groups_attributes": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"_destroy": {
+										"type": "boolean"
+									},
+									"communities_space_group_id": {
+										"type": "integer"
+									}
+								},
+								"required": []
 							}
 						}
 					},
@@ -7610,7 +7955,16 @@
 						"variant_properties": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer"
+									},
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": []
 							}
 						}
 					},
@@ -7712,7 +8066,16 @@
 						"stages_attributes": {
 							"type": "array",
 							"items": {
-								"type": "object"
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"close_probability": {
+										"type": "integer"
+									}
+								},
+								"required": []
 							}
 						}
 					},

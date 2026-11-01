@@ -157,7 +157,7 @@ describe('order', () => {
 			contact_id: 9,
 			order_type: 'one-time-order',
 			live_mode: true,
-			line_items_attributes: [{ variant_id: '3', products_price_id: '4', quantity: 2 }],
+			line_items_attributes: [{ variant_id: 3, products_price_id: 4, quantity: 2 }],
 			shipping_address_street_one: '1 Main',
 			shipping_address_postal_code: '10115',
 		});
@@ -182,7 +182,7 @@ describe('fulfillment', () => {
 		expect(c.body.fulfillment).toMatchObject({
 			contact_id: 9,
 			location_id: 2,
-			included_orders_invoices_line_items_attributes: [{ invoices_line_item_id: '55', quantity: 1 }],
+			included_orders_invoices_line_items_attributes: [{ invoices_line_item_id: 55, quantity: 1 }],
 			tracking_code: 'TRK1',
 		});
 		expect(c.body.fulfillment).not.toHaveProperty('tracking_number');

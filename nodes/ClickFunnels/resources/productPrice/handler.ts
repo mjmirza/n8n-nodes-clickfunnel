@@ -25,6 +25,14 @@ function toPriceBody(fields: IDataObject, isCreate: boolean): IDataObject {
 	if (fields.interval === 'one_time' && !price.payment_type) price.payment_type = 'one_time';
 	// Only a new price defaults to a subscription. An update must not turn a payment plan into one.
 	if (isCreate && price.interval && !price.payment_type) price.payment_type = 'subscription';
+	if (isCreate && (price.payment_type === 'subscription' || price.payment_type === 'payment_plan')) {
+		// The API requires an interval and an interval count for recurring prices. A count of 1 bills every interval.
+		if (!price.interval) throw new Error(`A ${String(price.payment_type)} price needs an Interval`);
+		if (price.interval_count === undefined || price.interval_count === null || price.interval_count === '') price.interval_count = 1;
+		if (price.payment_type === 'payment_plan' && !price.duration) {
+			throw new Error('A payment plan price needs a Duration, the number of payments');
+		}
+	}
 	return price;
 }
 

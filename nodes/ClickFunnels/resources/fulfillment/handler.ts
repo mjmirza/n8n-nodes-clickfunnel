@@ -11,7 +11,7 @@ function withTrackingCode(fields: IDataObject): IDataObject {
 function getLineItems(ctx: IExecuteFunctions, i: number): IDataObject[] {
 	const collection = ctx.getNodeParameter('lineItems', i, {}) as { item?: IDataObject[] };
 	const items = (collection.item ?? []).map((item) => ({
-		invoices_line_item_id: assertSafeId(item.invoiceLineItemId as string, 'Invoice line item ID'),
+		invoices_line_item_id: toApiId(assertSafeId(item.invoiceLineItemId as string, 'Invoice line item ID')),
 		quantity: Number(item.quantity ?? 1),
 	}));
 	if (items.length === 0) {

@@ -30,6 +30,9 @@ export const LEGACY_FIELDS: LegacyField[] = [
 
 const NOT_ACCEPTED = ' (Not Accepted by the API)';
 
+// resource.parameter -> operations that show the parameter. A field kept from another operation is never sent.
+const SHOWN_FOR = new Map<string, Set<string>>();
+
 function forResource(p: INodeProperties): LegacyField[] {
 	const resources = (p.displayOptions?.show?.resource ?? []) as string[];
 	return LEGACY_FIELDS.filter((l) => l.parameter === p.name && resources.includes(l.resource));
@@ -47,6 +50,12 @@ export function splitLegacyFields(properties: INodeProperties[]): INodePropertie
 		if (legacy.length === 0) {
 			out.push(p);
 			continue;
+		}
+		for (const l of legacy) {
+			const ops = (p.displayOptions?.show?.operation ?? []) as string[];
+			const shown = SHOWN_FOR.get(`${l.resource}.${l.parameter}`) ?? new Set<string>();
+			for (const op of ops) shown.add(op);
+			SHOWN_FOR.set(`${l.resource}.${l.parameter}`, shown);
 		}
 		const keys = new Set(legacy.flatMap((l) => l.keys ?? []));
 		if (legacy.some((l) => !l.keys)) {
@@ -74,9 +83,11 @@ function isSet(value: unknown): boolean {
 }
 
 /** Names the legacy fields a version 1 node has set, so the node can stop with a clear instruction. */
-export function legacyFieldsSet(resource: string, operationParams: (name: string) => unknown): string[] {
+export function legacyFieldsSet(resource: string, operation: string, operationParams: (name: string) => unknown): string[] {
 	const found: string[] = [];
 	for (const l of LEGACY_FIELDS.filter((f) => f.resource === resource)) {
+		const shown = SHOWN_FOR.get(`${l.resource}.${l.parameter}`);
+		if (shown && shown.size > 0 && !shown.has(operation)) continue;
 		const value = operationParams(l.parameter);
 		if (!l.keys) {
 			if (isSet(value)) found.push(l.parameter);

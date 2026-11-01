@@ -31,13 +31,13 @@ def describe(schema, depth=0):
     out = {"type": schema.get("type")}
     if "enum" in schema:
         out["enum"] = [v for v in schema["enum"] if v is not None]
-    if depth < 3 and "properties" in schema:
+    if depth < 6 and "properties" in schema:
         out["properties"] = {
             k: describe(v, depth + 1) for k, v in schema["properties"].items()
         }
         out["required"] = schema.get("required", [])
     items = schema.get("items")
-    if depth < 3 and isinstance(items, dict):
+    if depth < 6 and isinstance(items, dict):
         out["items"] = describe(items, depth + 1)
     return out
 

@@ -12,7 +12,7 @@ import {
 } from 'n8n-workflow';
 
 import { createHmac, timingSafeEqual } from 'crypto';
-import { clickFunnelsRequest, getHttpStatus, LEGACY_EVENT_KEYS } from './transport';
+import { assertSafeId, clickFunnelsRequest, getHttpStatus, LEGACY_EVENT_KEYS } from './transport';
 
 // User-selectable keys from https://developers.myclickfunnels.com/docs/webhook-event-types
 // Workflow-stamped event types are excluded, ClickFunnels rejects them on an endpoint you create.
@@ -137,6 +137,15 @@ function selectedEventKeys(ctx: IHookFunctions): string[] {
 	return [...new Set(selected.map((e) => LEGACY_EVENT_KEYS[e] ?? e))];
 }
 
+/** The workspace ID, validated so it can never change the request path. */
+function triggerWorkspaceId(ctx: IHookFunctions): string {
+	try {
+		return assertSafeId(ctx.getNodeParameter('workspaceId') as string, 'Workspace ID');
+	} catch (error) {
+		throw new NodeOperationError(ctx.getNode(), error as Error);
+	}
+}
+
 function sameKeys(a: string[], b: string[]): boolean {
 	const left = [...new Set(a)].sort();
 	const right = [...new Set(b)].sort();
@@ -255,7 +264,9 @@ export class ClickFunnelsTrigger implements INodeType {
 				const wanted = selectedEventKeys(this);
 				const current = Array.isArray(endpoint?.event_type_ids) ? (endpoint.event_type_ids as string[]) : undefined;
 				const eventsMatch = current === undefined || sameKeys(current, wanted);
-				if (endpoint && (endpoint.url as string) === webhookUrl && secretMatches && eventsMatch) {
+				// An endpoint in another workspace would deliver that workspace's events, so it is replaced.
+				const workspaceMatches = String(endpoint?.workspace_id ?? '') === triggerWorkspaceId(this);
+				if (endpoint && (endpoint.url as string) === webhookUrl && secretMatches && eventsMatch && workspaceMatches) {
 					return true;
 				}
 
@@ -266,7 +277,7 @@ export class ClickFunnelsTrigger implements INodeType {
 
 			async create(this: IHookFunctions): Promise<boolean> {
 				const webhookUrl = this.getNodeWebhookUrl('default') as string;
-				const workspaceId = this.getNodeParameter('workspaceId') as string;
+				const workspaceId = triggerWorkspaceId(this);
 				const events = selectedEventKeys(this);
 
 				const body = {

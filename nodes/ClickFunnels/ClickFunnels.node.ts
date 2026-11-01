@@ -500,7 +500,7 @@ export class ClickFunnels implements INodeType {
 					const migration = migrationMessage(resource, operation, (name) => this.getNodeParameter(name, i, ''));
 					if (migration) throw new NodeOperationError(this.getNode(), migration, { itemIndex: i });
 					// A null fallback, n8n throws for an absent parameter when the fallback is undefined.
-					const legacy = legacyFieldsSet(resource, (name) => this.getNodeParameter(name, i, null));
+					const legacy = legacyFieldsSet(resource, operation, (name) => this.getNodeParameter(name, i, null));
 					if (legacy.length > 0) {
 						throw new NodeOperationError(
 							this.getNode(),

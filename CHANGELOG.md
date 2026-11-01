@@ -40,6 +40,13 @@ Fixes from the third and fourth adversarial reviews, of 2.0.0 and of a 2.1.0 can
 - Record IDs the schema types as integers (contact, tag, field, location, rate name, stage) are sent as numbers. Sales opportunity Value is sent as a number.
 - A contact create or upsert with an incomplete billing address fails before the contact is written. An update checks first whether the contact already has a billing address, which accepts a partial change.
 - On version 2 an empty Tag IDs field clears a contact's tags. Version 1 still leaves them unchanged.
+- The trigger replaces an endpoint that belongs to a different workspace, and validates Workspace ID so it cannot change the request path.
+- Recurring prices send `interval_count` (1 when not set). A subscription without an interval and a payment plan without a duration fail before any request.
+- Order line item variant and price IDs and fulfillment invoice line item IDs are sent as numbers.
+- A blank Event Type IDs field on Webhook Endpoint update sends `[]`, which unsubscribes from every event.
+- Invoice line items are checked against the create shape (amount, quantity, variant ID, price ID) and the update shape (ID plus amount, quantity, description) before any request.
+- The legacy-field check only looks at fields the current operation uses, so a value left over from another operation does not stop a read.
+- `npm pack` builds first, so a local tarball never carries stale compiled code.
 - The version 1 legacy-field check no longer throws `Could not get parameter` for nodes that never had those parameters.
 - Contact Get Many offers the documented IDs and Is Active filters. After Date and Before Date sent `filter[after]` and `filter[before]`, which the API does not document.
 
