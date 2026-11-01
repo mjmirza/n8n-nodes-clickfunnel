@@ -1,4 +1,5 @@
 import {
+	Icon,
 	IAuthenticateGeneric,
 	ICredentialTestRequest,
 	ICredentialType,
@@ -9,6 +10,11 @@ export class ClickFunnelsApi implements ICredentialType {
 	name = 'clickFunnelsApi';
 	displayName = 'ClickFunnels API';
 	documentationUrl = 'https://developers.myclickfunnels.com/';
+
+	icon: Icon = {
+		light: 'file:../nodes/ClickFunnels/clickfunnels.svg',
+		dark: 'file:../nodes/ClickFunnels/clickfunnels.dark.svg',
+	};
 
 	properties: INodeProperties[] = [
 		{

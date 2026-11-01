@@ -146,6 +146,13 @@ export const fulfillmentLocationFields: INodeProperties[] = [
 		},
 		options: [
 			{
+				displayName: 'Address Line 1',
+				name: 'addressLine1',
+				type: 'string',
+				default: '',
+				description: 'Street address line 1',
+			},
+			{
 				displayName: 'Address Line 2',
 				name: 'addressLine2',
 				type: 'string',
@@ -181,13 +188,6 @@ export const fulfillmentLocationFields: INodeProperties[] = [
 				description: 'State or province',
 			},
 			{
-				displayName: 'Address Line 1',
-				name: 'addressLine1',
-				type: 'string',
-				default: '',
-				description: 'Street address line 1',
-			},
-			{
 				displayName: 'Zip Code',
 				name: 'zip',
 				type: 'string',
@@ -221,7 +221,7 @@ export const fulfillmentLocationFields: INodeProperties[] = [
 			minValue: 1,
 			maxValue: 100,
 		},
-		default: 20,
+		default: 50,
 		description: 'Max number of results to return',
 		displayOptions: {
 			show: {

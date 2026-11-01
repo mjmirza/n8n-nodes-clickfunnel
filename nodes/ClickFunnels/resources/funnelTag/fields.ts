@@ -61,7 +61,7 @@ export const funnelTagFields: INodeProperties[] = [
 	{
 		displayName: 'Color',
 		name: 'color',
-		type: 'string',
+		type: 'color',
 		required: true,
 		default: '',
 		description: 'The color of the funnel tag (e.g. "#FF0000")',
@@ -92,7 +92,7 @@ export const funnelTagFields: INodeProperties[] = [
 			{
 				displayName: 'Color',
 				name: 'color',
-				type: 'string',
+				type: 'color',
 				default: '',
 				description: 'The color of the funnel tag',
 			},
@@ -130,7 +130,7 @@ export const funnelTagFields: INodeProperties[] = [
 			minValue: 1,
 			maxValue: 100,
 		},
-		default: 20,
+		default: 50,
 		description: 'Max number of results to return',
 		displayOptions: {
 			show: {

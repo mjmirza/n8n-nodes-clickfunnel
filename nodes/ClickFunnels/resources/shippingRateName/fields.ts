@@ -105,7 +105,7 @@ export const shippingRateNameFields: INodeProperties[] = [
 			minValue: 1,
 			maxValue: 100,
 		},
-		default: 20,
+		default: 50,
 		description: 'Max number of results to return',
 		displayOptions: {
 			show: {
