@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2] - 2026-11-01
+
+Closes issue #4.
+
+### Tests
+- A regression test for issue #4. Lesson Completion, Page and Sales Opportunity call only the documented routes, `/courses/{course_id}/lesson_completions`, `/workspaces/{workspace_id}/pages` and `/workspaces/{workspace_id}/sales/opportunities`, with the required fields and the documented `filter[...]` keys. The test asserts the three removed routes are never requested, and that a missing Course, Enrollment, Workspace or Stage ID stops before any request. It fails against the 2.0.0 handlers and passes on 3.0.2. The route fix itself shipped in 3.0.0, so request behaviour is unchanged from 3.0.1.
+
 ## [3.0.1] - 2026-11-01
 
 From the confirming review of the published 3.0.0.
