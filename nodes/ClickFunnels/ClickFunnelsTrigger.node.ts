@@ -264,8 +264,12 @@ export class ClickFunnelsTrigger implements INodeType {
 				const wanted = selectedEventKeys(this);
 				const current = Array.isArray(endpoint?.event_type_ids) ? (endpoint.event_type_ids as string[]) : undefined;
 				const eventsMatch = current === undefined || sameKeys(current, wanted);
-				// An endpoint in another workspace would deliver that workspace's events, so it is replaced.
-				const workspaceMatches = String(endpoint?.workspace_id ?? '') === triggerWorkspaceId(this);
+				// A public ID cannot be compared with a numeric ID, so only replace on a certain mismatch.
+				const workspaceId = triggerWorkspaceId(this);
+				const workspacePublicId = (endpoint?.workspace as IDataObject | undefined)?.public_id ?? endpoint?.workspace_public_id;
+				const workspaceMatches = String(endpoint?.workspace_id ?? '') === workspaceId
+					|| String(workspacePublicId ?? '') === workspaceId
+					|| (!/^\d+$/.test(workspaceId) && (workspacePublicId === undefined || workspacePublicId === null));
 				if (endpoint && (endpoint.url as string) === webhookUrl && secretMatches && eventsMatch && workspaceMatches) {
 					return true;
 				}

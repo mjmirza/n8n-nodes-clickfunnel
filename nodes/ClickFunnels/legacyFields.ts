@@ -33,6 +33,7 @@ const IGNORED = ' (Ignored, Not Stored by ClickFunnels)';
 
 // resource.parameter -> operations that show the parameter. A field kept from another operation is never sent.
 const SHOWN_FOR = new Map<string, Set<string>>();
+const FIELD_DEFAULTS = new Map<string, unknown>();
 
 function forResource(p: INodeProperties): LegacyField[] {
 	const resources = (p.displayOptions?.show?.resource ?? []) as string[];
@@ -52,11 +53,17 @@ export function splitLegacyFields(properties: INodeProperties[]): INodePropertie
 			out.push(p);
 			continue;
 		}
+		const options = (p.options ?? []) as INodeProperties[];
 		for (const l of legacy) {
 			const ops = (p.displayOptions?.show?.operation ?? []) as string[];
 			const shown = SHOWN_FOR.get(`${l.resource}.${l.parameter}`) ?? new Set<string>();
 			for (const op of ops) shown.add(op);
 			SHOWN_FOR.set(`${l.resource}.${l.parameter}`, shown);
+			for (const op of ops.length > 0 ? ops : ['*']) {
+				for (const o of options.filter((o) => l.keys?.includes(o.name))) {
+					FIELD_DEFAULTS.set(`${l.resource}.${l.parameter}.${op}.${o.name}`, o.default);
+				}
+			}
 		}
 		const keys = new Set(legacy.flatMap((l) => l.keys ?? []));
 		if (legacy.some((l) => !l.keys)) {
@@ -64,7 +71,6 @@ export function splitLegacyFields(properties: INodeProperties[]): INodePropertie
 			out.push(withVersion({ ...p, required: false, displayName: p.displayName + IGNORED }, 1));
 			continue;
 		}
-		const options = (p.options ?? []) as INodeProperties[];
 		out.push(withVersion({ ...p, options: options.filter((o) => !keys.has(o.name)) }, 2));
 		out.push(
 			withVersion(
@@ -79,8 +85,29 @@ export function splitLegacyFields(properties: INodeProperties[]): INodePropertie
 	return out;
 }
 
-function isSet(value: unknown): boolean {
-	return value !== undefined && value !== null && value !== '';
+function equalsDefault(value: unknown, declaredDefault: unknown): boolean {
+	if (value === declaredDefault) return true;
+	if (!value || !declaredDefault || typeof value !== 'object' || typeof declaredDefault !== 'object') return false;
+	if (Array.isArray(value) !== Array.isArray(declaredDefault)) return false;
+	const defaults = declaredDefault as Record<string, unknown>;
+	const entries = Object.entries(value);
+	return entries.length === Object.keys(defaults).length
+		&& entries.every(([key, entry]) => Object.prototype.hasOwnProperty.call(defaults, key) && equalsDefault(entry, defaults[key]));
+}
+
+function isSet(value: unknown, declaredDefault: unknown): boolean {
+	if (value === undefined || value === null || value === '' || value === false || value === 0) return false;
+	if (typeof value === 'object' && Object.keys(value).length === 0) return false;
+	return !equalsDefault(value, declaredDefault);
+}
+
+/** Omit legacy collection keys after validation, without changing saved parameters. */
+export function withoutLegacyFields<T>(resource: string, parameter: string, value: T): T {
+	const keys = LEGACY_FIELDS.filter((l) => l.resource === resource && l.parameter === parameter).flatMap((l) => l.keys ?? []);
+	if (keys.length === 0 || value === null || typeof value !== 'object') return value;
+	const fields = { ...value } as Record<string, unknown>;
+	for (const key of keys) delete fields[key];
+	return fields as T;
 }
 
 /** Names the legacy fields a version 1 node has set, so the node can stop with a clear instruction. */
@@ -94,7 +121,11 @@ export function legacyFieldsSet(resource: string, operation: string, operationPa
 		// It is never sent and ClickFunnels never stored it, so ignoring it keeps version 1 behaviour.
 		if (!l.keys) continue;
 		const fields = (value ?? {}) as Record<string, unknown>;
-		for (const k of l.keys) if (isSet(fields[k])) found.push(k);
+		for (const k of l.keys) {
+			const key = `${l.resource}.${l.parameter}`;
+			const declaredDefault = FIELD_DEFAULTS.get(`${key}.${operation}.${k}`) ?? FIELD_DEFAULTS.get(`${key}.*.${k}`);
+			if (isSet(fields[k], declaredDefault)) found.push(k);
+		}
 	}
 	return [...new Set(found)];
 }

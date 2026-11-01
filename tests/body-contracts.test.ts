@@ -24,6 +24,7 @@ const PAGING = new Set(['after', 'per_page', 'sort_order', 'sort_property']);
 
 // Values a handler parses or validates, keyed resource.parameter. Everything else gets a generic sample.
 const OVERRIDES: Record<string, unknown> = {
+	'productVariant.properties': '{"11":"Large"}',
 	'salesPipeline.stages': '[{"name":"New","close_probability":10}]',
 	'contact.tags': '1,2',
 	'salesOpportunity.monetary_value': '5000.00',

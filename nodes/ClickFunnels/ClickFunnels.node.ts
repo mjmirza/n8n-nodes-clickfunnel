@@ -1,4 +1,4 @@
-import { legacyFieldsSet, splitLegacyFields } from './legacyFields';
+import { legacyFieldsSet, splitLegacyFields, withoutLegacyFields } from './legacyFields';
 import {
 	IExecuteFunctions,
 	INodeExecutionData,
@@ -496,6 +496,7 @@ export class ClickFunnels implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				const version = this.getNode().typeVersion;
+				let handlerContext: IExecuteFunctions = this;
 				if (version < 2) {
 					const migration = migrationMessage(resource, operation, (name) => this.getNodeParameter(name, i, ''));
 					if (migration) throw new NodeOperationError(this.getNode(), migration, { itemIndex: i });
@@ -508,8 +509,12 @@ export class ClickFunnels implements INodeType {
 							{ itemIndex: i },
 						);
 					}
+					handlerContext = Object.create(this) as IExecuteFunctions;
+					handlerContext.getNodeParameter = ((...args: Parameters<IExecuteFunctions['getNodeParameter']>) =>
+						withoutLegacyFields(resource, args[0], this.getNodeParameter(...args))
+					) as IExecuteFunctions['getNodeParameter'];
 				}
-				const result = await handler(this, operation, i);
+				const result = await handler(handlerContext, operation, i);
 
 				if (result === null || result === undefined) {
 					returnData.push({ json: { success: true }, pairedItem: { item: i } });

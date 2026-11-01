@@ -272,8 +272,8 @@ describe('product variant', () => {
 		});
 		expect(c.body.products_variant).toMatchObject({
 			properties_values: [
-				{ property_id: '11', value: 'Large' },
-				{ property_id: '12', value: 'Red' },
+				{ property_id: 11, value: 'Large' },
+				{ property_id: 12, value: 'Red' },
 			],
 		});
 		expect(c.body.products_variant).not.toHaveProperty('properties');

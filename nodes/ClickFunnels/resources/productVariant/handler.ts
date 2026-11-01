@@ -15,7 +15,13 @@ function withPropertyValues(ctx: IExecuteFunctions, fields: IDataObject, i: numb
 	}
 	const values = Array.isArray(parsed)
 		? parsed
-		: Object.entries((parsed ?? {}) as IDataObject).map(([property_id, value]) => ({ property_id, value }));
+		: Object.entries((parsed ?? {}) as IDataObject).map(([key, value]) => {
+			const property_id = Number(key);
+			if (!/^\d+$/.test(key) || !Number.isSafeInteger(property_id)) {
+				throw new NodeOperationError(ctx.getNode(), `Property ID "${key}" must be an integer`, { itemIndex: i });
+			}
+			return { property_id, value };
+		});
 	return { ...rest, properties_values: values as IDataObject[] };
 }
 
