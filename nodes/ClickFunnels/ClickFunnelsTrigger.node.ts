@@ -264,12 +264,13 @@ export class ClickFunnelsTrigger implements INodeType {
 				const wanted = selectedEventKeys(this);
 				const current = Array.isArray(endpoint?.event_type_ids) ? (endpoint.event_type_ids as string[]) : undefined;
 				const eventsMatch = current === undefined || sameKeys(current, wanted);
-				// A public ID cannot be compared with a numeric ID, so only replace on a certain mismatch.
+				// When the endpoint only exposes a numeric ID, compare public IDs with the stored configuration.
 				const workspaceId = triggerWorkspaceId(this);
 				const workspacePublicId = (endpoint?.workspace as IDataObject | undefined)?.public_id ?? endpoint?.workspace_public_id;
 				const workspaceMatches = String(endpoint?.workspace_id ?? '') === workspaceId
 					|| String(workspacePublicId ?? '') === workspaceId
-					|| (!/^\d+$/.test(workspaceId) && (workspacePublicId === undefined || workspacePublicId === null));
+					|| (!/^\d+$/.test(workspaceId) && (workspacePublicId === undefined || workspacePublicId === null)
+						&& (!webhookData.workspaceId || webhookData.workspaceId === workspaceId));
 				if (endpoint && (endpoint.url as string) === webhookUrl && secretMatches && eventsMatch && workspaceMatches) {
 					return true;
 				}
@@ -306,6 +307,7 @@ export class ClickFunnelsTrigger implements INodeType {
 
 				const webhookData = this.getWorkflowStaticData('node');
 				webhookData.webhookId = endpoint.id;
+				webhookData.workspaceId = workspaceId;
 
 				// ClickFunnels returns the signing secret once, in this response only.
 				if (typeof endpoint.webhook_secret !== 'string' || !endpoint.webhook_secret) {
@@ -370,4 +372,5 @@ async function removeEndpoint(ctx: IHookFunctions, webhookData: IDataObject, str
 	}
 	delete webhookData.webhookId;
 	delete webhookData.secret;
+	delete webhookData.workspaceId;
 }

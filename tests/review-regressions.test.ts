@@ -44,6 +44,45 @@ describe('legacy field defaults', () => {
 
 describe('trigger workspace identity', () => {
 	it.each([
+		['B', false],
+		['A', true],
+	])('checks workspace %s against the stored public workspace ID', async (workspaceId, keep) => {
+		const data: IDataObject = { webhookId: 9, secret: 'secret-abcd', workspaceId: 'A' };
+		const http: HttpMock = jest.fn(async (_opts) => ({
+			id: 9, workspace_id: 42,
+			url: 'https://n8n.example/webhook/abc', webhook_secret_last_four: 'abcd', event_type_ids: ['contact.created'],
+		}));
+		const ctx = {
+			...(makeCtx({}, http) as object),
+			getNodeWebhookUrl: () => 'https://n8n.example/webhook/abc',
+			getNodeParameter: (name: string) => name === 'workspaceId' ? workspaceId : ['contact.created'],
+			getWorkflowStaticData: () => data,
+			logger: { debug: jest.fn(), warn: jest.fn() },
+		} as never;
+		await expect(new ClickFunnelsTrigger().webhookMethods.default.checkExists.call(ctx)).resolves.toBe(keep);
+		expect(calls(http).map((c) => c.method)).toEqual(keep ? ['GET'] : ['GET', 'DELETE']);
+		expect(data).toEqual(keep ? { webhookId: 9, secret: 'secret-abcd', workspaceId: 'A' } : {});
+	});
+
+	it('stores the configured workspace ID on creation and clears it on deletion', async () => {
+		const data: IDataObject = {};
+		const http: HttpMock = jest.fn(async (_opts) => ({ id: 9, webhook_secret: 'secret-abcd' }));
+		const ctx = {
+			...(makeCtx({}, http) as object),
+			getNodeWebhookUrl: () => 'https://n8n.example/webhook/abc',
+			getNodeParameter: (name: string) => name === 'workspaceId' ? 'A' : ['contact.created'],
+			getWorkflowStaticData: () => data,
+			logger: { debug: jest.fn(), warn: jest.fn() },
+		} as never;
+		const methods = new ClickFunnelsTrigger().webhookMethods.default;
+		await expect(methods.create.call(ctx)).resolves.toBe(true);
+		expect(data).toEqual({ webhookId: 9, secret: 'secret-abcd', workspaceId: 'A' });
+		await expect(methods.delete.call(ctx)).resolves.toBe(true);
+		expect(calls(http).map((c) => c.method)).toEqual(['POST', 'DELETE']);
+		expect(data).toEqual({});
+	});
+
+	it.each([
 		['jWMWXZ', {}, true],
 		['jWMWXZ', { workspace: { public_id: 'jWMWXZ' } }, true],
 		['7', {}, false],
