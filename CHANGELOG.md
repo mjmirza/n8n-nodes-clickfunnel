@@ -54,6 +54,9 @@ Fixes from the third and fourth adversarial reviews, of 2.0.0 and of a 2.1.0 can
 - `npm pack` builds first, so a local tarball never carries stale compiled code.
 - The version 1 legacy-field check no longer throws `Could not get parameter` for nodes that never had those parameters.
 - Contact Get Many offers the documented IDs and Is Active filters. After Date and Before Date sent `filter[after]` and `filter[before]`, which the API does not document.
+- A version 1 node whose Not Accepted field holds its default value, such as an unticked Required or a Position of 0, runs and leaves the field out. Only a changed value stops the node.
+- The trigger keeps a valid endpoint when the Workspace ID is a public ID, which ClickFunnels reports back as a number. Switching to another workspace still replaces the endpoint, checked against the workspace stored at activation.
+- Product variant property maps send integer `property_id` values. A key that is not a whole number fails before any request.
 
 ### Changed
 - On version 2 an empty list returns no items, so downstream nodes do not run on nothing. Use Always Output Data to continue. Version 1 keeps its `{ success: true, count: 0 }` item.

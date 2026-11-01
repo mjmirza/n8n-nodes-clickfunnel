@@ -92,7 +92,7 @@ The credential is verified on save with a request to `GET /teams`. Tokens are cr
 
 ## Trigger events
 
-The **ClickFunnels Trigger** node registers a webhook endpoint in your workspace when the workflow is activated and removes it when the workflow is deactivated. It offers every event type ClickFunnels lets you pick for an endpoint, 83 in all, from the [webhook event catalog](https://developers.myclickfunnels.com/docs/webhook-event-types). Changing the selected events replaces the endpoint on the next activation.
+The **ClickFunnels Trigger** node registers a webhook endpoint in your workspace when the workflow is activated and removes it when the workflow is deactivated. It offers every event type ClickFunnels lets you pick for an endpoint, 83 in all, from the [webhook event catalog](https://developers.myclickfunnels.com/docs/webhook-event-types). Changing the selected events or the Workspace ID replaces the endpoint on the next activation.
 
 | Area | Events |
 |------|--------|
@@ -122,7 +122,7 @@ Workflow-stamped event types (for example `workflows/steps/deliver_webhook_step.
 | Area | What changed | What to do |
 |------|--------------|------------|
 | Saved version 1 nodes that lack a field the API requires | The node stops before any request and names the missing field, instead of failing with an API error | Open the node and fill in the named field |
-| Fields ClickFunnels never accepted | Version 2 no longer offers them. Version 1 keeps them, marked Not Accepted by the API, and a node that has one set stops before any request. Affected: contact After Date and Before Date filters, lesson and section Position, form Description and Redirect URL, form field Placeholder, Position and Required, field set Description and Position, form submission Page ID, order Currency, In Trial, Origination Channel Type and Total Amount, product Description, Image URL and Internal Name, variant Price, shipping rate Min and Max Price and Weight and rate Name | Clear the field, or switch the node to version 2 |
+| Fields ClickFunnels never accepted | Version 2 no longer offers them. Version 1 keeps them, marked Not Accepted by the API. A node that has one set to anything other than its default stops before any request, and a default value such as an unticked Required or a Position of 0 is left out of the request. Affected: contact After Date and Before Date filters, lesson and section Position, form Description and Redirect URL, form field Placeholder, Position and Required, field set Description and Position, form submission Page ID, order Currency, In Trial, Origination Channel Type and Total Amount, product Description, Image URL and Internal Name, variant Price, shipping rate Min and Max Price and Weight and rate Name | Clear the field, or switch the node to version 2 |
 | Form field option Value | ClickFunnels stores only the label. Version 2 no longer shows Value. Version 1 keeps it, marked Ignored, and creates the option without it, as before | None |
 | Contact tags | On version 2 an empty Tag IDs field on Update clears the contact's tags. Upsert cannot clear tags, ClickFunnels ignores an empty list there. Version 1 leaves them unchanged | Remove the Tag IDs field if a version 2 node must keep tags |
 | Contact address | A new billing address needs Address Line 1, City, Country and Zip. A create, or an upsert for a contact without an address, with fewer fails before anything is written. On version 2 an empty Address Line 2 or State clears it, and an empty required address field is rejected | Fill in the full address |
