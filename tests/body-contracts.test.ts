@@ -200,6 +200,10 @@ describe('every write body matches the ClickFunnels request schema', () => {
 			if (!route) problems.push(`${method} ${url} has no documented request body`);
 			else check(c.body, bodies[route], 'body', problems);
 		}
+		// An operation that makes no request, or a write that only reads, would pass the schema checks unnoticed.
+		const methods = calls(http).map((c) => String(c.method));
+		if (methods.length === 0) problems.push(`${resource} ${operation} made no request`);
+		else if (!operation.startsWith('get') && methods.every((m) => m === 'GET')) problems.push(`${resource} ${operation} made no write`);
 		return problems;
 	}
 

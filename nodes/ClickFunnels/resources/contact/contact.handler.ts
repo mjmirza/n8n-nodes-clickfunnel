@@ -31,7 +31,8 @@ function buildContactBody(ctx: IExecuteFunctions, i: number, requireEmail: boole
 	if (additionalFields.timeZone) body.time_zone = additionalFields.timeZone;
 
 	// On version 2 an explicitly empty Tag IDs field clears the tags. Version 1 kept them, and still does.
-	const clearsTags = Number(ctx.getNode().typeVersion) >= 2 && additionalFields.tags !== undefined;
+	// Upsert ignores an empty tag list, so clearing only applies to Update.
+	const clearsTags = !requireEmail && Number(ctx.getNode().typeVersion) >= 2 && additionalFields.tags !== undefined;
 	if (additionalFields.tags || clearsTags) {
 		body.tag_ids = String(additionalFields.tags)
 			.split(',')
@@ -66,11 +67,20 @@ const ADDRESS_FIELDS: Record<string, string> = {
 };
 
 // The contact endpoints ignore postal fields, so the address goes to the billing address endpoint.
+// Address Line 2 and State are nullable, so on version 2 an empty field clears them.
+const NULLABLE_ADDRESS = new Set(['address_two', 'region']);
+
 function buildBillingAddress(ctx: IExecuteFunctions, i: number): IDataObject | undefined {
 	const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
+	const clears = Number(ctx.getNode().typeVersion) >= 2;
 	const address: IDataObject = {};
 	for (const [field, apiKey] of Object.entries(ADDRESS_FIELDS)) {
-		if (additionalFields[field]) address[apiKey] = additionalFields[field];
+		const value = additionalFields[field];
+		if (value !== undefined && value !== null && value !== '') address[apiKey] = value;
+		else if (clears && field in additionalFields) {
+			if (!NULLABLE_ADDRESS.has(apiKey)) throw new Error(`The ${field} address field cannot be empty. Remove it or fill it in.`);
+			address[apiKey] = null;
+		}
 	}
 	return Object.keys(address).length > 0 ? address : undefined;
 }
@@ -82,6 +92,17 @@ const ADDRESS_REQUIRED: Record<string, string> = {
 	country_code: 'Country',
 	postal_code: 'Zip',
 };
+
+/** The ID of the contact an upsert will match on its email, if it already exists. */
+async function existingContactId(ctx: IExecuteFunctions, workspaceId: string, email: string): Promise<string | undefined> {
+	const found = (await clickFunnelsRequest(ctx, 'GET', `/workspaces/${workspaceId}/contacts`, undefined, {
+		'filter[email_address]': email,
+		per_page: 1,
+	})) as unknown;
+	const rows = Array.isArray(found) ? found : ((found as IDataObject)?.data as unknown[]) ?? [];
+	const id = (rows[0] as IDataObject | undefined)?.id;
+	return id === undefined || id === null ? undefined : assertSafeId(String(id), 'Contact ID');
+}
 
 function missingForCreate(address: IDataObject): string[] {
 	return Object.entries(ADDRESS_REQUIRED)
@@ -234,9 +255,13 @@ export async function handleContact(
 				'Workspace ID',
 			);
 			const body = buildContactBody(ctx, i, true);
-			// Upsert may create the contact, so a partial address is only accepted when complete enough to create.
 			const address = buildBillingAddress(ctx, i);
-			await assertAddressWritable(ctx, address, undefined);
+			// Upsert matches on email, so a partial address is fine when that contact already has one.
+			const known =
+				address && missingForCreate(address).length > 0
+					? await existingContactId(ctx, workspaceId, String((body.contact as IDataObject).email_address ?? ''))
+					: undefined;
+			await assertAddressWritable(ctx, address, known);
 			const contact = await clickFunnelsRequest(
 				ctx,
 				'POST',

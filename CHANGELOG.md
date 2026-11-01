@@ -5,7 +5,7 @@
 Fixes from the third and fourth adversarial reviews, of 2.0.0 and of a 2.1.0 candidate that was never published. **Breaking** for version 1 nodes that set a field ClickFunnels does not accept, see below. Every request shape was checked against the ClickFunnels OpenAPI document (https://accounts.myclickfunnels.com/openapi.json) and the webhook event catalog. The README has an upgrade table.
 
 ### Breaking
-- Fields the ClickFunnels request schemas do not accept are gone from version 2 and kept on version 1, marked Not Accepted by the API. A version 1 node with one of them set stops before any request and names the fields. 2.0.0 sent them and ClickFunnels did nothing with them. The full list is in the README upgrade table. Form field option nodes on version 1 always carry Value, so they need switching to version 2.
+- Fields the ClickFunnels request schemas do not accept are gone from version 2 and kept on version 1, marked Not Accepted by the API. A version 1 node with one of them set stops before any request and names the fields. 2.0.0 sent them and ClickFunnels did nothing with them. The full list is in the README upgrade table. Form field option Value is the exception. Every saved node has it, ClickFunnels never stored it, so version 1 keeps it, marked Ignored, and creates the option without it.
 
 ### Added
 - A body contract test. Every operation runs twice, once with every field the UI offers and once with only the required ones, and each request body is checked against the OpenAPI request schema, including enums and required keys. `filter[...]` query keys are checked against the documented filters, JSON types are checked, and a write that drops a required body fails. Absent parameters throw, as they do in n8n. `scripts/snapshot-openapi-bodies.py` regenerates the fixture.
@@ -40,6 +40,11 @@ Fixes from the third and fourth adversarial reviews, of 2.0.0 and of a 2.1.0 can
 - Record IDs the schema types as integers (contact, tag, field, location, rate name, stage) are sent as numbers. Sales opportunity Value is sent as a number.
 - A contact create or upsert with an incomplete billing address fails before the contact is written. An update checks first whether the contact already has a billing address, which accepts a partial change.
 - On version 2 an empty Tag IDs field clears a contact's tags. Version 1 still leaves them unchanged.
+- An upsert for an existing contact that already has a billing address accepts a partial address. The contact is looked up by email first.
+- On version 2 an empty Address Line 2 or State clears it, an empty required address field is rejected, and Upsert never sends an empty tag list, which ClickFunnels ignores.
+- A failed endpoint delete keeps the endpoint tracked. Replacing an endpoint whose delete fails stops activation instead of orphaning it.
+- The quickstart names the Workspace ID.
+- The body contract test fails an operation that makes no request, or a write that only reads.
 - The trigger replaces an endpoint that belongs to a different workspace, and validates Workspace ID so it cannot change the request path.
 - Recurring prices send `interval_count` (1 when not set). A subscription without an interval and a payment plan without a duration fail before any request.
 - Order line item variant and price IDs and fulfillment invoice line item IDs are sent as numbers.

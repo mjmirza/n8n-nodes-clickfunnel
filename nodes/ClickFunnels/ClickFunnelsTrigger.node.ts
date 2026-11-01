@@ -271,7 +271,8 @@ export class ClickFunnelsTrigger implements INodeType {
 				}
 
 				// Endpoints from 1.x stored a locally generated secret ClickFunnels never used, so replace them.
-				await removeEndpoint(this, webhookData);
+				// A failed delete stops activation, so the old endpoint is never left running untracked.
+				await removeEndpoint(this, webhookData, true);
 				return false;
 			},
 
@@ -346,16 +347,21 @@ export class ClickFunnelsTrigger implements INodeType {
 	}
 }
 
-// Cleanup is best effort: a failed delete must not block deactivating the workflow.
-async function removeEndpoint(ctx: IHookFunctions, webhookData: IDataObject): Promise<void> {
+// Forgets the endpoint only once it is gone. A failed delete keeps the ID so the endpoint is never orphaned.
+// strict throws on failure (replacing an endpoint), otherwise it logs (deactivation must not be blocked).
+async function removeEndpoint(ctx: IHookFunctions, webhookData: IDataObject, strict = false): Promise<void> {
 	if (webhookData.webhookId) {
 		try {
 			await clickFunnelsRequest(ctx, 'DELETE', `/webhooks/outgoing/endpoints/${webhookData.webhookId}`);
 		} catch (error) {
-			ctx.logger.warn('Could not delete ClickFunnels webhook endpoint during cleanup', {
-				webhookId: webhookData.webhookId,
-				error: (error as Error).message,
-			});
+			if (getHttpStatus(error) !== 404) {
+				if (strict) throw new NodeApiError(ctx.getNode(), error as JsonObject);
+				ctx.logger.warn('Could not delete ClickFunnels webhook endpoint, it stays tracked for the next activation', {
+					webhookId: webhookData.webhookId,
+					error: (error as Error).message,
+				});
+				return;
+			}
 		}
 	}
 	delete webhookData.webhookId;

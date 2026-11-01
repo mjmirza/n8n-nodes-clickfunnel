@@ -21,7 +21,7 @@ Run your ClickFunnels 2.0 workspace from n8n. Contacts, orders, products, course
 1. In n8n, open **Settings**, then **Community Nodes**, select **Install** and enter `n8n-nodes-clickfunnel`.
 2. In ClickFunnels, create an API access token. The steps are in the ClickFunnels [getting started guide](https://developers.myclickfunnels.com/docs/getting-started).
 3. In n8n, add a **ClickFunnels API** credential with your workspace subdomain and the token. n8n tests it on save.
-4. Add the **ClickFunnels** node, choose the resource **Contact** and the operation **Get Many**, then select **Execute step**.
+4. Add the **ClickFunnels** node, choose the resource **Contact** and the operation **Get Many**, and enter your **Workspace ID**. It is the number in your workspace URLs, or the `id` from the **Workspace** resource with **Get Many**. Then select **Execute step**.
 5. Your contacts appear in the output panel. From here, connect them to any other node.
 
 ## Credentials
@@ -122,13 +122,15 @@ Workflow-stamped event types (for example `workflows/steps/deliver_webhook_step.
 | Area | What changed | What to do |
 |------|--------------|------------|
 | Saved version 1 nodes that lack a field the API requires | The node stops before any request and names the missing field, instead of failing with an API error | Open the node and fill in the named field |
-| Fields ClickFunnels never accepted | Version 2 no longer offers them. Version 1 keeps them, marked Not Accepted by the API, and a node that has one set stops before any request. Affected: contact After Date and Before Date filters, lesson and section Position, form Description and Redirect URL, form field Placeholder, Position and Required, form field option Value, field set Description and Position, form submission Page ID, order Currency, In Trial, Origination Channel Type and Total Amount, product Description, Image URL and Internal Name, variant Price, shipping rate Min and Max Price and Weight and rate Name | Clear the field, or switch the node to version 2. Form field option nodes on version 1 always carry Value, so switch them to version 2 |
-| Contact tags | On version 2 an empty Tag IDs field clears the contact's tags. Version 1 leaves them unchanged | Remove the Tag IDs field if a version 2 node must keep tags |
-| Contact address | A new billing address needs Address Line 1, City, Country and Zip. A create or upsert with fewer fails before anything is written | Fill in the full address |
+| Fields ClickFunnels never accepted | Version 2 no longer offers them. Version 1 keeps them, marked Not Accepted by the API, and a node that has one set stops before any request. Affected: contact After Date and Before Date filters, lesson and section Position, form Description and Redirect URL, form field Placeholder, Position and Required, field set Description and Position, form submission Page ID, order Currency, In Trial, Origination Channel Type and Total Amount, product Description, Image URL and Internal Name, variant Price, shipping rate Min and Max Price and Weight and rate Name | Clear the field, or switch the node to version 2 |
+| Form field option Value | ClickFunnels stores only the label. Version 2 no longer shows Value. Version 1 keeps it, marked Ignored, and creates the option without it, as before | None |
+| Contact tags | On version 2 an empty Tag IDs field on Update clears the contact's tags. Upsert cannot clear tags, ClickFunnels ignores an empty list there. Version 1 leaves them unchanged | Remove the Tag IDs field if a version 2 node must keep tags |
+| Contact address | A new billing address needs Address Line 1, City, Country and Zip. A create, or an upsert for a contact without an address, with fewer fails before anything is written. On version 2 an empty Address Line 2 or State clears it, and an empty required address field is rejected | Fill in the full address |
 | Contact Get Many filters | New IDs and Is Active filters, the documented `filter[id]` and `filter[is_active]` | None |
 | Course lesson and section update | Name is sent as `title` and shown as Title | None |
 | Product variant create | Sends the required `product_type` (new **Product Type**, Digital by default), `weight_unit` (Pounds when not set) and `properties_values` (empty when not set). Update offers Product Type | Choose Physical for goods that ship |
 | Product price create | Recurring prices send an interval count, 1 when not set. A subscription needs an Interval and a payment plan a Duration | Fill them in |
+| Trigger endpoint cleanup | A failed delete keeps the endpoint tracked. Replacing an endpoint whose delete fails stops activation with the API error | Fix the token permissions and reactivate |
 | Webhook Endpoint update | A blank Event Type IDs field unsubscribes from every event | Remove the field if you meant to keep the subscriptions |
 | Product price update | An interval change no longer sets the payment type to subscription | Set Payment Type explicitly when you mean to change it |
 | Return All | Pages until the API runs dry, the old 50 page cap is gone. On version 2 a Max Pages limit that cuts the result short stops with an error. Version 1 nodes with Max Pages keep returning the first pages | Raise Max Pages or narrow the request |

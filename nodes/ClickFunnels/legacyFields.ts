@@ -29,6 +29,7 @@ export const LEGACY_FIELDS: LegacyField[] = [
 ];
 
 const NOT_ACCEPTED = ' (Not Accepted by the API)';
+const IGNORED = ' (Ignored, Not Stored by ClickFunnels)';
 
 // resource.parameter -> operations that show the parameter. A field kept from another operation is never sent.
 const SHOWN_FOR = new Map<string, Set<string>>();
@@ -59,8 +60,8 @@ export function splitLegacyFields(properties: INodeProperties[]): INodePropertie
 		}
 		const keys = new Set(legacy.flatMap((l) => l.keys ?? []));
 		if (legacy.some((l) => !l.keys)) {
-			// A top-level parameter the API never accepted, kept on version 1 only.
-			out.push(withVersion({ ...p, required: false, displayName: p.displayName + NOT_ACCEPTED }, 1));
+			// A required top-level parameter the API never stored. Version 1 keeps it and runs without sending it.
+			out.push(withVersion({ ...p, required: false, displayName: p.displayName + IGNORED }, 1));
 			continue;
 		}
 		const options = (p.options ?? []) as INodeProperties[];
@@ -89,10 +90,9 @@ export function legacyFieldsSet(resource: string, operation: string, operationPa
 		const shown = SHOWN_FOR.get(`${l.resource}.${l.parameter}`);
 		if (shown && shown.size > 0 && !shown.has(operation)) continue;
 		const value = operationParams(l.parameter);
-		if (!l.keys) {
-			if (isSet(value)) found.push(l.parameter);
-			continue;
-		}
+		// A required top-level parameter was set on every saved node, so rejecting it would break them all.
+		// It is never sent and ClickFunnels never stored it, so ignoring it keeps version 1 behaviour.
+		if (!l.keys) continue;
 		const fields = (value ?? {}) as Record<string, unknown>;
 		for (const k of l.keys) if (isSet(fields[k])) found.push(k);
 	}
