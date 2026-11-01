@@ -1,5 +1,5 @@
 import type { IExecuteFunctions } from 'n8n-workflow';
-import { clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
 
 export async function handleScheduledEvent(
 	ctx: IExecuteFunctions,
@@ -23,14 +23,7 @@ export async function handleScheduledEvent(
 			}
 
 			const limit = ctx.getNodeParameter('limit', i) as number;
-			const results = await clickFunnelsGetAll(
-				ctx,
-				'GET',
-				`/workspaces/${workspaceId}/appointments/scheduled_events`,
-				{},
-				1,
-			);
-			return results.slice(0, limit);
+			return clickFunnelsGetMany(ctx, `/workspaces/${workspaceId}/appointments/scheduled_events`, {}, limit);
 		}
 
 		default:

@@ -108,7 +108,7 @@ export const productVariantFields: INodeProperties[] = [
 				name: 'properties',
 				type: 'json',
 				default: '{}',
-				description: 'Custom properties as a JSON object',
+				description: 'Variant property values as JSON, either {"propertyId": "value"} or [{"property_id": 1, "value": "Large"}]',
 			},
 			{
 				displayName: 'SKU',
@@ -207,7 +207,7 @@ export const productVariantFields: INodeProperties[] = [
 				name: 'properties',
 				type: 'json',
 				default: '{}',
-				description: 'Custom properties as a JSON object',
+				description: 'Variant property values as JSON, either {"propertyId": "value"} or [{"property_id": 1, "value": "Large"}]',
 			},
 			{
 				displayName: 'SKU',

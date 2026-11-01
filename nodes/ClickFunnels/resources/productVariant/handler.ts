@@ -1,5 +1,23 @@
 import { NodeOperationError, type IExecuteFunctions, type IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
+
+// The API takes properties_values: [{ property_id, value }]. Accepts that array or a { propertyId: value } map.
+function withPropertyValues(ctx: IExecuteFunctions, fields: IDataObject, i: number): IDataObject {
+	const { properties, ...rest } = fields;
+	if (properties === undefined || properties === null || properties === '') return rest;
+	let parsed: unknown = properties;
+	if (typeof properties === 'string') {
+		try {
+			parsed = JSON.parse(properties);
+		} catch {
+			throw new NodeOperationError(ctx.getNode(), 'Properties must be valid JSON', { itemIndex: i });
+		}
+	}
+	const values = Array.isArray(parsed)
+		? parsed
+		: Object.entries((parsed ?? {}) as IDataObject).map(([property_id, value]) => ({ property_id, value }));
+	return { ...rest, properties_values: values as IDataObject[] };
+}
 
 export async function handleProductVariant(
 	ctx: IExecuteFunctions,
@@ -15,22 +33,10 @@ export async function handleProductVariant(
 			const name = ctx.getNodeParameter('name', i) as string;
 			const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
 
-			// Parse properties JSON if provided as a string
-			if (
-				typeof additionalFields.properties === 'string' &&
-				additionalFields.properties.trim()
-			) {
-				try {
-					additionalFields.properties = JSON.parse(additionalFields.properties);
-				} catch {
-					throw new NodeOperationError(ctx.getNode(), 'Properties must be valid JSON', { itemIndex: i });
-				}
-			}
-
 			const body: IDataObject = {
 				products_variant: {
 					name,
-					...additionalFields,
+					...withPropertyValues(ctx, additionalFields, i),
 				} as IDataObject,
 			};
 
@@ -67,14 +73,7 @@ export async function handleProductVariant(
 			}
 
 			const limit = ctx.getNodeParameter('limit', i) as number;
-			const results = await clickFunnelsGetAll(
-				ctx,
-				'GET',
-				`/products/${productId}/variants`,
-				{},
-				1,
-			);
-			return results.slice(0, limit);
+			return clickFunnelsGetMany(ctx, `/products/${productId}/variants`, {}, limit);
 		}
 
 		case 'update': {
@@ -84,17 +83,8 @@ export async function handleProductVariant(
 			);
 			const updateFields = ctx.getNodeParameter('updateFields', i, {}) as IDataObject;
 
-			// Parse properties JSON if provided as a string
-			if (typeof updateFields.properties === 'string' && updateFields.properties.trim()) {
-				try {
-					updateFields.properties = JSON.parse(updateFields.properties);
-				} catch {
-					throw new NodeOperationError(ctx.getNode(), 'Properties must be valid JSON', { itemIndex: i });
-				}
-			}
-
 			const body: IDataObject = {
-				products_variant: { ...updateFields } as IDataObject,
+				products_variant: withPropertyValues(ctx, updateFields, i),
 			};
 
 			return clickFunnelsRequest(ctx, 'PUT', `/products/variants/${variantId}`, body);

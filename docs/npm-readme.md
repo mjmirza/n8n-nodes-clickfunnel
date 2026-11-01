@@ -203,8 +203,8 @@ The **ClickFunnels Trigger** node fires instantly when things happen:
 | **SSRF Protection** | Strict subdomain validation — requests can only reach `*.myclickfunnels.com` |
 | **Input Sanitization** | Every ID validated against injection (path traversal, null bytes, unicode) |
 | **Token Security** | Control character rejection, length limits, no token leakage in error messages |
-| **Webhook HMAC** | SHA-256 signature verification with timing-safe comparison |
-| **Retry Logic** | Exponential backoff with jitter on 429/502/503/504 |
+| **Webhook HMAC** | Every call must carry a valid ClickFunnels signature (HMAC-SHA256 over timestamp and raw body, 600 second window), unsigned calls are rejected |
+| **Retry Logic** | Exponential backoff with jitter on 429/502/503/504 for reads, updates and deletes. Creates are never replayed |
 | **Error Handling** | Truncated error messages (no PII leakage), per-item continue-on-fail |
 | **URL Validation** | HTTPS-only enforcement for external URLs |
 

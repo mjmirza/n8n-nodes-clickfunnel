@@ -1,5 +1,5 @@
 import { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId, getHttpStatus } from '../../transport';
 
 /**
  * Build the contact request body from node parameters.
@@ -28,20 +28,14 @@ function buildContactBody(ctx: IExecuteFunctions, i: number, requireEmail: boole
 	// Additional fields
 	const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
 
-	if (additionalFields.addressLine1) body.address_line_1 = additionalFields.addressLine1;
-	if (additionalFields.addressLine2) body.address_line_2 = additionalFields.addressLine2;
-	if (additionalFields.city) body.city = additionalFields.city;
-	if (additionalFields.state) body.state = additionalFields.state;
-	if (additionalFields.zip) body.zip = additionalFields.zip;
-	if (additionalFields.country) body.country = additionalFields.country;
 	if (additionalFields.timeZone) body.time_zone = additionalFields.timeZone;
 
 	if (additionalFields.tags) {
-		const tagsRaw = additionalFields.tags as string;
-		body.tags = tagsRaw.split(',').map((t: string) => t.trim()).filter(Boolean);
+		const tagsRaw = String(additionalFields.tags);
+		body.tag_ids = tagsRaw.split(',').map((t: string) => t.trim()).filter(Boolean);
 	}
 
-	// Custom fields → { "custom_field_key": "value", ... }
+	// Custom fields are stored by ClickFunnels as custom_attributes.
 	const customFields = additionalFields.customFields as IDataObject | undefined;
 	if (customFields?.field) {
 		const fields = customFields.field as Array<{ key: string; value: string }>;
@@ -50,11 +44,52 @@ function buildContactBody(ctx: IExecuteFunctions, i: number, requireEmail: boole
 			if (f.key) cfMap[f.key] = f.value;
 		}
 		if (Object.keys(cfMap).length > 0) {
-			body.custom_fields = cfMap;
+			body.custom_attributes = cfMap;
 		}
 	}
 
 	return { contact: body };
+}
+
+const ADDRESS_FIELDS: Record<string, string> = {
+	addressLine1: 'address_one',
+	addressLine2: 'address_two',
+	city: 'city',
+	state: 'region',
+	zip: 'postal_code',
+	country: 'country_code',
+};
+
+// The contact endpoints ignore postal fields, so the address goes to the billing address endpoint.
+function buildBillingAddress(ctx: IExecuteFunctions, i: number): IDataObject | undefined {
+	const additionalFields = ctx.getNodeParameter('additionalFields', i, {}) as IDataObject;
+	const address: IDataObject = {};
+	for (const [field, apiKey] of Object.entries(ADDRESS_FIELDS)) {
+		if (additionalFields[field]) address[apiKey] = additionalFields[field];
+	}
+	return Object.keys(address).length > 0 ? address : undefined;
+}
+
+async function saveBillingAddress(
+	ctx: IExecuteFunctions,
+	contact: unknown,
+	address: IDataObject | undefined,
+	isNewContact: boolean,
+): Promise<unknown> {
+	if (!address) return contact;
+	const contactId = assertSafeId((contact as IDataObject)?.id as string, 'Contact ID');
+	const path = `/contacts/${contactId}/billing_address`;
+	const body = { contacts_billing_address: address };
+	let billingAddress: unknown;
+	if (isNewContact) {
+		billingAddress = await clickFunnelsRequest(ctx, 'POST', path, body);
+	} else {
+		billingAddress = await clickFunnelsRequest(ctx, 'PATCH', path, body).catch(async (error: unknown) => {
+			if (getHttpStatus(error) !== 404) throw error;
+			return clickFunnelsRequest(ctx, 'POST', path, body);
+		});
+	}
+	return { ...(contact as IDataObject), billing_address: billingAddress as IDataObject };
 }
 
 /**
@@ -64,8 +99,8 @@ function buildListFilters(ctx: IExecuteFunctions, i: number): IDataObject {
 	const qs: IDataObject = {};
 	const filters = ctx.getNodeParameter('filters', i, {}) as IDataObject;
 
-	if (filters.email) qs['filter[email]'] = filters.email;
-	if (filters.tag) qs['filter[tag]'] = filters.tag;
+	if (filters.email) qs['filter[email_address]'] = filters.email;
+	if (filters.tag) qs['filter[tag_ids]'] = filters.tag;
 	if (filters.afterDate) qs['filter[after]'] = filters.afterDate;
 	if (filters.beforeDate) qs['filter[before]'] = filters.beforeDate;
 
@@ -90,7 +125,8 @@ export async function handleContact(
 				'Workspace ID',
 			);
 			const body = buildContactBody(ctx, i, true);
-			return clickFunnelsRequest(ctx, 'POST', `/workspaces/${workspaceId}/contacts`, body);
+			const contact = await clickFunnelsRequest(ctx, 'POST', `/workspaces/${workspaceId}/contacts`, body);
+			return saveBillingAddress(ctx, contact, buildBillingAddress(ctx, i), true);
 		}
 
 		// -----------------------------------------------------------------
@@ -126,7 +162,8 @@ export async function handleContact(
 				'Contact ID',
 			);
 			const body = buildContactBody(ctx, i, false);
-			return clickFunnelsRequest(ctx, 'PUT', `/contacts/${contactId}`, body);
+			const contact = await clickFunnelsRequest(ctx, 'PUT', `/contacts/${contactId}`, body);
+			return saveBillingAddress(ctx, contact, buildBillingAddress(ctx, i), false);
 		}
 
 		// -----------------------------------------------------------------
@@ -149,12 +186,13 @@ export async function handleContact(
 				'Workspace ID',
 			);
 			const body = buildContactBody(ctx, i, true);
-			return clickFunnelsRequest(
+			const contact = await clickFunnelsRequest(
 				ctx,
 				'POST',
 				`/workspaces/${workspaceId}/contacts/upsert`,
 				body,
 			);
+			return saveBillingAddress(ctx, contact, buildBillingAddress(ctx, i), false);
 		}
 
 		// -----------------------------------------------------------------

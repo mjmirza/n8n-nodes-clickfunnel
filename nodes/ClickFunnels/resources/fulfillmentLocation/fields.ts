@@ -55,6 +55,22 @@ export const fulfillmentLocationFields: INodeProperties[] = [
 		},
 	},
 
+	{
+		displayName: 'Email Address',
+		name: 'emailAddress',
+		type: 'string',
+		placeholder: 'name@email.com',
+		required: true,
+		default: '',
+		description: 'Contact email address for the fulfillment location',
+		displayOptions: {
+			show: {
+				resource: ['fulfillmentLocation'],
+				operation: ['create'],
+			},
+		},
+	},
+
 	// ------------------------------------------------------------------
 	//        Address fields — required for create
 	// ------------------------------------------------------------------
@@ -160,6 +176,13 @@ export const fulfillmentLocationFields: INodeProperties[] = [
 				description: 'Street address line 2',
 			},
 			{
+				displayName: 'Address Name',
+				name: 'addressName',
+				type: 'string',
+				default: '',
+				description: 'Label for the address. Defaults to the location name on create.',
+			},
+			{
 				displayName: 'City',
 				name: 'city',
 				type: 'string',
@@ -172,6 +195,14 @@ export const fulfillmentLocationFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description: 'Country code (ISO 3166-1 alpha-2)',
+			},
+			{
+				displayName: 'Email Address',
+				name: 'emailAddress',
+				type: 'string',
+				placeholder: 'name@email.com',
+				default: '',
+				description: 'Contact email address for the fulfillment location',
 			},
 			{
 				displayName: 'Name',

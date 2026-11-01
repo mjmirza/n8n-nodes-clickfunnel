@@ -1,5 +1,5 @@
 import type { IExecuteFunctions, IDataObject } from 'n8n-workflow';
-import { clickFunnelsRequest, clickFunnelsGetAll, assertSafeId } from '../../transport';
+import { clickFunnelsRequest, clickFunnelsGetAll, clickFunnelsGetMany, assertSafeId } from '../../transport';
 
 export async function handleShippingLocationGroup(
 	ctx: IExecuteFunctions,
@@ -17,9 +17,9 @@ export async function handleShippingLocationGroup(
 		}
 
 		case 'getMany': {
-			const workspaceId = assertSafeId(
-				ctx.getNodeParameter('workspaceId', i) as string,
-				'Workspace ID',
+			const profileId = assertSafeId(
+				ctx.getNodeParameter('profileId', i) as string,
+				'Shipping Profile ID',
 			);
 			const returnAll = ctx.getNodeParameter('returnAll', i) as boolean;
 
@@ -27,19 +27,12 @@ export async function handleShippingLocationGroup(
 				return clickFunnelsGetAll(
 					ctx,
 					'GET',
-					`/workspaces/${workspaceId}/shipping/location_groups`,
+					`/shipping/profiles/${profileId}/location_groups`,
 				);
 			}
 
 			const limit = ctx.getNodeParameter('limit', i) as number;
-			const results = await clickFunnelsGetAll(
-				ctx,
-				'GET',
-				`/workspaces/${workspaceId}/shipping/location_groups`,
-				{},
-				1,
-			);
-			return results.slice(0, limit);
+			return clickFunnelsGetMany(ctx, `/shipping/profiles/${profileId}/location_groups`, {}, limit);
 		}
 
 		default:
